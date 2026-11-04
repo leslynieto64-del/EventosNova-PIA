@@ -5,6 +5,7 @@
 databases:
   - name: eventosnova-db
     plan: basic-256mb            # el plan gratuito caduca y no sirve para operar; verifique el plan vigente
+    postgresMajorVersion: "18"   # coincide con el PostgreSQL 18 de CI y Docker Compose; no cambia después de crear la base
     databaseName: eventosnova
     user: eventosnova
 
@@ -14,10 +15,13 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: .
+    # Sin dockerCommand: Render construye la etapa FINAL del Dockerfile (runtime), cuyo CMD inicia uvicorn con $PORT.
     plan: starter                # el plan gratuito se duerme tras inactividad
+    autoDeployTrigger: checksPass   # despliega solo cuando pasan las comprobaciones de CI del commit (no en cada push)
     healthCheckPath: /ready      # 503 si la base no responde
     preDeployCommand: python -m alembic upgrade head      # migraciones antes de arrancar la nueva versión
     envVars:
+      # EVENTOSNOVA_DOCS=1 (Swagger/OpenAPI en la demostración) se define A MANO en el panel de Render: no está en este archivo.
       - key: DATABASE_URL
         fromDatabase: { name: eventosnova-db, property: connectionString }   # postgres:// se normaliza a postgresql+psycopg://
       - key: EVENTOSNOVA_PERSISTENCIA
@@ -34,6 +38,7 @@ services:
     dockerContext: .
     plan: starter
     dockerCommand: python -m infrastructure.persistencia.trabajador_outbox --intervalo 2
+    autoDeployTrigger: checksPass
     envVars:
       - key: DATABASE_URL
         fromDatabase: { name: eventosnova-db, property: connectionString }

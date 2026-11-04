@@ -2,6 +2,8 @@
 #   target «app»   : API, migraciones y trabajador del Outbox (solo dependencias de ejecución).
 #   target «tests» : imagen anterior + dependencias de desarrollo y el proyecto completo que la suite verifica
 #                    (el contexto filtrado por .dockerignore: sin .env, .git, .venv ni exportaciones pesadas de BPMN).
+#   target «runtime»: etapa FINAL y PREDETERMINADA (docker build sin --target; es la que construyen Render y las plataformas que no
+#                    permiten elegir etapa). Es la imagen «app»: API de producción, sin pruebas ni dependencias de desarrollo.
 # No se copia ningún secreto: `.env` está en .dockerignore y la configuración llega por variables de entorno.
 
 FROM python:3.13-slim AS app
@@ -35,3 +37,9 @@ COPY . .
 RUN chown -R eventosnova /app
 USER eventosnova
 CMD ["python", "-m", "unittest", "discover", "-s", "tests"]
+
+# Etapa final y PREDETERMINADA (la que construye «docker build» sin --target). Hereda de «app» el usuario sin privilegios, EXPOSE 8000 y el
+# CMD de uvicorn (escucha en 0.0.0.0 y usa $PORT; 8000 si no existe), de modo que una plataforma que construya el Dockerfile sin indicar
+# etapa ejecuta la API y NO la suite de pruebas. CI y Docker Compose siguen usando explícitamente los targets «app» y «tests».
+# DEBE seguir siendo la ÚLTIMA etapa del archivo: añadir otra después cambiaría lo que se construye por omisión.
+FROM app AS runtime

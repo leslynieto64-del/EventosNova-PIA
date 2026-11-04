@@ -109,6 +109,16 @@ jobs:
       - name: Construir las imágenes
         run: docker compose --profile tests build
 
+      - name: Construir sin --target (la etapa predeterminada debe ser runtime, es decir la API y no unittest)
+        run: |
+          docker build -t eventosnova-runtime-check .
+          cmd="$(docker image inspect eventosnova-runtime-check --format '{{json .Config.Cmd}}')"
+          echo "CMD de la imagen predeterminada: $cmd"
+          echo "$cmd" | grep -q "uvicorn"
+          if echo "$cmd" | grep -q "unittest"; then echo "La etapa predeterminada ejecuta unittest" >&2; exit 1; fi
+          test "$(docker image inspect eventosnova-runtime-check --format '{{.Config.User}}')" = "eventosnova"
+          docker run --rm --entrypoint sh eventosnova-runtime-check -c 'test ! -d /app/tests'
+
       - name: Ejecutar la suite completa dentro de Docker (servicio tests)
         run: docker compose run --rm tests
 

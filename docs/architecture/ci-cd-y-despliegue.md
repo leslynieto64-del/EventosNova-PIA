@@ -45,7 +45,7 @@ El PIA pide un despliegue con Swagger/OpenAPI accesible. La aplicación está li
 
 | Pieza | Configuración |
 |---|---|
-| Imagen | `Dockerfile`, objetivo `app` (sin dependencias de desarrollo ni secretos). Escucha en `$PORT` (8000 por omisión) |
+| Imagen | `Dockerfile`, etapas `app` (API), `tests` (suite) y `runtime` (**etapa final y predeterminada**, igual que `app`: sin pruebas, dependencias de desarrollo ni secretos). Una plataforma que construye el Dockerfile sin indicar etapa (Render) obtiene `runtime` y ejecuta la API, no `unittest`; CI y Compose siguen usando `app` y `tests` de forma explícita. `runtime` debe seguir siendo la última etapa. Escucha en `$PORT` (8000 por omisión) |
 | Base de datos | PostgreSQL 18 gestionado. Variable `DATABASE_URL` (se aceptan `postgres://`, `postgresql://` y `postgresql+psycopg://`) |
 | Modo de persistencia | `EVENTOSNOVA_PERSISTENCIA=postgresql` |
 | Paso previo | `python -m alembic upgrade head` (comando de pre-despliegue o *release*) |
@@ -56,7 +56,7 @@ El PIA pide un despliegue con Swagger/OpenAPI accesible. La aplicación está li
 | Swagger / OpenAPI | `/docs` y `/openapi.json` (77 operaciones: 73 protegidas y 4 públicas). **En producción están ocultos por omisión: para la demostración del PIA hay que definir `EVENTOSNOVA_DOCS=1` a mano en el servicio web** |
 | **No existe** (D-P3, 01/11/2026): la disponibilidad, el costo y las condiciones de los proveedores se registran manualmente; la fuente simulada es solo para pruebas automatizadas y la aplicación se niega a arrancar si `EVENTOSNOVA_DISPONIBILIDAD_ARCHIVO` está definida | — |
 
-`render.yaml` es un **borrador no aplicado** (web, trabajador y PostgreSQL de Render): no define `EVENTOSNOVA_DOCS` ni la versión de PostgreSQL, y sus planes deben confirmarse en Render antes de usarlo. No se ha configurado ni desplegado nada.
+`render.yaml` es un **borrador no aplicado** (web, trabajador y PostgreSQL de Render): fija `postgresMajorVersion: "18"` (igual que el CI), usa `autoDeployTrigger: checksPass` (despliega solo si pasan las comprobaciones de CI del commit) y no define `EVENTOSNOVA_DOCS` (se añade a mano en el servicio web). No elige región (Render usa `oregon` por omisión) y sus planes deben confirmarse en Render antes de usarlo. El job `docker` del CI construye el Dockerfile **sin `--target`** y comprueba que la imagen resultante inicia uvicorn (no `unittest`), con usuario sin privilegios y sin la carpeta `tests`. No se ha configurado ni desplegado nada.
 
 ### Pasos manuales exactos
 
