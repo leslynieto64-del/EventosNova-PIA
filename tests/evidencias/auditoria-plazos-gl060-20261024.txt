@@ -1,0 +1,13 @@
+| Plazo | Unidad | Punto de partida | Vencimiento con el código actual | Vencimiento según GL-060 | Conforme | Implementación |
+|---|---|---|---|---|---|---|
+| Anticipo (3 días hábiles tras la firma) | días hábiles | firma Thu 01/10 10:00 | Tue 06/10/2026 10:00:00 | Wed 07/10/2026 00:00:00 | NO | EstadoCuenta.registrar_obligacion_anticipo → PlazoPago.dias_habiles → sumar_dias_habiles |
+| Seguimiento del anticipo (¿venció el plazo de 3 días hábiles?) | días hábiles | firma Thu 01/10 10:00 | Tue 06/10/2026 10:00:00 | Wed 07/10/2026 00:00:00 | NO | FormalizarContratacionService.dar_seguimiento_anticipo_pendiente |
+| Saldo del contrato original (3 días hábiles antes del evento) | días hábiles | evento Fri 20/11 18:00 | Tue 17/11/2026 18:00:00 | Wed 18/11/2026 00:00:00 | NO | EstadoCuenta.registrar_obligacion_saldo_original → restar_dias_habiles |
+| Límite ordinario de la sustitución con costo adicional | días hábiles | evento Fri 20/11 18:00 | Tue 17/11/2026 18:00:00 | Wed 18/11/2026 00:00:00 | NO | SustitucionProveedor.registrar_autorizacion |
+| Devolución SE-012 (5 días hábiles) | días hábiles | cierre Fri 20/11 15:30 | Fri 27/11/2026 15:30:00 | Sat 28/11/2026 00:00:00 | NO | Devolucion.fecha_limite (tipo SE-012) |
+| Devolución del anticipo, decisión A (5 días hábiles) | días hábiles | cierre Fri 20/11 15:30 | Sat 28/11/2026 00:00:00 | Sat 28/11/2026 00:00:00 | SÍ | Devolucion.fecha_limite (tipo anticipo) → limite_exclusivo_dias_habiles |
+
+Plazos en horas o días naturales (límite inclusivo según GL-060; no afectados por la brecha):
+- Ventanas de 24 horas (contacto del anticipo, moratorios, solicitudes de pago): vence a las 02/10 10:00 y «vencido» es ahora > vence → en el instante exacto del límite todavía está en plazo (inclusivo).
+- Cinco días naturales (servicio adicional) y siete (cambio tardío): se cuentan por fecha de calendario (AnticipacionSolicitud.dias_naturales).
+- T (inicio del evento): Evento.iniciado_en usa ahora >= fecha y hora programadas (límite inclusivo en T).

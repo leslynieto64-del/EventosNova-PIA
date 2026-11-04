@@ -1,0 +1,17 @@
+# Decisiones sobre proveedores
+
+Estado al 01/11/2026: **D-P1, D-P2 y D-P3 aprobadas por el equipo** (y S-7 y S-8, en `SEGURIDAD_Y_PERMISOS.md`; ver `../ADR/ADR-009-…` y `../ADR/ADR-010-decisiones-aprobadas-dp1-dp3.md`). **D-P3 implementada el 01/11/2026** (ver ADR-010, sección «Implementación»). Ninguna tiene respaldo explícito en el BRD, las User Stories o el cierre de alcance. Ninguna aprueba tarifas ni condiciones permanentes en el catálogo.
+
+## Qué está implementado hoy (29/10/2026)
+- **Fuente de los candidatos:** la asignación inicial de un proveedor a un servicio contratado (`GET …/servicios/{id}/disponibilidad`, `POST …/servicios/{id}/proveedor`) usa **solo el catálogo registrado en PostgreSQL** (`proveedor`): son candidatos los proveedores cuyos servicios incluyen el del evento (sin distinguir mayúsculas ni acentos). No se crean registros automáticamente; con el catálogo vacío la lista es vacía y la interfaz indica que primero hay que registrar un proveedor.
+- **Los identificadores `PV-DEMO-*`** (archivo `src/infrastructure/datos_demo/disponibilidad_demo.json`) **no son candidatos operativos**: la fuente cargada del entorno está marcada como demostración y la asignación la ignora. El entorno de pruebas manuales ya no la activa. Las pruebas automatizadas pueden inyectarla explícitamente.
+- **Validaciones de la asignación (en el servicio, aunque se llame al endpoint directamente):** evento En organización (si no, rechazo con ese motivo); proveedor registrado en el catálogo («no está registrado en el catálogo de proveedores»); que ofrezca el servicio («no ofrece el servicio …»). Todo rechazo es HTTP 422 y no cambia el estado del servicio. Una asignación válida deja el servicio «Pendiente de confirmación del proveedor»; solo la respuesta del proveedor lo confirma.
+
+## D-P1 · Catálogo de proveedores — **APROBADA el 01/11/2026** (ADR-010)
+Se conservan: registrar, consultar listado y fichas, editar, desactivar y reactivar. **No hay eliminación definitiva**; desactivar conserva datos e historial de asignaciones. Permisos según S-8 (Administración todo; Coordinación registra y consulta; Proveedor solo lo suyo y responde). **Sin tarifas ni condiciones permanentes en el catálogo.**
+
+## D-P2 · Significado de «disponible» — **APROBADA el 01/11/2026** (ver `../ADR/ADR-009-decisiones-aprobadas-dp2-s7-s8.md`)
+Es **candidato** para una asignación el proveedor **registrado en el catálogo, activo y que ofrece el servicio**. El sistema **no verifica** la disponibilidad real en la fecha del evento ni mantiene calendarios; esa disponibilidad la confirma el proveedor al responder la asignación. No se desarrollarán calendarios ni integraciones externas. La interfaz habla de «candidatos» y no presenta como verificada una disponibilidad por fecha. (CA-029 habla de disponibilidad para la fecha: la decisión del equipo es esta limitación.)
+
+## D-P3 · Costos y condiciones por operación — **APROBADA e implementada el 01/11/2026** (ADR-010)
+El costo y las condiciones se **capturan manualmente en cada operación** (cambio, servicio adicional, sustitución) según la cotización del proveedor: Coordinación los registra, Administración revisa y autoriza el importe y el sistema conserva los datos. No hay tarifas permanentes ni fuentes externas de precios. Eventos Nova no cobra por gestionar servicios adicionales: solo se considera el costo del proveedor (BN-004). La fuente simulada de disponibilidad existe solo para pruebas automatizadas y no puede activarse por entorno.

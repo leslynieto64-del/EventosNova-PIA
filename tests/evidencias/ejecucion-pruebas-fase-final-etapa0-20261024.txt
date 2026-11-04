@@ -1,0 +1,5 @@
+Fase final - linea base Etapa 0 (2026-10-24): 1159 pruebas OK; alembic 0002; git 140 entradas
+----------------------------------------------------------------------
+Ran 1159 tests in 84.345s
+
+OK

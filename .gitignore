@@ -27,3 +27,11 @@ Thumbs.db
 
 # Logs
 *.log
+# Copias de seguridad de la base de pruebas manuales (no se versionan)
+backups/
+
+# Credenciales y archivos locales de las pruebas manuales (nunca se versionan)
+scratchpad/
+
+# Cuentas de prueba e identificadores de la base manual (nunca se versionan)
+tests/evidencias/pruebas_manuales_web/datos_controlados.json

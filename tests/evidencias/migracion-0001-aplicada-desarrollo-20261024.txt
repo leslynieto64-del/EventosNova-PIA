@@ -1,0 +1,20 @@
+Eventos Nova — Fase 2 — ETAPA 2: migración 0001 aplicada a la base de DESARROLLO (2026-10-24)
+Destino verificado antes de escribir: host 127.0.0.1, puerto 5432, base 'eventosnova' (la del Compose; contenedor 'eventosnova-db', único contenedor); system_identifier idéntico vía URL y vía contenedor; 0 tablas y sin alembic_version antes de aplicar. Sin credenciales en este archivo.
+Comando: .\.venv\Scripts\python.exe -m alembic upgrade head  (rc=0)
+Verificación posterior de solo lectura (conexión default_transaction_read_only=on):
+base: eventosnova
+alembic_version: ['0001']
+tablas reales: 22 | metadatos: 22 | coinciden: True
+FK: 25 | CHECK: 61 | UNIQUE: 14 | �ndices: 12
+diferencias estructurales: ninguna
+compare_metadata de Alembic (esquema real vs metadatos): sin diferencias
+FK diferida: [('fk_propuesta_version_vigente', True, True)]
+  tipo real: ('contrato.costo_total', 'numeric', None, None)
+  tipo real: ('devolucion.importe', 'numeric', None, None)
+  tipo real: ('evento.invitados_aproximados', 'bigint', 64, 0)
+  tipo real: ('obligacion_pago.importe', 'numeric', None, None)
+  tipo real: ('pago.importe', 'numeric', None, None)
+  tipo real: ('solicitud_cambio.datos_propuestos_invitados', 'bigint', 64, 0)
+  tipo real: ('version_propuesta.costo_total', 'numeric', None, None)
+secuencia identity: [('YES', 'ALWAYS')]
+filas en tablas de aplicaci�n: 0

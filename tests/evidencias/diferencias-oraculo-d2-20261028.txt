@@ -1,0 +1,133 @@
+Claves del oráculo: 1203; claves actuales: 1203; mismas claves: True
+Claves cuyo resultado actual difiere del oráculo: 1203
+Claves cuyo resultado actual NO coincide con el esperado por regla: 0
+
+Claves por combinación de reglas:
+     48  D-2 + E-1
+   1046  E-1
+     67  E-1 + E-3/E-4
+      2  E-1 + E-3/E-4 + H-10
+     40  E-1 + H-10
+
+Claves afectadas por cada regla:
+  E-1: 1203
+  H-10: 42
+  E-3/E-4: 69
+  D-2: 48
+
+Identificadores (H-10 y E-3/E-4; E-1 afecta a las 1203, sin lista):
+
+[H-10] 42 claves
+  anticipo_importe_incorrecto | pagar(OB-A, 3000, tardio)
+  anticipo_pendiente | pagar(OB-A, 3000, tardio)
+  anticipo_registrado_sin_verificar | pagar(OB-A, 3000, tardio)
+  anticipo_tardio_verificado | (inicial)
+  anticipo_tardio_verificado | activar_protocolo_cobro
+  anticipo_tardio_verificado | aplicar_cierre_sin_realizar(CT-1, evento_cancelado=False)
+  anticipo_tardio_verificado | aplicar_cierre_sin_realizar(CT-1, evento_cancelado=True)
+  anticipo_tardio_verificado | aplicar_cierre_sin_realizar(SC-1, evento_cancelado=False)
+  anticipo_tardio_verificado | aplicar_cierre_sin_realizar(SC-1, evento_cancelado=True)
+  anticipo_tardio_verificado | aplicar_cierre_sin_realizar(SP-1, evento_cancelado=False)
+  anticipo_tardio_verificado | aplicar_cierre_sin_realizar(SP-1, evento_cancelado=True)
+  anticipo_tardio_verificado | comunicar_solicitud_pago(ANTICIPO)
+  anticipo_tardio_verificado | comunicar_solicitud_pago(CAMBIO, SC-1)
+  anticipo_tardio_verificado | comunicar_solicitud_pago(CAMBIO, SC-2)
+  anticipo_tardio_verificado | pagar(OB-A, 1000, importe_incorrecto)
+  anticipo_tardio_verificado | pagar(OB-A, 3000, sin_verificar)
+  anticipo_tardio_verificado | pagar(OB-A, 3000, tardio)
+  anticipo_tardio_verificado | pagar(OB-C, 300, a_tiempo)
+  anticipo_tardio_verificado | pagar(OB-C, 300, tardio)
+  anticipo_tardio_verificado | pagar(OB-M, 700, dentro_ventana)
+  anticipo_tardio_verificado | pagar(OB-M, 700, despues_ventana)
+  anticipo_tardio_verificado | pagar(OB-S, 2000, parcial)
+  anticipo_tardio_verificado | pagar(OB-S, 7000, antes_limite)
+  anticipo_tardio_verificado | pagar(OB-S, 7000, dentro_ventana)
+  anticipo_tardio_verificado | pagar(OB-S, 7000, despues_limite)
+  anticipo_tardio_verificado | pagar(OB-S, 7000, despues_ventana)
+  anticipo_tardio_verificado | pagar(OB-S, 7000, sin_verificar)
+  anticipo_tardio_verificado | pagar(OB-SP, 500, antes_limite)
+  anticipo_tardio_verificado | pagar(OB-X, inexistente)
+  anticipo_tardio_verificado | registrar_importe_adicional_sustitucion(antes_del_limite)
+  anticipo_tardio_verificado | registrar_importe_adicional_sustitucion(despues_del_limite)
+  anticipo_tardio_verificado | registrar_obligacion_anticipo
+  anticipo_tardio_verificado | registrar_obligacion_saldo_original
+  anticipo_tardio_verificado | registrar_vencimiento_saldo(antes_limite)
+  anticipo_tardio_verificado | registrar_vencimiento_saldo(despues_limite)
+  anticipo_tardio_verificado | resolver_regularizacion(despues)
+  anticipo_tardio_verificado | resolver_regularizacion(fin_exacto)
+  anticipo_tardio_verificado | resolver_regularizacion(ventana_vigente)
+  anticipo_tardio_verificado | verificar_pago_registrado(PG-1)
+  anticipo_tardio_verificado | verificar_pago_registrado(PG-2)
+  anticipo_tardio_verificado | verificar_pago_registrado(PG-3)
+  anticipo_tardio_verificado | verificar_pago_registrado(PG-X)
+
+[E-3/E-4] 69 claves
+  anticipo_importe_incorrecto | (inicial)
+  anticipo_importe_incorrecto | activar_protocolo_cobro
+  anticipo_importe_incorrecto | aplicar_cierre_sin_realizar(CT-1, evento_cancelado=False)
+  anticipo_importe_incorrecto | aplicar_cierre_sin_realizar(CT-1, evento_cancelado=True)
+  anticipo_importe_incorrecto | aplicar_cierre_sin_realizar(SC-1, evento_cancelado=False)
+  anticipo_importe_incorrecto | aplicar_cierre_sin_realizar(SC-1, evento_cancelado=True)
+  anticipo_importe_incorrecto | aplicar_cierre_sin_realizar(SP-1, evento_cancelado=False)
+  anticipo_importe_incorrecto | aplicar_cierre_sin_realizar(SP-1, evento_cancelado=True)
+  anticipo_importe_incorrecto | comunicar_solicitud_pago(ANTICIPO)
+  anticipo_importe_incorrecto | comunicar_solicitud_pago(CAMBIO, SC-1)
+  anticipo_importe_incorrecto | comunicar_solicitud_pago(CAMBIO, SC-2)
+  anticipo_importe_incorrecto | pagar(OB-A, 1000, importe_incorrecto)
+  anticipo_importe_incorrecto | pagar(OB-A, 3000, a_tiempo)
+  anticipo_importe_incorrecto | pagar(OB-A, 3000, sin_verificar)
+  anticipo_importe_incorrecto | pagar(OB-A, 3000, tardio)
+  anticipo_importe_incorrecto | pagar(OB-C, 300, a_tiempo)
+  anticipo_importe_incorrecto | pagar(OB-C, 300, tardio)
+  anticipo_importe_incorrecto | pagar(OB-M, 700, dentro_ventana)
+  anticipo_importe_incorrecto | pagar(OB-M, 700, despues_ventana)
+  anticipo_importe_incorrecto | pagar(OB-S, 2000, parcial)
+  anticipo_importe_incorrecto | pagar(OB-S, 7000, antes_limite)
+  anticipo_importe_incorrecto | pagar(OB-S, 7000, dentro_ventana)
+  anticipo_importe_incorrecto | pagar(OB-S, 7000, despues_limite)
+  anticipo_importe_incorrecto | pagar(OB-S, 7000, despues_ventana)
+  anticipo_importe_incorrecto | pagar(OB-S, 7000, sin_verificar)
+  anticipo_importe_incorrecto | pagar(OB-SP, 500, antes_limite)
+  anticipo_importe_incorrecto | pagar(OB-X, inexistente)
+  anticipo_importe_incorrecto | registrar_importe_adicional_sustitucion(antes_del_limite)
+  anticipo_importe_incorrecto | registrar_importe_adicional_sustitucion(despues_del_limite)
+  anticipo_importe_incorrecto | registrar_obligacion_anticipo
+  anticipo_importe_incorrecto | registrar_obligacion_saldo_original
+  anticipo_importe_incorrecto | registrar_vencimiento_saldo(antes_limite)
+  anticipo_importe_incorrecto | registrar_vencimiento_saldo(despues_limite)
+  anticipo_importe_incorrecto | resolver_regularizacion(despues)
+  anticipo_importe_incorrecto | resolver_regularizacion(fin_exacto)
+  anticipo_importe_incorrecto | resolver_regularizacion(ventana_vigente)
+  anticipo_importe_incorrecto | verificar_pago_registrado(PG-1)
+  anticipo_importe_incorrecto | verificar_pago_registrado(PG-2)
+  anticipo_importe_incorrecto | verificar_pago_registrado(PG-3)
+  anticipo_importe_incorrecto | verificar_pago_registrado(PG-X)
+  anticipo_pendiente | pagar(OB-A, 1000, importe_incorrecto)
+  anticipo_registrado_sin_verificar | pagar(OB-A, 1000, importe_incorrecto)
+  anticipo_tardio_verificado | pagar(OB-A, 1000, importe_incorrecto)
+  cambio_cerrado_con_devolucion_efectuada | pagar(OB-A, 1000, importe_incorrecto)
+  cambio_cerrado_con_devolucion_pendiente | pagar(OB-A, 1000, importe_incorrecto)
+  cambio_liquidado | pagar(OB-A, 1000, importe_incorrecto)
+  cambio_liquidado_cerrado_con_devolucion_pendiente | pagar(OB-A, 1000, importe_incorrecto)
+  cambio_liquidado_cerrado_evento_cancelado | pagar(OB-A, 1000, importe_incorrecto)
+  cambio_pago_parcial | pagar(OB-A, 1000, importe_incorrecto)
+  cambio_pago_tardio | pagar(OB-A, 1000, importe_incorrecto)
+  cambio_pendiente | pagar(OB-A, 1000, importe_incorrecto)
+  cambio_sin_efecto_evento_cancelado | pagar(OB-A, 1000, importe_incorrecto)
+  cambio_sin_efecto_sin_pagos | pagar(OB-A, 1000, importe_incorrecto)
+  no_regularizado | pagar(OB-A, 1000, importe_incorrecto)
+  regularizado | pagar(OB-A, 1000, importe_incorrecto)
+  saldo_liquidado | pagar(OB-A, 1000, importe_incorrecto)
+  saldo_pago_a_tiempo_sin_verificar | pagar(OB-A, 1000, importe_incorrecto)
+  saldo_pago_parcial | pagar(OB-A, 1000, importe_incorrecto)
+  saldo_pendiente | pagar(OB-A, 1000, importe_incorrecto)
+  saldo_pendiente_y_sustitucion_liquidada | pagar(OB-A, 1000, importe_incorrecto)
+  saldo_vencido | pagar(OB-A, 1000, importe_incorrecto)
+  saldo_y_sustitucion_pendientes | pagar(OB-A, 1000, importe_incorrecto)
+  saldo_y_sustitucion_vencidos | pagar(OB-A, 1000, importe_incorrecto)
+  sustitucion_sin_plazo | pagar(OB-A, 1000, importe_incorrecto)
+  ventana_pago_a_tiempo_sin_verificar | pagar(OB-A, 1000, importe_incorrecto)
+  ventana_pagos_completos_a_tiempo | pagar(OB-A, 1000, importe_incorrecto)
+  ventana_pagos_tardios | pagar(OB-A, 1000, importe_incorrecto)
+  ventana_sustitucion_vencida | pagar(OB-A, 1000, importe_incorrecto)
+  ventana_vigente | pagar(OB-A, 1000, importe_incorrecto)

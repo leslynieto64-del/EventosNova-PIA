@@ -1,0 +1,43 @@
+# Eventos Nova — Blueprint de Render (BORRADOR NO APLICADO: nada se ha desplegado ni contratado).
+# Requiere cuenta en Render, un repositorio Git y autorización expresa del equipo; genera costos mensuales (ver el informe de despliegue).
+# Sin secretos en este archivo: la URL de la base la inyecta Render (fromDatabase). Verifique los nombres de plan vigentes en
+# https://render.com/pricing antes de aplicarlo (los identificadores de plan pueden cambiar).
+databases:
+  - name: eventosnova-db
+    plan: basic-256mb            # el plan gratuito caduca y no sirve para operar; verifique el plan vigente
+    databaseName: eventosnova
+    user: eventosnova
+
+services:
+  - type: web
+    name: eventosnova-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter                # el plan gratuito se duerme tras inactividad
+    healthCheckPath: /ready      # 503 si la base no responde
+    preDeployCommand: python -m alembic upgrade head      # migraciones antes de arrancar la nueva versión
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase: { name: eventosnova-db, property: connectionString }   # postgres:// se normaliza a postgresql+psycopg://
+      - key: EVENTOSNOVA_PERSISTENCIA
+        value: postgresql
+      - key: EVENTOSNOVA_ENTORNO
+        value: produccion        # cookie Secure, HSTS, /docs oculto, autenticación obligatoria
+      - key: FORWARDED_ALLOW_IPS
+        value: "*"               # uvicorn confía en X-Forwarded-Proto/For del proxy TLS de Render (sin esto el Origin https no coincide)
+
+  - type: worker
+    name: eventosnova-worker
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: starter
+    dockerCommand: python -m infrastructure.persistencia.trabajador_outbox --intervalo 2
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase: { name: eventosnova-db, property: connectionString }
+      - key: EVENTOSNOVA_PERSISTENCIA
+        value: postgresql
+      - key: EVENTOSNOVA_ENTORNO
+        value: produccion

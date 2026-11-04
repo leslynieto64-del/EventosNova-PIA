@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" id="Defs_SP02" targetNamespace="https://eventosnova.example/bpmn" exporter="Eventos Nova (generador del equipo)" exporterVersion="1.0">
   <bpmn:collaboration id="Collab_SP02">
-    <bpmn:documentation>Contrato, política de no reembolso, anticipo del 30 % en 3 días hábiles, contacto y 24 horas naturales para que el Cliente pague, revisión de Administración y cierre sin contratación (BN-009, SE-010; US-008 a US-010; CA-015 a CA-021).</bpmn:documentation>
+    <bpmn:documentation>Contrato, política de no reembolso, anticipo de al menos el 30 % en 3 días hábiles, contacto y 24 horas naturales para que el Cliente pague, revisión de Administración, cierre sin contratación, inicio en T sin contratación confirmada y devolución A del anticipo, incluido el pago posterior al cierre (BN-009, BN-010, SE-010; US-008 a US-010, US-032, US-033; CA-015 a CA-021, CA-102 a CA-106, CA-110).</bpmn:documentation>
     <bpmn:participant id="Part_SP02_Cliente" name="Cliente" />
     <bpmn:participant id="Part_SP02_EN" name="Eventos Nova" processRef="Proc_SP02_Contratacion" />
     <bpmn:messageFlow id="SP02_M01" name="Contrato y política de no reembolso" sourceRef="SP02_Politica" targetRef="Part_SP02_Cliente" />
@@ -11,6 +11,7 @@
     <bpmn:messageFlow id="SP02_M05" name="Pago del anticipo" sourceRef="Part_SP02_Cliente" targetRef="SP02_Anticipo24" />
     <bpmn:messageFlow id="SP02_M06" name="Solicitud de corrección del anticipo" sourceRef="SP02_Corregir" targetRef="Part_SP02_Cliente" />
     <bpmn:messageFlow id="SP02_M07" name="Anticipo corregido" sourceRef="Part_SP02_Cliente" targetRef="SP02_Corregido" />
+  <bpmn:messageFlow id="SP02_M08" name="Pago del anticipo después del cierre" sourceRef="Part_SP02_Cliente" targetRef="SP02_PagoPost" />
   </bpmn:collaboration>
   <bpmn:process id="Proc_SP02_Contratacion" name="Formalización del contrato y confirmación de la contratación" isExecutable="false">
     <bpmn:laneSet id="LaneSet_SP02">
@@ -41,6 +42,15 @@
         <bpmn:flowNodeRef>SP02_FinConfirmada</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP02_Corregir</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP02_Corregido</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP02_SinEfecto</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP02_GwRecibido</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP02_DevA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP02_FinDevA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP02_EvT</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP02_PagoPost</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP02_RegPost</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP02_DevPost</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP02_FinDevPost</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="SP02_Inicio" name="Propuesta aceptada">
@@ -101,7 +111,7 @@
     </bpmn:task>
     <bpmn:endEvent id="SP02_FinCerrado" name="Cerrado sin contratación (no Cancelado)">
       <bpmn:documentation>CA-021: el Evento queda Cerrado sin contratación y no se inicia la contratación definitiva de proveedores.</bpmn:documentation>
-      <bpmn:incoming>SP02_F15</bpmn:incoming>
+      <bpmn:incoming>SP02_F28</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:intermediateCatchEvent id="SP02_Anticipo" name="Anticipo recibido">
       <bpmn:documentation>CA-018</bpmn:documentation>
@@ -136,12 +146,12 @@
       <bpmn:incoming>SP02_F26</bpmn:incoming>
       <bpmn:outgoing>SP02_F20</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:task id="SP02_Verificar" name="Registrar y verificar el anticipo: 30 % del costo total de la propuesta aceptada">
+    <bpmn:task id="SP02_Verificar" name="Registrar y verificar el anticipo: al menos el 30 % del costo total de la propuesta aceptada">
       <bpmn:documentation>BN-009; CA-018, CA-019 (US-009): el registro y la verificación pueden ser posteriores al plazo del Cliente.</bpmn:documentation>
       <bpmn:incoming>SP02_F20</bpmn:incoming>
       <bpmn:outgoing>SP02_F21</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:exclusiveGateway id="SP02_Gw30" name="¿El anticipo corresponde al 30 %?">
+    <bpmn:exclusiveGateway id="SP02_Gw30" name="¿El anticipo cubre al menos el 30 %?">
       <bpmn:incoming>SP02_F21</bpmn:incoming>
       <bpmn:outgoing>SP02_F22</bpmn:outgoing>
       <bpmn:outgoing>SP02_F24</bpmn:outgoing>
@@ -154,7 +164,7 @@
     <bpmn:endEvent id="SP02_FinConfirmada" name="Contratación confirmada (Evento En organización)">
       <bpmn:incoming>SP02_F23</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:task id="SP02_Corregir" name="Informar al Cliente para que corrija el anticipo">
+    <bpmn:task id="SP02_Corregir" name="Informar al Cliente que el anticipo acumulado es inferior al 30 % para que lo complete (E-3)">
       <bpmn:documentation>CA-019, SE-010</bpmn:documentation>
       <bpmn:incoming>SP02_F24</bpmn:incoming>
       <bpmn:outgoing>SP02_F25</bpmn:outgoing>
@@ -178,7 +188,7 @@
     <bpmn:sequenceFlow id="SP02_F12" sourceRef="SP02_Plazo24" targetRef="SP02_Revisar" />
     <bpmn:sequenceFlow id="SP02_F13" sourceRef="SP02_Revisar" targetRef="SP02_GwPlazo" />
     <bpmn:sequenceFlow id="SP02_F14" name="No" sourceRef="SP02_GwPlazo" targetRef="SP02_Cerrar" />
-    <bpmn:sequenceFlow id="SP02_F15" sourceRef="SP02_Cerrar" targetRef="SP02_FinCerrado" />
+    <bpmn:sequenceFlow id="SP02_F15" sourceRef="SP02_Cerrar" targetRef="SP02_SinEfecto" />
     <bpmn:sequenceFlow id="SP02_F16" name="Sí: pendiente de registro y verificación" sourceRef="SP02_GwPlazo" targetRef="SP02_Union" />
     <bpmn:sequenceFlow id="SP02_F17" sourceRef="SP02_Anticipo" targetRef="SP02_UAnt" />
     <bpmn:sequenceFlow id="SP02_F18" sourceRef="SP02_Anticipo24" targetRef="SP02_UAnt" />
@@ -190,6 +200,77 @@
     <bpmn:sequenceFlow id="SP02_F24" name="No" sourceRef="SP02_Gw30" targetRef="SP02_Corregir" />
     <bpmn:sequenceFlow id="SP02_F25" sourceRef="SP02_Corregir" targetRef="SP02_Corregido" />
     <bpmn:sequenceFlow id="SP02_F26" sourceRef="SP02_Corregido" targetRef="SP02_Union" />
+    <bpmn:task id="SP02_SinEfecto" name="Dejar sin efecto el anticipo pendiente (el Liquidado conserva su estado); la contratación cerrada no se reabre">
+      <bpmn:documentation>A-2 y C-04: la contratación cerrada no se reabre; el anticipo pendiente pasa a Sin efecto y el Liquidado conserva su estado (CA-021, CA-106; GL-053, GL-062).</bpmn:documentation>
+      <bpmn:incoming>SP02_F15</bpmn:incoming>
+      <bpmn:outgoing>SP02_F27</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="SP02_GwRecibido" name="¿Se recibió algún importe como anticipo?">
+      <bpmn:incoming>SP02_F27</bpmn:incoming>
+      <bpmn:outgoing>SP02_F28</bpmn:outgoing>
+      <bpmn:outgoing>SP02_F29</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="SP02_DevA" name="Verificar y devolver el anticipo recibido (devolución A) en 5 días hábiles desde la fecha de referencia; registrarla">
+      <bpmn:documentation>Devolución A (decisión A, A-1 a A-6): fecha de referencia = la más tardía entre el cierre y el registro del pago; vence al final del 5.º día hábil posterior; la verificación tardía no reinicia el plazo. Se registran el pago, concepto, importe, motivo, fecha y comprobante y se informa al Coordinador (CA-102 a CA-105; GL-061). Distinta de SE-012 (SP-08).</bpmn:documentation>
+      <bpmn:incoming>SP02_F29</bpmn:incoming>
+      <bpmn:outgoing>SP02_F30</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="SP02_FinDevA" name="Cerrado sin contratación: anticipo devuelto">
+      <bpmn:documentation>CA-102 a CA-105.</bpmn:documentation>
+      <bpmn:incoming>SP02_F30</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="SP02_PagoPost" name="Pago de anticipo después del cierre">
+      <bpmn:documentation>A-3, BN-009, CA-106: un pago de anticipo puede registrarse y verificarse después del cierre sin reactivar la contratación. Inicia una instancia propia; la contratación cerrada no se reabre (A-2).</bpmn:documentation>
+      <bpmn:outgoing>SP02_F31</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="SP02_PagoPost_def" />
+    </bpmn:startEvent>
+    <bpmn:task id="SP02_RegPost" name="Registrar y verificar el pago sin aplicarlo a la contratación cerrada ni reabrirla">
+      <bpmn:documentation>A-2, A-3, A-4, CA-103, CA-106: el pago no se aplica a la contratación cerrada ni la reactiva; si el Cliente desea continuar, inicia un proceso nuevo.</bpmn:documentation>
+      <bpmn:incoming>SP02_F31</bpmn:incoming>
+      <bpmn:outgoing>SP02_F32</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="SP02_DevPost" name="Devolver el importe recibido (devolución A) en 5 días hábiles desde el día del registro; registrar la devolución">
+      <bpmn:documentation>A-1, A-6, C-11, CA-103 a CA-105: la fecha de referencia es el día del registro (no cuenta); vence al final del 5.º día hábil posterior, límite exclusivo a las 00:00 del día siguiente (C-15). La verificación forma parte del plazo y verificar tarde no lo reinicia. Un pago genera como máximo una devolución, sin superar lo recibido. Distinta de SE-012.</bpmn:documentation>
+      <bpmn:incoming>SP02_F32</bpmn:incoming>
+      <bpmn:outgoing>SP02_F33</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="SP02_FinDevPost" name="Pago posterior al cierre devuelto">
+      <bpmn:incoming>SP02_F33</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:subProcess id="SP02_EvT" name="Llegada de T con el Evento En gestión (inicio automático)" triggeredByEvent="true">
+      <bpmn:documentation>C-01 y C-02: al llegar T con el Evento En gestión (CA-110, CA-111; BN-010).</bpmn:documentation>
+      <bpmn:startEvent id="SP02_EvT_Inicio" name="Llega la fecha y hora de inicio del Evento (T) sin contratación confirmada" isInterrupting="true">
+        <bpmn:documentation>BN-010.</bpmn:documentation>
+        <bpmn:outgoing>SP02_EvT_F01</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP02_EvT_Inicio_def"></bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+      <bpmn:task id="SP02_EvT_Cerrar" name="Cerrar la contratación sin confirmar: Evento Cerrado sin contratación; contrato En preparación o Firmado, Cerrado sin confirmar (D-3)">
+        <bpmn:documentation>C-01, CA-110. El cierre aprobado define el estado del contrato no firmado (Cerrado sin confirmar). Implementación (ADR-008): el contrato Firmado sin confirmar también pasa a Cerrado sin confirmar al llegar T; es una decisión interna del equipo sin aprobación externa. El Evento, la no reapertura y el anticipo están definidos (C-01, C-02, C-04, A-1 a A-6).</bpmn:documentation>
+        <bpmn:incoming>SP02_EvT_F01</bpmn:incoming>
+        <bpmn:outgoing>SP02_EvT_F02</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:task id="SP02_EvT_Devolver" name="Dejar sin efecto el anticipo pendiente y devolver lo recibido (devolución A), aunque se verifique después de T">
+        <bpmn:documentation>C-02, C-04, A-1, A-3, A-6, CA-104, CA-110: nada se confirma después de T; un pago registrado antes de T y verificado después no confirma la contratación ni la reactiva y se devuelve (prueba T-57 del cierre aprobado). El anticipo Liquidado conserva su estado y también se devuelve. Fecha de referencia: el día del cierre si el pago ya estaba registrado; el del registro si es posterior.</bpmn:documentation>
+        <bpmn:incoming>SP02_EvT_F02</bpmn:incoming>
+        <bpmn:outgoing>SP02_EvT_F03</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:endEvent id="SP02_EvT_Fin" name="Cerrado sin contratación (no Cancelado)">
+        <bpmn:documentation>CA-110.</bpmn:documentation>
+        <bpmn:incoming>SP02_EvT_F03</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SP02_EvT_F01" sourceRef="SP02_EvT_Inicio" targetRef="SP02_EvT_Cerrar" />
+      <bpmn:sequenceFlow id="SP02_EvT_F02" sourceRef="SP02_EvT_Cerrar" targetRef="SP02_EvT_Devolver" />
+      <bpmn:sequenceFlow id="SP02_EvT_F03" sourceRef="SP02_EvT_Devolver" targetRef="SP02_EvT_Fin" />
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="SP02_F27" sourceRef="SP02_SinEfecto" targetRef="SP02_GwRecibido" />
+    <bpmn:sequenceFlow id="SP02_F28" name="No" sourceRef="SP02_GwRecibido" targetRef="SP02_FinCerrado" />
+    <bpmn:sequenceFlow id="SP02_F29" name="Sí" sourceRef="SP02_GwRecibido" targetRef="SP02_DevA" />
+    <bpmn:sequenceFlow id="SP02_F30" sourceRef="SP02_DevA" targetRef="SP02_FinDevA" />
+    <bpmn:sequenceFlow id="SP02_F31" sourceRef="SP02_PagoPost" targetRef="SP02_RegPost" />
+    <bpmn:sequenceFlow id="SP02_F32" sourceRef="SP02_RegPost" targetRef="SP02_DevPost" />
+    <bpmn:sequenceFlow id="SP02_F33" sourceRef="SP02_DevPost" targetRef="SP02_FinDevPost" />
+    <bpmn:textAnnotation id="SP02_NotaDevA"><bpmn:text>Devolución A (distinta de SE-012): la fecha de referencia es el día del cierre si el pago ya estaba registrado, o el día del registro si es posterior; ese día no cuenta y el plazo vence al final del 5.º día hábil posterior (límite exclusivo a las 00:00). La verificación tardía no reinicia el plazo. Un pago posterior al cierre se registra y verifica sin reabrir ni aplicarse a la contratación; si el Cliente desea continuar, inicia un proceso nuevo (BN-009, CA-102 a CA-106).</bpmn:text></bpmn:textAnnotation>
+    <bpmn:textAnnotation id="SP02_NotaEvT"><bpmn:text>Implementado (ADR-008): el trabajador aplica la llegada de T, cierra también el contrato Firmado y avisa a Cliente, Coordinador y Administración (decisiones internas, sin aprobación externa). Desde T no se confirma (CA-110).</bpmn:text></bpmn:textAnnotation>
     <bpmn:textAnnotation id="SP02_NotaPago"><bpmn:text>El plazo de 24 horas es para que el Cliente efectúe el pago. Si pagó dentro de él, la contratación queda pendiente de que Administración registre y verifique el anticipo, aunque lo haga después; no se cierra por esa demora (BN-009, CA-021).</bpmn:text></bpmn:textAnnotation>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram_SP02" name="Formalización del contrato y confirmación de la contratación">
@@ -237,7 +318,7 @@
       <bpmndi:BPMNEdge id="SP02_F12_di" bpmnElement="SP02_F12"><di:waypoint x="1982" y="203" /><di:waypoint x="1982" y="400" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP02_F13_di" bpmnElement="SP02_F13"><di:waypoint x="2062" y="445" /><di:waypoint x="2157" y="445" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP02_F14_di" bpmnElement="SP02_F14"><di:waypoint x="2182" y="420" /><di:waypoint x="2182" y="315" /><di:waypoint x="2302" y="315" /><bpmndi:BPMNLabel><dc:Bounds x="2190" y="387" width="40" height="16" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SP02_F15_di" bpmnElement="SP02_F15"><di:waypoint x="2462" y="315" /><di:waypoint x="2564" y="315" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_F15_di" bpmnElement="SP02_F15"><di:waypoint x="2462" y="315" /><di:waypoint x="2500" y="315" /><di:waypoint x="2500" y="445" /><di:waypoint x="2520" y="445" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP02_F16_di" bpmnElement="SP02_F16"><di:waypoint x="2207" y="445" /><di:waypoint x="2382" y="445" /><di:waypoint x="2382" y="550" /><bpmndi:BPMNLabel><dc:Bounds x="2212" y="451" width="150" height="20" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP02_F17_di" bpmnElement="SP02_F17"><di:waypoint x="1182" y="463" /><di:waypoint x="1182" y="575" /><di:waypoint x="1757" y="575" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP02_F18_di" bpmnElement="SP02_F18"><di:waypoint x="1782" y="463" /><di:waypoint x="1782" y="550" /></bpmndi:BPMNEdge>
@@ -256,6 +337,32 @@
       <bpmndi:BPMNEdge id="SP02_M05_di" bpmnElement="SP02_M05" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="1682" y="70" /><di:waypoint x="1682" y="445" /><di:waypoint x="1764" y="445" /><bpmndi:BPMNLabel><dc:Bounds x="1687" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP02_M06_di" bpmnElement="SP02_M06" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="2862" y="705" /><di:waypoint x="2882" y="705" /><di:waypoint x="2882" y="70" /><bpmndi:BPMNLabel><dc:Bounds x="2887" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP02_M07_di" bpmnElement="SP02_M07" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="2482" y="70" /><di:waypoint x="2482" y="660" /><di:waypoint x="2582" y="660" /><di:waypoint x="2582" y="687" /><bpmndi:BPMNLabel><dc:Bounds x="2487" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_M08_di" bpmnElement="SP02_M08" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="1300" y="70" /><di:waypoint x="1300" y="672" /><bpmndi:BPMNLabel><dc:Bounds x="1305" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="SP02_SinEfecto_di" bpmnElement="SP02_SinEfecto" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="2520" y="400" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_GwRecibido_di" bpmnElement="SP02_GwRecibido" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="2745" y="420" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="2798" y="450" width="82" height="56" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_DevA_di" bpmnElement="SP02_DevA" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="2920" y="400" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_FinDevA_di" bpmnElement="SP02_FinDevA" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="3150" y="427" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="3113" y="467" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_PagoPost_di" bpmnElement="SP02_PagoPost" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="1282" y="672" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="1245" y="712" width="110" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_RegPost_di" bpmnElement="SP02_RegPost" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="1360" y="645" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_DevPost_di" bpmnElement="SP02_DevPost" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="1580" y="645" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_FinDevPost_di" bpmnElement="SP02_FinDevPost" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="1790" y="672" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="1753" y="712" width="110" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_NotaDevA_di" bpmnElement="SP02_NotaDevA"><dc:Bounds x="2910" y="130" width="350" height="150" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_NotaEvT_di" bpmnElement="SP02_NotaEvT"><dc:Bounds x="260" y="598" width="620" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_EvT_di" bpmnElement="SP02_EvT" isExpanded="true" bioc:fill="none" color:background-color="none" bioc:stroke="#37474F" color:border-color="#37474F"><dc:Bounds x="140" y="420" width="760" height="220" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_EvT_Inicio_di" bpmnElement="SP02_EvT_Inicio" bioc:fill="#FFF2A8" color:background-color="#FFF2A8" bioc:stroke="#8F6C00" color:border-color="#8F6C00"><dc:Bounds x="170" y="512" width="36" height="36" /><bpmndi:BPMNLabel color:color="#8F6C00"><dc:Bounds x="123" y="552" width="130" height="66" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_EvT_Cerrar_di" bpmnElement="SP02_EvT_Cerrar" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="260" y="485" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_EvT_Devolver_di" bpmnElement="SP02_EvT_Devolver" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="480" y="485" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_EvT_Fin_di" bpmnElement="SP02_EvT_Fin" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="700" y="512" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="663" y="552" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SP02_F27_di" bpmnElement="SP02_F27"><di:waypoint x="2680" y="445" /><di:waypoint x="2745" y="445" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_F28_di" bpmnElement="SP02_F28"><di:waypoint x="2770" y="420" /><di:waypoint x="2770" y="315" /><di:waypoint x="2600" y="315" /><bpmndi:BPMNLabel><dc:Bounds x="2778" y="372" width="40" height="16" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_F29_di" bpmnElement="SP02_F29"><di:waypoint x="2795" y="445" /><di:waypoint x="2920" y="445" /><bpmndi:BPMNLabel><dc:Bounds x="2840" y="425" width="30" height="16" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_F30_di" bpmnElement="SP02_F30"><di:waypoint x="3080" y="445" /><di:waypoint x="3150" y="445" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_F31_di" bpmnElement="SP02_F31"><di:waypoint x="1318" y="690" /><di:waypoint x="1360" y="690" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_F32_di" bpmnElement="SP02_F32"><di:waypoint x="1520" y="690" /><di:waypoint x="1580" y="690" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_F33_di" bpmnElement="SP02_F33"><di:waypoint x="1740" y="690" /><di:waypoint x="1790" y="690" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_EvT_F01_di" bpmnElement="SP02_EvT_F01"><di:waypoint x="206" y="530" /><di:waypoint x="260" y="530" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_EvT_F02_di" bpmnElement="SP02_EvT_F02"><di:waypoint x="420" y="530" /><di:waypoint x="480" y="530" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_EvT_F03_di" bpmnElement="SP02_EvT_F03"><di:waypoint x="640" y="530" /><di:waypoint x="700" y="530" /></bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

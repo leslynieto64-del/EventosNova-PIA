@@ -1,0 +1,246 @@
+ Container eventosnova-db Running 
+ Image eventosnova-tests:local Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 610B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.50kB 0.1s done
+#2 DONE 0.1s
+
+#3 [internal] load metadata for docker.io/library/python:3.13-slim
+#3 DONE 0.5s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 542B done
+#4 DONE 0.0s
+
+#5 [app 1/9] FROM docker.io/library/python:3.13-slim@sha256:2d44738ebf4ce5f63b9d9ea871e9c7cfdc0426f7b0c97cac915fd88ded1d86bb
+#5 resolve docker.io/library/python:3.13-slim@sha256:2d44738ebf4ce5f63b9d9ea871e9c7cfdc0426f7b0c97cac915fd88ded1d86bb 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 32.33MB 2.9s done
+#6 DONE 2.9s
+
+#7 [app 2/9] WORKDIR /app
+#7 CACHED
+
+#8 [app 4/9] RUN pip install -r requirements.txt
+#8 CACHED
+
+#9 [app 3/9] COPY requirements.txt ./
+#9 CACHED
+
+#10 [app 7/9] COPY scripts ./scripts
+#10 CACHED
+
+#11 [app 5/9] COPY alembic.ini ./
+#11 CACHED
+
+#12 [app 6/9] COPY migraciones ./migraciones
+#12 CACHED
+
+#13 [app 8/9] COPY src ./src
+#13 CACHED
+
+#14 [app 9/9] RUN useradd --create-home --uid 10001 eventosnova && chown -R eventosnova /app
+#14 CACHED
+
+#15 [tests 1/4] COPY requirements-dev.txt ./
+#15 DONE 0.1s
+
+#16 [tests 2/4] RUN pip install -r requirements-dev.txt
+#16 1.664 Requirement already satisfied: fastapi<1.0,>=0.115 in /usr/local/lib/python3.13/site-packages (from -r /app/requirements.txt (line 4)) (0.162.0)
+#16 1.665 Requirement already satisfied: uvicorn<1.0,>=0.34 in /usr/local/lib/python3.13/site-packages (from -r /app/requirements.txt (line 5)) (0.54.0)
+#16 1.666 Requirement already satisfied: httpx<1.0,>=0.28 in /usr/local/lib/python3.13/site-packages (from -r /app/requirements.txt (line 6)) (0.28.1)
+#16 1.667 Requirement already satisfied: SQLAlchemy<2.1,>=2.0 in /usr/local/lib/python3.13/site-packages (from -r /app/requirements.txt (line 9)) (2.0.55)
+#16 1.668 Requirement already satisfied: alembic<2.0,>=1.14 in /usr/local/lib/python3.13/site-packages (from -r /app/requirements.txt (line 10)) (1.20.1)
+#16 1.668 Requirement already satisfied: psycopg<4.0,>=3.2 in /usr/local/lib/python3.13/site-packages (from psycopg[binary]<4.0,>=3.2->-r /app/requirements.txt (line 11)) (3.3.6)
+#16 2.389 Collecting coverage==7.16.2 (from -r requirements-dev.txt (line 5))
+#16 2.545   Downloading coverage-7.16.2-cp313-cp313-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (8.2 kB)
+#16 2.555 Requirement already satisfied: starlette>=0.46.0 in /usr/local/lib/python3.13/site-packages (from fastapi<1.0,>=0.115->-r /app/requirements.txt (line 4)) (1.10.0)
+#16 2.556 Requirement already satisfied: pydantic>=2.9.0 in /usr/local/lib/python3.13/site-packages (from fastapi<1.0,>=0.115->-r /app/requirements.txt (line 4)) (2.14.1)
+#16 2.556 Requirement already satisfied: typing-extensions>=4.8.0 in /usr/local/lib/python3.13/site-packages (from fastapi<1.0,>=0.115->-r /app/requirements.txt (line 4)) (4.16.0)
+#16 2.557 Requirement already satisfied: typing-inspection>=0.4.2 in /usr/local/lib/python3.13/site-packages (from fastapi<1.0,>=0.115->-r /app/requirements.txt (line 4)) (0.4.4)
+#16 2.557 Requirement already satisfied: annotated-doc>=0.0.2 in /usr/local/lib/python3.13/site-packages (from fastapi<1.0,>=0.115->-r /app/requirements.txt (line 4)) (0.0.5)
+#16 2.558 Requirement already satisfied: opentelemetry-api>=1.44.0 in /usr/local/lib/python3.13/site-packages (from fastapi<1.0,>=0.115->-r /app/requirements.txt (line 4)) (1.45.1)
+#16 2.562 Requirement already satisfied: click>=7.0 in /usr/local/lib/python3.13/site-packages (from uvicorn<1.0,>=0.34->-r /app/requirements.txt (line 5)) (8.5.0)
+#16 2.565 Requirement already satisfied: h11>=0.8 in /usr/local/lib/python3.13/site-packages (from uvicorn<1.0,>=0.34->-r /app/requirements.txt (line 5)) (0.16.0)
+#16 2.569 Requirement already satisfied: anyio in /usr/local/lib/python3.13/site-packages (from httpx<1.0,>=0.28->-r /app/requirements.txt (line 6)) (4.15.1)
+#16 2.570 Requirement already satisfied: certifi in /usr/local/lib/python3.13/site-packages (from httpx<1.0,>=0.28->-r /app/requirements.txt (line 6)) (2026.10.23)
+#16 2.570 Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.13/site-packages (from httpx<1.0,>=0.28->-r /app/requirements.txt (line 6)) (1.0.9)
+#16 2.571 Requirement already satisfied: idna in /usr/local/lib/python3.13/site-packages (from httpx<1.0,>=0.28->-r /app/requirements.txt (line 6)) (3.20)
+#16 2.575 Requirement already satisfied: greenlet>=1 in /usr/local/lib/python3.13/site-packages (from SQLAlchemy<2.1,>=2.0->-r /app/requirements.txt (line 9)) (3.5.6)
+#16 2.579 Requirement already satisfied: Mako in /usr/local/lib/python3.13/site-packages (from alembic<2.0,>=1.14->-r /app/requirements.txt (line 10)) (1.4.3)
+#16 2.586 Requirement already satisfied: psycopg-binary==3.3.6 in /usr/local/lib/python3.13/site-packages (from psycopg[binary]<4.0,>=3.2->-r /app/requirements.txt (line 11)) (3.3.6)
+#16 2.595 Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.13/site-packages (from pydantic>=2.9.0->fastapi<1.0,>=0.115->-r /app/requirements.txt (line 4)) (0.8.0)
+#16 2.596 Requirement already satisfied: pydantic-core==2.50.1 in /usr/local/lib/python3.13/site-packages (from pydantic>=2.9.0->fastapi<1.0,>=0.115->-r /app/requirements.txt (line 4)) (2.50.1)
+#16 2.606 Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.13/site-packages (from Mako->alembic<2.0,>=1.14->-r /app/requirements.txt (line 10)) (3.0.4)
+#16 2.639 Downloading coverage-7.16.2-cp313-cp313-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (257 kB)
+#16 2.801 Installing collected packages: coverage
+#16 2.929 Successfully installed coverage-7.16.2
+#16 2.930 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#16 DONE 3.1s
+
+#17 [tests 3/4] COPY . .
+#17 DONE 0.2s
+
+#18 [tests 4/4] RUN chown -R eventosnova /app
+#18 DONE 2.2s
+
+#19 exporting to image
+#19 exporting layers
+#19 exporting layers 2.1s done
+#19 exporting manifest sha256:3e26a2b8583dfb46c6647c198dd2dcd6811ecea2162c564e5477687398fecd0d 0.0s done
+#19 exporting config sha256:0a42e9bca0638d50ef28b172f0128b08239f2d9dc377cf9c6165a4a4c1088df9 0.0s done
+#19 exporting attestation manifest sha256:83f6c1762fe640943e3d84a20b32519b6a9bec7a7ca79b0ba9be40455417c072 0.0s done
+#19 exporting manifest list sha256:4499aacfd2e82275d5675f5047e903fb8f471e18695d44d1ec6132efcaae676f 0.0s done
+#19 naming to docker.io/library/eventosnova-tests:local
+#19 naming to docker.io/library/eventosnova-tests:local done
+#19 unpacking to docker.io/library/eventosnova-tests:local
+#19 unpacking to docker.io/library/eventosnova-tests:local 0.8s done
+#19 DONE 3.1s
+
+#20 resolving provenance for metadata file
+#20 DONE 0.0s
+ Image eventosnova-tests:local Built 
+ Container eventosnova-db Waiting 
+ Container eventosnova-db Healthy 
+ Container eventosnova-tests-run-37c03a54308d Creating 
+ Container eventosnova-tests-run-37c03a54308d Created 
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+Base de pruebas lista: {'host': 'db', 'puerto': 5432, 'base': 'eventosnova_test', 'usuario': 'eventosnova', 'creada': False}
+/usr/local/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+....................INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+.......................................................................ERROR [eventosnova.trabajador] Falló un ciclo de despacho del Outbox
+Traceback (most recent call last):
+  File "/app/tests/../src/infrastructure/persistencia/trabajador_outbox.py", line 33, in ejecutar
+    procesados = contenedor.despachador.despachar()
+  File "/usr/local/lib/python3.13/unittest/mock.py", line 1169, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/unittest/mock.py", line 1173, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/unittest/mock.py", line 1234, in _execute_mock_call
+    raise effect
+infrastructure.persistencia.errores.ErrorDePersistencia: x
+.WARNI [eventosnova.api] Violación de restricción: fk_secreta (tabla tabla_interna)
+WARNI [eventosnova.api] Dato no almacenable: integer out of range
+ERROR [eventosnova.api] Base de datos no disponible: password authentication failed for user x
+ERROR [eventosnova.api] Error de persistencia: algo interno
+.WARNI [eventosnova.api] Violación de restricción: fk_secreta (tabla tabla_interna)
+WARNI [eventosnova.api] Dato no almacenable: integer out of range
+ERROR [eventosnova.api] Base de datos no disponible: password authentication failed for user x
+ERROR [eventosnova.api] Error de persistencia: algo interno
+..................................................................................WARNI [eventosnova.api] Conflicto de concurrencia: El agregado evento EV-1 cambió desde que se leyó
+.WARNI [eventosnova.api] Conflicto de concurrencia: El agregado estado_cuenta EC-8e9ea3cf-243d-4fe6-990b-c2a0077c60aa cambió desde que se leyó (versión 0) o ya no existe.
+.............................................................................................................................ERROR [eventosnova.servicios] Falló el procesamiento de la llegada de T del evento EV-96d23cc7-9c8d-435b-8b82-9b405efd3543
+Traceback (most recent call last):
+  File "/app/tests/../src/application/servicios.py", line 536, in procesar_eventos_vencidos
+    r = self.procesar_inicio_evento(ev.id, ahora)
+  File "/app/tests/test_d3_llegada_de_t.py", line 174, in falla_con_a
+    raise RuntimeError('fallo técnico simulado')
+RuntimeError: fallo técnico simulado
+................ERROR [eventosnova.servicios] Falló el procesamiento de la llegada de T del evento EV-cbbc80d7-76f0-4d7e-bab8-b396f940b48b
+Traceback (most recent call last):
+  File "/app/tests/../src/application/servicios.py", line 536, in procesar_eventos_vencidos
+    r = self.procesar_inicio_evento(ev.id, ahora)
+  File "/app/tests/test_d3_llegada_de_t.py", line 174, in falla_con_a
+    raise RuntimeError('fallo técnico simulado')
+RuntimeError: fallo técnico simulado
+.................................................................................................................................................INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Generating static SQL
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Esquema relacional inicial de Eventos Nova (22 tablas).
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, sustitucion_proveedor.proveedor_original_id pasa a admitir NULL.
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, Devolución del anticipo de una contratación cerrada sin confirmar (decisión A del cierre de alcance aprobado).
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, Control de concurrencia optimista: columna `version` en cada raíz de agregado.
+............INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Generating static SQL
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Esquema relacional inicial de Eventos Nova (22 tablas).
+.INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Generating static SQL
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Esquema relacional inicial de Eventos Nova (22 tablas).
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, sustitucion_proveedor.proveedor_original_id pasa a admitir NULL.
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, Devolución del anticipo de una contratación cerrada sin confirmar (decisión A del cierre de alcance aprobado).
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, Control de concurrencia optimista: columna `version` en cada raíz de agregado.
+...........INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.schemas
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.tables
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.types
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.constraints
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.defaults
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.comments
+....................................................................................................................................................................................................................................................................................................................................................................................................INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0004 -> 0003, Control de concurrencia optimista: columna `version` en cada raíz de agregado.
+INFO  [alembic.runtime.migration] Running downgrade 0003 -> 0002, Devolución del anticipo de una contratación cerrada sin confirmar (decisión A del cierre de alcance aprobado).
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, Devolución del anticipo de una contratación cerrada sin confirmar (decisión A del cierre de alcance aprobado).
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, Control de concurrencia optimista: columna `version` en cada raíz de agregado.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0004 -> 0003, Control de concurrencia optimista: columna `version` en cada raíz de agregado.
+INFO  [alembic.runtime.migration] Running downgrade 0003 -> 0002, Devolución del anticipo de una contratación cerrada sin confirmar (decisión A del cierre de alcance aprobado).
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0002 -> 0001, sustitucion_proveedor.proveedor_original_id pasa a admitir NULL.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0002 -> 0001, sustitucion_proveedor.proveedor_original_id pasa a admitir NULL.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, sustitucion_proveedor.proveedor_original_id pasa a admitir NULL.
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, Devolución del anticipo de una contratación cerrada sin confirmar (decisión A del cierre de alcance aprobado).
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, Control de concurrencia optimista: columna `version` en cada raíz de agregado.
+.INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.schemas
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.tables
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.types
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.constraints
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.defaults
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.comments
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0004 -> 0003, Control de concurrencia optimista: columna `version` en cada raíz de agregado.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0003 -> 0002, Devolución del anticipo de una contratación cerrada sin confirmar (decisión A del cierre de alcance aprobado).
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0002 -> 0001, sustitucion_proveedor.proveedor_original_id pasa a admitir NULL.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running downgrade 0001 -> , Esquema relacional inicial de Eventos Nova (22 tablas).
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Esquema relacional inicial de Eventos Nova (22 tablas).
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, sustitucion_proveedor.proveedor_original_id pasa a admitir NULL.
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, Devolución del anticipo de una contratación cerrada sin confirmar (decisión A del cierre de alcance aprobado).
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, Control de concurrencia optimista: columna `version` en cada raíz de agregado.
+...INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+.............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 1387 tests in 65.787s
+
+OK
+rc=0

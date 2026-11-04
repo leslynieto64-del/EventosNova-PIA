@@ -1,0 +1,12 @@
+ Container eventosnova-migrate-run-0a1e4a7128ff Creating 
+ Container eventosnova-migrate-run-0a1e4a7128ff Created 
+--- upgrade head (migrate, base aislada)
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, Esquema relacional inicial de Eventos Nova (22 tablas).
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, sustitucion_proveedor.proveedor_original_id pasa a admitir NULL.
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, Devolución del anticipo de una contratación cerrada sin confirmar (decisión A del cierre de alcance aprobado).
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, Control de concurrencia optimista: columna `version` en cada raíz de agregado.
+--- current
+0004 (head)
+--- segundo upgrade head (idempotente)
+0

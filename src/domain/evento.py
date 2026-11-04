@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Dict, List, Optional, Set
 from .base import AggregateRoot
 from .valores import (DatosEvento, EstadoEvento, EstadoSolicitudCancelacion, MotivoCancelacionEvento,
-                      OrigenCancelacion, CondicionesServicio, ErrorDominio, Importe)
+                      OrigenCancelacion, CondicionesServicio, ErrorDominio, Importe, EstadoServicioContratado)
 from .servicios_dominio import ConfiguracionComparable
 from .eventos_dominio import EventoIniciado, EventoCancelado, EventoFinalizado
 from .maquina_estados import MaquinaEstados, Transicion
@@ -52,12 +52,51 @@ MAQUINA_EVENTO = MaquinaEstados(
 )
 
 
+ORIGEN_RESPUESTA_PROVEEDOR = "Proveedor"                 # el proveedor respondió directamente desde su propia cuenta
+ORIGEN_RESPUESTA_COORDINACION = "Coordinación"           # Coordinación registró una respuesta que el proveedor le comunicó por otro medio (S-5)
+ORIGEN_RESPUESTA_SIN_IDENTIFICAR = "Sin identificar"     # solo con la autenticación desactivada (pruebas y desarrollo local)
+ORIGENES_RESPUESTA = (ORIGEN_RESPUESTA_PROVEEDOR, ORIGEN_RESPUESTA_COORDINACION, ORIGEN_RESPUESTA_SIN_IDENTIFICAR)
+MEDIOS_RESPUESTA = ("Llamada telefónica", "Mensaje (WhatsApp o SMS)", "Correo electrónico", "Otro")
+
+
+@dataclass(frozen=True)
+class RespuestaProveedor:
+    """S-5: la respuesta de disponibilidad de un servicio y su procedencia. El origen lo decide el servidor según la cuenta que la registra
+    (nunca un dato libre del cliente): una respuesta de Coordinación exige el medio por el que el proveedor la comunicó; una directa no lleva medio."""
+    disponible: bool
+    origen: str
+    medio: Optional[str]
+    registrado_por_id: str
+    registrado_por_nombre: str
+    fecha: datetime
+
+    def __post_init__(self):
+        if self.origen not in ORIGENES_RESPUESTA:
+            raise ErrorDominio("El origen de la respuesta del proveedor no es válido.")
+        if self.origen == ORIGEN_RESPUESTA_COORDINACION:
+            if self.medio not in MEDIOS_RESPUESTA:
+                raise ErrorDominio("Indica el medio por el que el proveedor comunicó su respuesta: " + ", ".join(MEDIOS_RESPUESTA) + ".")
+        elif self.medio is not None:
+            raise ErrorDominio("Solo una respuesta registrada por Coordinación lleva el medio de comunicación; la directa del proveedor no.")
+        if not self.registrado_por_id or not self.registrado_por_nombre:
+            raise ErrorDominio("La respuesta debe conservar la cuenta que la registró.")
+
+
 @dataclass
 class ServicioContratado:
     servicio_contratado_id: str
     servicio: str
     proveedor_id: Optional[str]
     condiciones: CondicionesServicio
+    # E3G: si no se indica, un servicio sin proveedor nace «Sin proveedor asignado» y uno con proveedor ya confirmado
+    # (servicio adicional o reemplazo confirmados) nace «Confirmado por el proveedor».
+    estado: Optional[EstadoServicioContratado] = None
+    respuesta: Optional[RespuestaProveedor] = None          # S-5: la última respuesta del proveedor asignado y su procedencia
+
+    def __post_init__(self):
+        if self.estado is None:
+            self.estado = (EstadoServicioContratado.CONFIRMADO if self.proveedor_id
+                           else EstadoServicioContratado.SIN_PROVEEDOR)
 
 
 @dataclass(frozen=True)
@@ -162,16 +201,65 @@ class Evento(AggregateRoot):
         if sustitucion_id in self._operaciones_aplicadas:
             return
         self._no_iniciado(confirmado_en)
-        self.servicios[servicio_contratado_id].proveedor_id = proveedor_id
+        sc = self.servicios[servicio_contratado_id]
+        sc.proveedor_id = proveedor_id
+        sc.respuesta = None                                  # la respuesta anterior era del proveedor reemplazado
+        sc.estado = EstadoServicioContratado.CONFIRMADO     # el reemplazo se confirma con su disponibilidad (SE-001)
         self._operaciones_aplicadas.add(sustitucion_id)
+
+    # -- proveedores de los servicios contratados (E3G: US-013 a US-016; BN-004, BN-009)
+    def _servicio(self, servicio_contratado_id: str) -> ServicioContratado:
+        sc = self.servicios.get(servicio_contratado_id)
+        if sc is None:
+            raise ErrorDominio("El servicio contratado no existe en el Evento.")
+        return sc
+
+    def _admite_gestion_de_proveedores(self) -> None:
+        """Los proveedores se asignan y responden solo con la contratación confirmada y antes del inicio (BN-009)."""
+        if self.estado != EstadoEvento.EN_ORGANIZACION:
+            raise ErrorDominio(f"Los proveedores solo se gestionan con el Evento En organización; el Evento está "
+                               f"{self.estado.value} (BN-009).")
+
+    def asignar_proveedor(self, servicio_contratado_id: str, proveedor_id: str) -> ServicioContratado:
+        """CA-031, CA-032: relaciona al proveedor con el servicio; queda pendiente de que el proveedor confirme su
+        disponibilidad. No modifica la configuración vigente (servicios y condiciones acordadas)."""
+        self._admite_gestion_de_proveedores()
+        sc = self._servicio(servicio_contratado_id)
+        if not proveedor_id:
+            raise ErrorDominio("Debe indicarse el proveedor que se asigna al servicio.")
+        if sc.estado != EstadoServicioContratado.SIN_PROVEEDOR:
+            raise ErrorDominio(f"El servicio ya tiene proveedor asignado ({sc.estado.value}); un cambio de proveedor "
+                               "se gestiona como sustitución (SE-001).")
+        sc.proveedor_id, sc.estado = proveedor_id, EstadoServicioContratado.PENDIENTE_CONFIRMACION
+        sc.respuesta = None
+        return sc
+
+    def registrar_respuesta_proveedor(self, servicio_contratado_id: str, proveedor_id: str, disponible: bool,
+                                      respuesta: Optional[RespuestaProveedor] = None) -> ServicioContratado:
+        """CA-035, CA-036: solo el proveedor asignado responde, mientras el servicio espera su confirmación. Si no está
+        disponible, el servicio queda marcado y conserva a ese proveedor como original de la sustitución (SE-001)."""
+        self._admite_gestion_de_proveedores()
+        sc = self._servicio(servicio_contratado_id)
+        if sc.proveedor_id != proveedor_id:
+            raise ErrorDominio("El proveedor no está asignado a este servicio.")
+        if sc.estado != EstadoServicioContratado.PENDIENTE_CONFIRMACION:
+            raise ErrorDominio(f"El servicio no espera la respuesta del proveedor ({sc.estado.value}).")
+        if respuesta is not None and respuesta.disponible != disponible:
+            raise ErrorDominio("La respuesta registrada no coincide con la disponibilidad indicada.")
+        sc.estado = (EstadoServicioContratado.CONFIRMADO if disponible
+                     else EstadoServicioContratado.PROVEEDOR_NO_DISPONIBLE)
+        sc.respuesta = respuesta
+        return sc
 
     # -- cancelación y cierre
     def solicitar_cancelacion(self, motivo: str, ahora: datetime, contratacion_confirmada: bool) -> bool:
         """Devuelve True si se canceló. BN-008, CA-084, CA-087, CA-088."""
         if not contratacion_confirmada:
             raise ErrorDominio("La cancelación solo procede con la contratación confirmada (CA-084).")
-        if self.estado == EstadoEvento.EN_EJECUCION:
+        if self.iniciado_en(ahora) and self.estado in (EstadoEvento.EN_EJECUCION, EstadoEvento.EN_ORGANIZACION):
             # CA-088: la solicitud se registra como rechazada y el Evento continúa En ejecución (no es una transición).
+            # H-08 (GL-032, SE-009): también cuando ya llegó la fecha y hora programadas aunque el inicio todavía no se
+            # haya registrado; el Evento no cambia de estado por este rechazo.
             self.solicitudes_cancelacion.append(
                 SolicitudCancelacion(ahora, motivo, EstadoSolicitudCancelacion.RECHAZADA_INICIO_EVENTO))
             return False
@@ -193,6 +281,10 @@ class Evento(AggregateRoot):
             raise ErrorDominio("Administración no ha verificado el vencimiento del plazo de regularización.")
         if not motivo:
             raise ErrorDominio("El Coordinador debe indicar el motivo de la cancelación (BN-005).")
+        if self.estado == EstadoEvento.EN_ORGANIZACION and self.iniciado_en(ahora):
+            # H-08 (BN-005, GL-032): «siempre antes del inicio del evento»; si inicia sin registrarse, ya no procede.
+            raise ErrorDominio("El evento ya inició según su fecha y hora programadas: la cancelación ya no procede y "
+                               "el saldo vencido y los cargos moratorios permanecen registrados como adeudo (BN-005).")
         self._cancelar(MotivoCancelacionEvento(OrigenCancelacion.FALTA_REGULARIZACION, motivo, ahora, registrado_por))
         return True
 
@@ -208,12 +300,24 @@ class Evento(AggregateRoot):
         self.revision_administrativa = revision
 
     def iniciar(self, ahora: datetime) -> None:
-        self.estado, self.fecha_inicio = self._transitar(AccionEvento.INICIAR), ahora
+        """H-08 (GL-032, GL-005, BPMN SP-07 «Fecha y hora de inicio del evento»): el inicio no puede registrarse antes de
+        la fecha y hora programadas. El estado se valida primero (mensajes existentes), después la hora."""
+        destino = self._transitar(AccionEvento.INICIAR)
+        if ahora < self.datos.fecha_hora:
+            raise ErrorDominio(f"El evento no puede iniciar antes de su fecha y hora programadas "
+                               f"({self.datos.fecha_hora:%d/%m/%Y %H:%M}) (GL-032).")
+        self.estado, self.fecha_inicio = destino, ahora
         self._registrar(EventoIniciado(self.id, ahora))
 
     def finalizar(self, fecha: datetime) -> None:
-        """CA-094: solo un evento En ejecución; CA-095: un evento cancelado nunca se registra como Finalizado."""
-        self.estado, self.fecha_finalizacion = self._transitar(AccionEvento.FINALIZAR), fecha
+        """CA-094: solo un evento En ejecución; CA-095: un evento cancelado nunca se registra como Finalizado.
+        H-08 (BN-010, GL-033): la finalización es posterior al inicio, por lo que su fecha no puede ser anterior a la
+        fecha de inicio registrada. No se valida una hora de término: las fuentes no la definen."""
+        destino = self._transitar(AccionEvento.FINALIZAR)
+        if self.fecha_inicio is not None and fecha < self.fecha_inicio:
+            raise ErrorDominio(f"La fecha de finalización no puede ser anterior al inicio del evento "
+                               f"({self.fecha_inicio:%d/%m/%Y %H:%M}) (BN-010, CA-094).")
+        self.estado, self.fecha_finalizacion = destino, fecha
         self._registrar(EventoFinalizado(self.id, fecha))
 
     @property
@@ -223,3 +327,9 @@ class Evento(AggregateRoot):
     @property
     def iniciado(self) -> bool:
         return self.estado in (EstadoEvento.EN_EJECUCION, EstadoEvento.FINALIZADO)
+
+    def iniciado_en(self, ahora: datetime) -> bool:
+        """H-08 (GL-032): «Evento iniciado» es la situación en que el evento ya comenzó según su fecha y hora
+        programadas. Es verdadero si el inicio ya se registró o si, con la contratación confirmada (En organización),
+        ya llegó esa fecha y hora aunque el registro del inicio esté pendiente. No cambia el estado del Evento."""
+        return self.iniciado or (self.estado == EstadoEvento.EN_ORGANIZACION and ahora >= self.datos.fecha_hora)

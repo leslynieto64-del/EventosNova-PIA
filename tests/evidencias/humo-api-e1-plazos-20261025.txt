@@ -1,0 +1,8 @@
+OK   E-1 anticipo (firma jue 01/10 10:00) vence mié 07/10 00:00 2026-10-07T00:00:00
+OK   E-1 seguimiento un segundo antes del límite → 422 El plazo de tres días hábiles para el anticipo no ha vencido (CA-020).
+OK   E-1 seguimiento a las 00:00 del límite → aceptado (200, None)
+OK   E-1 saldo vence mié 18/11 00:00 (antes del límite) 2026-11-18T00:00:00
+OK   E-1 límite de sustitución, autorizada antes del límite (2026-11-17T23:59:59): la obligación existe y su plazo es mié 18/11 00:00 obligación listada: True; fechaLimite: 2026-11-18T00:00:00
+OK   E-1 saldo vence mié 18/11 00:00 (en el límite) 2026-11-18T00:00:00
+OK   E-1 límite de sustitución, autorizada en el límite (2026-11-18T00:00:00): la obligación existe y su plazo es ninguno (posterior al límite) obligación listada: True; fechaLimite: None
+TOTAL 7 de 7

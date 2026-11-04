@@ -1,0 +1,205 @@
+Eventos Nova â€” Fase 2, Incremento 2.4 â€” registro de ejecuciÃ³n (2026-10-24)
+Archivo NUEVO: no sustituye ni modifica las evidencias histÃ³ricas ni el registro del incremento 2.2.
+
+## Comando: .\.venv\Scripts\python.exe -m unittest discover -s tests
+----------------------------------------------------------------------
+Ran 906 tests in 12.988s
+
+OK
+
+## Pruebas nuevas del lÃ­mite tÃ©cnico de enteros (17 en total; salida de las clases nuevas)
+test_aplica_tambien_a_los_datos_propuestos_de_una_solicitud_de_cambio ... ok
+test_el_limite_es_el_maximo_de_un_entero_de_64_bits_con_signo ... ok
+test_el_siguiente_valor_y_los_muy_grandes_se_rechazan_antes_de_persistir ... ok
+test_las_demas_reglas_de_invitados_no_cambian ... ok
+test_valores_dentro_del_limite_se_aceptan ... ok
+test_el_dominio_tambien_rechaza_si_alguien_esquiva_el_esquema ... ok
+test_el_maximo_de_bigint_se_acepta_y_se_conserva_exacto ... ok
+test_se_conserva_el_comportamiento_de_los_demas_valores ... ok
+test_superiores_al_maximo_devuelven_422_no_500 ... ok
+test_un_valor_fuera_de_rango_no_guarda_nada ... ok
+test_el_check_de_positividad_se_conserva ... ok
+test_el_ddl_offline_usa_bigint_en_las_dos_columnas ... INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+test_la_migracion_declara_los_mismos_tipos ... ok
+test_las_columnas_integer_son_las_previstas ... ok
+test_no_se_introdujo_ningun_maximo_de_negocio_en_los_check ... ok
+test_tipos_de_los_metadatos ... ok
+test_el_limite_tecnico_de_bigint_se_acepta_y_el_siguiente_no_cabe_en_la_columna ... ok
+Ran 17 tests in 0.774s
+OK
+
+## EvaluaciÃ³n de CHECK en PostgreSQL 18.6 (solo lectura; sin tablas ni datos). Casos: 174; fallos: 0
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=-1                                   esperado=False real=False OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=-0.01                                esperado=False real=False OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=0                                    esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=0.00                                 esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=1                                    esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=125.50                               esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=12.345678901234                      esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=NaN                                  esperado=False real=False OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=Infinity                             esperado=False real=False OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=-Infinity                            esperado=False real=False OK
+evento.ck_evento_revision_importes_validos                                                      revision_pagos_realizados          valor=None                                 esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=-1                                   esperado=False real=False OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=-0.01                                esperado=False real=False OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=0                                    esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=0.00                                 esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=1                                    esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=125.50                               esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=12.345678901234                      esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=NaN                                  esperado=False real=False OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=Infinity                             esperado=False real=False OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=-Infinity                            esperado=False real=False OK
+evento.ck_evento_revision_importes_validos                                                      revision_saldo_pendiente           valor=None                                 esperado=True  real=True  OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=-1                                   esperado=False real=False OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=-0.01                                esperado=False real=False OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=0                                    esperado=True  real=True  OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=0.00                                 esperado=True  real=True  OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=1                                    esperado=True  real=True  OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=125.50                               esperado=True  real=True  OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=12.345678901234                      esperado=True  real=True  OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=NaN                                  esperado=False real=False OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=Infinity                             esperado=False real=False OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=-Infinity                            esperado=False real=False OK
+version_propuesta.ck_version_propuesta_costo_total_valido                                       costo_total                        valor=NULL (NOT NULL en la columna)        esperado=True  real=True  OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=-1                                   esperado=False real=False OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=-0.01                                esperado=False real=False OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=0                                    esperado=True  real=True  OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=0.00                                 esperado=True  real=True  OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=1                                    esperado=True  real=True  OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=125.50                               esperado=True  real=True  OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=12.345678901234                      esperado=True  real=True  OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=NaN                                  esperado=False real=False OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=Infinity                             esperado=False real=False OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=-Infinity                            esperado=False real=False OK
+contrato.ck_contrato_costo_total_valido                                                         costo_total                        valor=NULL (NOT NULL en la columna)        esperado=True  real=True  OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=-1                                   esperado=False real=False OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=-0.01                                esperado=False real=False OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=0                                    esperado=True  real=True  OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=0.00                                 esperado=True  real=True  OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=1                                    esperado=True  real=True  OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=125.50                               esperado=True  real=True  OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=12.345678901234                      esperado=True  real=True  OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=NaN                                  esperado=False real=False OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=Infinity                             esperado=False real=False OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=-Infinity                            esperado=False real=False OK
+devolucion.ck_devolucion_importe_valido                                                         importe                            valor=NULL (NOT NULL en la columna)        esperado=True  real=True  OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=-1                                   esperado=False real=False OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=-0.01                                esperado=False real=False OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=0                                    esperado=True  real=True  OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=0.00                                 esperado=True  real=True  OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=1                                    esperado=True  real=True  OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=125.50                               esperado=True  real=True  OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=12.345678901234                      esperado=True  real=True  OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=NaN                                  esperado=False real=False OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=Infinity                             esperado=False real=False OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=-Infinity                            esperado=False real=False OK
+obligacion_pago.ck_obligacion_pago_importe_valido                                               importe                            valor=NULL (NOT NULL en la columna)        esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=-1                                   esperado=False real=False OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=-0.01                                esperado=False real=False OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=0                                    esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=0.00                                 esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=1                                    esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=125.50                               esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=12.345678901234                      esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=NaN                                  esperado=False real=False OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=Infinity                             esperado=False real=False OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=-Infinity                            esperado=False real=False OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           tarifa_importe                     valor=NULL (NOT NULL en la columna)        esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=-1                                   esperado=False real=False OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=-0.01                                esperado=False real=False OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=0                                    esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=0.00                                 esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=1                                    esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=125.50                               esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=12.345678901234                      esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=NaN                                  esperado=False real=False OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=Infinity                             esperado=False real=False OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=-Infinity                            esperado=False real=False OK
+solicitud_cambio.ck_solicitud_cambio_importes_validos                                           costo_proveedor                    valor=None                                 esperado=True  real=True  OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=-1                                   esperado=False real=False OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=-0.01                                esperado=False real=False OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=0                                    esperado=True  real=True  OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=0.00                                 esperado=True  real=True  OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=1                                    esperado=True  real=True  OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=125.50                               esperado=True  real=True  OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=12.345678901234                      esperado=True  real=True  OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=NaN                                  esperado=False real=False OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=Infinity                             esperado=False real=False OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=-Infinity                            esperado=False real=False OK
+solicitud_servicio_adicional.ck_solicitud_servicio_adicional_disponibilidad_costo_valido        disponibilidad_costo               valor=None                                 esperado=True  real=True  OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=-1                                   esperado=False real=False OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=-0.01                                esperado=False real=False OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=0                                    esperado=True  real=True  OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=0.00                                 esperado=True  real=True  OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=1                                    esperado=True  real=True  OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=125.50                               esperado=True  real=True  OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=12.345678901234                      esperado=True  real=True  OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=NaN                                  esperado=False real=False OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=Infinity                             esperado=False real=False OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=-Infinity                            esperado=False real=False OK
+sustitucion_proveedor.ck_sustitucion_proveedor_costo_adicional_valido                           costo_adicional                    valor=None                                 esperado=True  real=True  OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=-1                                   esperado=False real=False OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=-0.01                                esperado=False real=False OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=0                                    esperado=True  real=True  OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=0.00                                 esperado=True  real=True  OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=1                                    esperado=True  real=True  OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=125.50                               esperado=True  real=True  OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=12.345678901234                      esperado=True  real=True  OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=NaN                                  esperado=False real=False OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=Infinity                             esperado=False real=False OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=-Infinity                            esperado=False real=False OK
+pago.ck_pago_importe_valido                                                                     importe                            valor=NULL (NOT NULL en la columna)        esperado=True  real=True  OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=-1                                   esperado=False real=False OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=-0.01                                esperado=False real=False OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=0                                    esperado=True  real=True  OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=0.00                                 esperado=True  real=True  OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=1                                    esperado=True  real=True  OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=125.50                               esperado=True  real=True  OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=12.345678901234                      esperado=True  real=True  OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=123456789012345678901234567890.5     esperado=True  real=True  OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=NaN                                  esperado=False real=False OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=Infinity                             esperado=False real=False OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=-Infinity                            esperado=False real=False OK
+sustitucion_alternativa.ck_sustitucion_alternativa_disponibilidad_costo_valido                  disponibilidad_costo               valor=None                                 esperado=True  real=True  OK
+evento.invitados_positivo                                                                       invitados_aproximados              valor=-1                                   esperado=False real=False OK
+evento.invitados_positivo                                                                       invitados_aproximados              valor=0                                    esperado=False real=False OK
+evento.invitados_positivo                                                                       invitados_aproximados              valor=1                                    esperado=True  real=True  OK
+evento.invitados_positivo                                                                       invitados_aproximados              valor=2147483647                           esperado=True  real=True  OK
+evento.invitados_positivo                                                                       invitados_aproximados              valor=2147483648                           esperado=True  real=True  OK
+evento.invitados_positivo                                                                       invitados_aproximados              valor=9223372036854775807                  esperado=True  real=True  OK
+solicitud_cambio.datos_propuestos_invitados_positivo                                            datos_propuestos_invitados         valor=-1                                   esperado=False real=False OK
+solicitud_cambio.datos_propuestos_invitados_positivo                                            datos_propuestos_invitados         valor=0                                    esperado=False real=False OK
+solicitud_cambio.datos_propuestos_invitados_positivo                                            datos_propuestos_invitados         valor=1                                    esperado=True  real=True  OK
+solicitud_cambio.datos_propuestos_invitados_positivo                                            datos_propuestos_invitados         valor=None                                 esperado=True  real=True  OK
+solicitud_cambio.datos_propuestos_invitados_positivo                                            datos_propuestos_invitados         valor=2147483648                           esperado=True  real=True  OK
+solicitud_cambio.datos_propuestos_invitados_positivo                                            datos_propuestos_invitados         valor=9223372036854775807                  esperado=True  real=True  OK
+version_propuesta.numero_positivo                                                               numero                             valor=-1                                   esperado=False real=False OK
+version_propuesta.numero_positivo                                                               numero                             valor=0                                    esperado=False real=False OK
+version_propuesta.numero_positivo                                                               numero                             valor=1                                    esperado=True  real=True  OK
+version_propuesta.numero_positivo                                                               numero                             valor=7                                    esperado=True  real=True  OK
+outbox_evento.intentos_no_negativos                                                             intentos                           valor=-1                                   esperado=False real=False OK
+outbox_evento.intentos_no_negativos                                                             intentos                           valor=0                                    esperado=True  real=True  OK
+outbox_evento.intentos_no_negativos                                                             intentos                           valor=3                                    esperado=True  real=True  OK
+evento.datos_no_vacios                                                                          tipo/lugar                         valor=('Boda', 'Salón')                    esperado=True  real=True  OK
+evento.datos_no_vacios                                                                          tipo/lugar                         valor=('', 'Salón')                        esperado=False real=False OK
+evento.datos_no_vacios                                                                          tipo/lugar                         valor=('Boda', '')                         esperado=False real=False OK
+evento.datos_no_vacios                                                                          tipo/lugar                         valor=('123', '456')                       esperado=True  real=True  OK
+evento.datos_no_vacios                                                                          tipo/lugar                         valor=('Boda 2', 'Av. Juárez #123')        esperado=True  real=True  OK
+evento.datos_no_vacios                                                                          tipo/lugar                         valor=('  ', 'x')                          esperado=True  real=True  OK
+solicitud_cambio.datos_propuestos_no_vacios                                                     datos_propuestos_tipo/datos_propuestos_lugar valor=(None, None)                         esperado=True  real=True  OK
+solicitud_cambio.datos_propuestos_no_vacios                                                     datos_propuestos_tipo/datos_propuestos_lugar valor=('Boda', 'Salón')                    esperado=True  real=True  OK
+solicitud_cambio.datos_propuestos_no_vacios                                                     datos_propuestos_tipo/datos_propuestos_lugar valor=('', 'Salón')                        esperado=False real=False OK
+solicitud_cambio.datos_propuestos_no_vacios                                                     datos_propuestos_tipo/datos_propuestos_lugar valor=('Boda', '')                         esperado=False real=False OK
+solicitud_cambio.datos_propuestos_no_vacios                                                     datos_propuestos_tipo/datos_propuestos_lugar valor=('123', '456')                       esperado=True  real=True  OK

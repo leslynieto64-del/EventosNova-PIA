@@ -1,0 +1,17 @@
+Eventos Nova — Fase 2 — ETAPA 9: Docker Compose (2026-10-24)
+Archivo NUEVO; no sustituye evidencias históricas.
+Comando: docker compose run --rm tests   (imagen eventosnova-tests:local; EVENTOSNOVA_REQUIERE_BD=1; base eventosnova_test)
+
+..................................................................................................................................................................................................................................................................................................................................................................................................................................
+----------------------------------------------------------------------
+Ran 1126 tests in 49.289s
+
+OK
+
+docker compose config --quiet: rc=0
+Servicios (perfil por omisión): db migrate api worker 
+Estado: 
+api: running healthy 127.0.0.1:8000->8000/tcp
+db: running healthy 127.0.0.1:5432->5432/tcp
+worker: running  8000/tcp
+GET /ready -> {"estado":"ok","persistencia":"postgresql","base_de_datos":"ok"}

@@ -36,6 +36,7 @@ package "Aplicación · Service Layer" <<Rectangle>> {
   }
   class GestionPagosService <<Application Service>> {
     +registrarObligacionAnticipo()
+    +aplicarCierreContratacion()
     +registrarObligacionSaldoOriginal()
     +comunicarSolicitudPago()
     +registrarYVerificarPago()
@@ -52,6 +53,7 @@ package "Aplicación · Service Layer" <<Rectangle>> {
     +resolverRegularizacionSaldoVencido()
     +registrarCancelacionPorFaltaDeRegularizacion()
     +procesarInicioEvento()
+    +procesarEventosVencidos()
     +finalizarEvento()
   }
   class GestionCambiosEventoService <<Application Service>> {
@@ -105,6 +107,7 @@ package "Aplicación · reacciones a Domain Events (después del commit)" <<Rect
   class ReaccionesPagos {
     +alFirmarseContrato()
     +alConfirmarseContratacion()
+    +alCerrarseProcesoContratacion()
     +alVerificarsePago()
     +alCerrarseSinRealizar()
   }
@@ -160,6 +163,8 @@ ReaccionesPagos ..> FormalizarContratacionService
 legend bottom left
   Todos los Application Services que escriben usan IUnitOfWork: confirman una raíz por transacción
   (excepción documentada: comunicarSolicitudPago()). Las reacciones se ejecutan después del commit, cada una en su transacción.
+  El «ahora» de la API y del trabajador lo da reloj_negocio() (America/Mexico_City sin zona, TP-06); el trabajador invoca
+  procesarEventosVencidos() en cada ciclo, antes de despachar el Outbox (ADR-008).
   Línea discontinua = dependencia.
 endlegend
 @enduml

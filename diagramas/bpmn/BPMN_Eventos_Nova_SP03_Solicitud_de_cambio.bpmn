@@ -369,7 +369,7 @@
       <bpmn:outgoing>SP03_F52</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SP03_BIniciado_def" signalRef="Signal_EventoIniciado" />
     </bpmn:boundaryEvent>
-    <bpmn:task id="SP03_CerrarIni" name="Cerrar la solicitud como no procedente por inicio del evento">
+    <bpmn:task id="SP03_CerrarIni" name="Cerrar la solicitud como «Cerrada por inicio del evento»">
       <bpmn:documentation>CA-070</bpmn:documentation>
       <bpmn:incoming>SP03_F52</bpmn:incoming>
       <bpmn:outgoing>SP03_F63</bpmn:outgoing>

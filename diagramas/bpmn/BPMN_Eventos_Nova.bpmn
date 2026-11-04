@@ -15,6 +15,7 @@
     <bpmn:messageFlow id="MAE_M04" name="Contrato firmado" sourceRef="Part_MAE_Cliente" targetRef="SP02_Firma" />
     <bpmn:messageFlow id="MAE_M05" name="Seguimiento del anticipo: 24 horas para pagar" sourceRef="SP02_Contactar" targetRef="Part_MAE_Cliente" />
     <bpmn:messageFlow id="MAE_M06" name="Pago del anticipo" sourceRef="Part_MAE_Cliente" targetRef="SP02_Anticipo" />
+    <bpmn:messageFlow id="MAE_M62" name="Pago del anticipo después del cierre" sourceRef="Part_MAE_Cliente" targetRef="SP02_PagoPost" />
     <bpmn:messageFlow id="MAE_M07" name="Pago del anticipo" sourceRef="Part_MAE_Cliente" targetRef="SP02_Anticipo24" />
     <bpmn:messageFlow id="MAE_M08" name="Solicitud de corrección del anticipo" sourceRef="SP02_Corregir" targetRef="Part_MAE_Cliente" />
     <bpmn:messageFlow id="MAE_M09" name="Anticipo corregido" sourceRef="Part_MAE_Cliente" targetRef="SP02_Corregido" />
@@ -46,6 +47,7 @@
     <bpmn:messageFlow id="MAE_M35" name="Devolución" sourceRef="SP04_SE_SP08_Devolver" targetRef="Part_MAE_Cliente" />
     <bpmn:messageFlow id="MAE_M36" name="Resultado de la devolución" sourceRef="SP04_SE_SP08_Comunicar" targetRef="Part_MAE_Cliente" />
     <bpmn:messageFlow id="MAE_M37" name="Solicitud de servicio adicional" sourceRef="Part_MAE_Cliente" targetRef="SP04_Inicio" />
+    <bpmn:messageFlow id="MAE_M61" name="Aviso: servicio adicional no registrado" sourceRef="SP04_NoRegistrar" targetRef="Part_MAE_Cliente" />
     <bpmn:messageFlow id="MAE_M38" name="Aviso de saldo vencido" sourceRef="SP04_Detener" targetRef="Part_MAE_Cliente" />
     <bpmn:messageFlow id="MAE_M39" name="Consulta de disponibilidad" sourceRef="SP04_Actuales" targetRef="Part_MAE_Proveedor" />
     <bpmn:messageFlow id="MAE_M40" name="Disponibilidad, costo y condiciones" sourceRef="Part_MAE_Proveedor" targetRef="SP04_Actuales" />
@@ -212,6 +214,7 @@
         <bpmn:flowNodeRef>SP03_SE_SP08_FinDevuelto</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP03_FinImportes</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP04_Inicio</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP04_GwContr</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP04_GwEvento</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP04_NoProcEv</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP04_FinNoProcEv</bpmn:flowNodeRef>
@@ -313,6 +316,9 @@
         <bpmn:flowNodeRef>SP05_SE_SP08_Comunicar</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP05_SE_SP08_FinDevuelto</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP05_FinImportes</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP01_EvT</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP04_NoRegistrar</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP04_FinNoRegistrada</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_MAE_Admin" name="Administración">
         <bpmn:flowNodeRef>SP02_Anticipo</bpmn:flowNodeRef>
@@ -385,6 +391,15 @@
         <bpmn:flowNodeRef>SP05_SE_SP08_VerificarImp</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP05_SE_SP08_Devolver</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP05_SE_SP08_Registrar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP02_SinEfecto</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP02_GwRecibido</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP02_DevA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP02_FinDevA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP02_EvT</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP02_PagoPost</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP02_RegPost</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP02_DevPost</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP02_FinDevPost</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="MAE_Inicio" name="Solicitud del Cliente para organizar un evento">
@@ -470,6 +485,25 @@
       <bpmn:sequenceFlow id="MAE_F10" sourceRef="SP01_NuevaVersion" targetRef="SP01_Union" />
       <bpmn:sequenceFlow id="MAE_F11" sourceRef="SP01_Cerrar" targetRef="SP01_FinCerrada" />
       <bpmn:sequenceFlow id="MAE_F12" sourceRef="SP01_Aceptar" targetRef="SP01_FinAceptada" />
+      <bpmn:subProcess id="SP01_EvT" name="Llegada de T con el Evento En gestión (inicio automático)" triggeredByEvent="true">
+        <bpmn:documentation>C-01 y C-02: al llegar T con el Evento En gestión durante la etapa de propuesta (CA-110; BN-010).</bpmn:documentation>
+        <bpmn:startEvent id="SP01_EvT_Inicio" name="Llega la fecha y hora de inicio del Evento (T) sin contratación confirmada" isInterrupting="true">
+          <bpmn:documentation>BN-010.</bpmn:documentation>
+          <bpmn:outgoing>SP01_EvT_F01</bpmn:outgoing>
+          <bpmn:timerEventDefinition id="SP01_EvT_Inicio_def"></bpmn:timerEventDefinition>
+        </bpmn:startEvent>
+        <bpmn:task id="SP01_EvT_Cerrar" name="Cerrar el proceso de contratación sin confirmar: el Evento En gestión pasa a Cerrado sin contratación (no Cancelado)">
+          <bpmn:documentation>C-01, CA-110: todavía no existe contrato firmado ni anticipo.</bpmn:documentation>
+          <bpmn:incoming>SP01_EvT_F01</bpmn:incoming>
+          <bpmn:outgoing>SP01_EvT_F02</bpmn:outgoing>
+        </bpmn:task>
+        <bpmn:endEvent id="SP01_EvT_Fin" name="Cerrado sin contratación (no Cancelado)">
+          <bpmn:documentation>CA-110.</bpmn:documentation>
+          <bpmn:incoming>SP01_EvT_F02</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="SP01_EvT_F01" sourceRef="SP01_EvT_Inicio" targetRef="SP01_EvT_Cerrar" />
+        <bpmn:sequenceFlow id="SP01_EvT_F02" sourceRef="SP01_EvT_Cerrar" targetRef="SP01_EvT_Fin" />
+      </bpmn:subProcess>
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="MAE_GwAceptada" name="¿La propuesta fue aceptada?">
       <bpmn:incoming>MAE_F41</bpmn:incoming>
@@ -542,7 +576,7 @@
       </bpmn:task>
       <bpmn:endEvent id="SP02_FinCerrado" name="Cerrado sin contratación (no Cancelado)">
         <bpmn:documentation>CA-021: el Evento queda Cerrado sin contratación y no se inicia la contratación definitiva de proveedores.</bpmn:documentation>
-        <bpmn:incoming>MAE_F27</bpmn:incoming>
+        <bpmn:incoming>MAE_F321</bpmn:incoming>
       </bpmn:endEvent>
       <bpmn:intermediateCatchEvent id="SP02_Anticipo" name="Anticipo recibido">
         <bpmn:documentation>CA-018</bpmn:documentation>
@@ -577,12 +611,12 @@
         <bpmn:incoming>MAE_F38</bpmn:incoming>
         <bpmn:outgoing>MAE_F32</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:task id="SP02_Verificar" name="Registrar y verificar el anticipo: 30 % del costo total de la propuesta aceptada">
+      <bpmn:task id="SP02_Verificar" name="Registrar y verificar el anticipo: al menos el 30 % del costo total de la propuesta aceptada">
         <bpmn:documentation>BN-009; CA-018, CA-019 (US-009): el registro y la verificación pueden ser posteriores al plazo del Cliente.</bpmn:documentation>
         <bpmn:incoming>MAE_F32</bpmn:incoming>
         <bpmn:outgoing>MAE_F33</bpmn:outgoing>
       </bpmn:task>
-      <bpmn:exclusiveGateway id="SP02_Gw30" name="¿El anticipo corresponde al 30 %?">
+      <bpmn:exclusiveGateway id="SP02_Gw30" name="¿El anticipo cubre al menos el 30 %?">
         <bpmn:incoming>MAE_F33</bpmn:incoming>
         <bpmn:outgoing>MAE_F34</bpmn:outgoing>
         <bpmn:outgoing>MAE_F36</bpmn:outgoing>
@@ -595,7 +629,7 @@
       <bpmn:endEvent id="SP02_FinConfirmada" name="Contratación confirmada (Evento En organización)">
         <bpmn:incoming>MAE_F35</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:task id="SP02_Corregir" name="Informar al Cliente para que corrija el anticipo">
+      <bpmn:task id="SP02_Corregir" name="Informar al Cliente que el anticipo acumulado es inferior al 30 % para que lo complete (E-3)">
         <bpmn:documentation>CA-019, SE-010</bpmn:documentation>
         <bpmn:incoming>MAE_F36</bpmn:incoming>
         <bpmn:outgoing>MAE_F37</bpmn:outgoing>
@@ -619,7 +653,7 @@
       <bpmn:sequenceFlow id="MAE_F24" sourceRef="SP02_Plazo24" targetRef="SP02_Revisar" />
       <bpmn:sequenceFlow id="MAE_F25" sourceRef="SP02_Revisar" targetRef="SP02_GwPlazo" />
       <bpmn:sequenceFlow id="MAE_F26" name="No" sourceRef="SP02_GwPlazo" targetRef="SP02_Cerrar" />
-      <bpmn:sequenceFlow id="MAE_F27" sourceRef="SP02_Cerrar" targetRef="SP02_FinCerrado" />
+      <bpmn:sequenceFlow id="MAE_F27" sourceRef="SP02_Cerrar" targetRef="SP02_SinEfecto" />
       <bpmn:sequenceFlow id="MAE_F28" name="Sí: pendiente de registro y verificación" sourceRef="SP02_GwPlazo" targetRef="SP02_Union" />
       <bpmn:sequenceFlow id="MAE_F29" sourceRef="SP02_Anticipo" targetRef="SP02_UAnt" />
       <bpmn:sequenceFlow id="MAE_F30" sourceRef="SP02_Anticipo24" targetRef="SP02_UAnt" />
@@ -631,6 +665,56 @@
       <bpmn:sequenceFlow id="MAE_F36" name="No" sourceRef="SP02_Gw30" targetRef="SP02_Corregir" />
       <bpmn:sequenceFlow id="MAE_F37" sourceRef="SP02_Corregir" targetRef="SP02_Corregido" />
       <bpmn:sequenceFlow id="MAE_F38" sourceRef="SP02_Corregido" targetRef="SP02_Union" />
+      <bpmn:task id="SP02_SinEfecto" name="Dejar sin efecto el anticipo pendiente (el Liquidado conserva su estado); la contratación cerrada no se reabre">
+        <bpmn:documentation>A-2 y C-04: la contratación cerrada no se reabre; el anticipo pendiente pasa a Sin efecto y el Liquidado conserva su estado (CA-021, CA-106; GL-053, GL-062).</bpmn:documentation>
+        <bpmn:incoming>MAE_F27</bpmn:incoming>
+        <bpmn:outgoing>MAE_F320</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:exclusiveGateway id="SP02_GwRecibido" name="¿Se recibió algún importe como anticipo?">
+        <bpmn:incoming>MAE_F320</bpmn:incoming>
+        <bpmn:outgoing>MAE_F321</bpmn:outgoing>
+        <bpmn:outgoing>MAE_F322</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:task id="SP02_DevA" name="Verificar y devolver el anticipo recibido (devolución A) en 5 días hábiles desde la fecha de referencia; registrarla">
+        <bpmn:documentation>Devolución A (decisión A, A-1 a A-6): fecha de referencia = la más tardía entre el cierre y el registro del pago; vence al final del 5.º día hábil posterior; la verificación tardía no reinicia el plazo. Se registran el pago, concepto, importe, motivo, fecha y comprobante y se informa al Coordinador (CA-102 a CA-105; GL-061). Distinta de SE-012 (SP-08).</bpmn:documentation>
+        <bpmn:incoming>MAE_F322</bpmn:incoming>
+        <bpmn:outgoing>MAE_F323</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:endEvent id="SP02_FinDevA" name="Cerrado sin contratación: anticipo devuelto">
+        <bpmn:documentation>CA-102 a CA-105.</bpmn:documentation>
+        <bpmn:incoming>MAE_F323</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:subProcess id="SP02_EvT" name="Llegada de T con el Evento En gestión (inicio automático)" triggeredByEvent="true">
+        <bpmn:documentation>C-01 y C-02: al llegar T con el Evento En gestión (CA-110, CA-111; BN-010).</bpmn:documentation>
+        <bpmn:startEvent id="SP02_EvT_Inicio" name="Llega la fecha y hora de inicio del Evento (T) sin contratación confirmada" isInterrupting="true">
+          <bpmn:documentation>BN-010.</bpmn:documentation>
+          <bpmn:outgoing>SP02_EvT_F01</bpmn:outgoing>
+          <bpmn:timerEventDefinition id="SP02_EvT_Inicio_def"></bpmn:timerEventDefinition>
+        </bpmn:startEvent>
+        <bpmn:task id="SP02_EvT_Cerrar" name="Cerrar la contratación sin confirmar: Evento Cerrado sin contratación; contrato En preparación o Firmado, Cerrado sin confirmar (D-3)">
+          <bpmn:documentation>C-01, CA-110. El cierre aprobado define el estado del contrato no firmado (Cerrado sin confirmar). Implementación (ADR-008): el contrato Firmado sin confirmar también pasa a Cerrado sin confirmar al llegar T; es una decisión interna del equipo sin aprobación externa. El Evento, la no reapertura y el anticipo están definidos (C-01, C-02, C-04, A-1 a A-6).</bpmn:documentation>
+          <bpmn:incoming>SP02_EvT_F01</bpmn:incoming>
+          <bpmn:outgoing>SP02_EvT_F02</bpmn:outgoing>
+        </bpmn:task>
+        <bpmn:task id="SP02_EvT_Devolver" name="Dejar sin efecto el anticipo pendiente y devolver lo recibido (devolución A), aunque se verifique después de T">
+          <bpmn:documentation>C-02, C-04, A-1, A-3, A-6, CA-104, CA-110: nada se confirma después de T; un pago registrado antes de T y verificado después no confirma la contratación ni la reactiva y se devuelve (prueba T-57 del cierre aprobado). El anticipo Liquidado conserva su estado y también se devuelve. Fecha de referencia: el día del cierre si el pago ya estaba registrado; el del registro si es posterior.</bpmn:documentation>
+          <bpmn:incoming>SP02_EvT_F02</bpmn:incoming>
+          <bpmn:outgoing>SP02_EvT_F03</bpmn:outgoing>
+        </bpmn:task>
+        <bpmn:endEvent id="SP02_EvT_Fin" name="Cerrado sin contratación (no Cancelado)">
+          <bpmn:documentation>CA-110.</bpmn:documentation>
+          <bpmn:incoming>SP02_EvT_F03</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="SP02_EvT_F01" sourceRef="SP02_EvT_Inicio" targetRef="SP02_EvT_Cerrar" />
+        <bpmn:sequenceFlow id="SP02_EvT_F02" sourceRef="SP02_EvT_Cerrar" targetRef="SP02_EvT_Devolver" />
+        <bpmn:sequenceFlow id="SP02_EvT_F03" sourceRef="SP02_EvT_Devolver" targetRef="SP02_EvT_Fin" />
+      </bpmn:subProcess>
+      <bpmn:sequenceFlow id="MAE_F320" sourceRef="SP02_SinEfecto" targetRef="SP02_GwRecibido" />
+      <bpmn:sequenceFlow id="MAE_F321" name="No" sourceRef="SP02_GwRecibido" targetRef="SP02_FinCerrado" />
+      <bpmn:sequenceFlow id="MAE_F322" name="Sí" sourceRef="SP02_GwRecibido" targetRef="SP02_DevA" />
+      <bpmn:sequenceFlow id="MAE_F323" sourceRef="SP02_DevA" targetRef="SP02_FinDevA" />
+      <bpmn:textAnnotation id="SP02_NotaDevA"><bpmn:text>Devolución A (distinta de SE-012): la fecha de referencia es el día del cierre si el pago ya estaba registrado, o el día del registro si es posterior; ese día no cuenta y el plazo vence al final del 5.º día hábil posterior (límite exclusivo a las 00:00). La verificación tardía no reinicia el plazo. Un pago posterior al cierre se registra y verifica sin reabrir ni aplicarse a la contratación; si el Cliente desea continuar, inicia un proceso nuevo (BN-009, CA-102 a CA-106).</bpmn:text></bpmn:textAnnotation>
+      <bpmn:textAnnotation id="SP02_NotaEvT"><bpmn:text>Implementado (ADR-008): el trabajador aplica la llegada de T, cierra también el contrato Firmado y avisa a Cliente, Coordinador y Administración (decisiones internas, sin aprobación externa). Desde T no se confirma (CA-110).</bpmn:text></bpmn:textAnnotation>
     </bpmn:subProcess>
     <bpmn:exclusiveGateway id="MAE_GwConfirmada" name="¿La contratación quedó confirmada?">
       <bpmn:incoming>MAE_F44</bpmn:incoming>
@@ -640,6 +724,24 @@
     <bpmn:endEvent id="MAE_FinSinContr" name="Cerrado sin contratación">
       <bpmn:documentation>CA-021</bpmn:documentation>
       <bpmn:incoming>MAE_F45</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="SP02_PagoPost" name="Pago de anticipo después del cierre">
+      <bpmn:documentation>A-3, BN-009, CA-106: un pago de anticipo puede registrarse y verificarse después del cierre sin reactivar la contratación. Inicia una instancia propia; la contratación cerrada no se reabre (A-2).</bpmn:documentation>
+      <bpmn:outgoing>MAE_F327</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="SP02_PagoPost_def" />
+    </bpmn:startEvent>
+    <bpmn:task id="SP02_RegPost" name="Registrar y verificar el pago sin aplicarlo a la contratación cerrada ni reabrirla">
+      <bpmn:documentation>A-2, A-3, A-4, CA-103, CA-106: el pago no se aplica a la contratación cerrada ni la reactiva; si el Cliente desea continuar, inicia un proceso nuevo.</bpmn:documentation>
+      <bpmn:incoming>MAE_F327</bpmn:incoming>
+      <bpmn:outgoing>MAE_F328</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="SP02_DevPost" name="Devolver el importe recibido (devolución A) en 5 días hábiles desde el día del registro; registrar la devolución">
+      <bpmn:documentation>A-1, A-6, C-11, CA-103 a CA-105: la fecha de referencia es el día del registro (no cuenta); vence al final del 5.º día hábil posterior, límite exclusivo a las 00:00 del día siguiente (C-15). La verificación forma parte del plazo y verificar tarde no lo reinicia. Un pago genera como máximo una devolución, sin superar lo recibido. Distinta de SE-012.</bpmn:documentation>
+      <bpmn:incoming>MAE_F328</bpmn:incoming>
+      <bpmn:outgoing>MAE_F329</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="SP02_FinDevPost" name="Pago posterior al cierre devuelto">
+      <bpmn:incoming>MAE_F329</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:subProcess id="MAE_Organizacion" name="Organizar el evento (Evento En organización)">
       <bpmn:documentation>GL-033: contratación confirmada y evento no iniciado.</bpmn:documentation>
@@ -848,8 +950,8 @@
       <bpmn:incoming>MAE_F88</bpmn:incoming>
       <bpmn:outgoing>MAE_F89</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:task id="MAE_RegInicio" name="Registrar el inicio del evento (En ejecución)">
-      <bpmn:documentation>GL-032, GL-033</bpmn:documentation>
+    <bpmn:task id="MAE_RegInicio" name="Inicio automático del evento al llegar T (En ejecución)">
+      <bpmn:documentation>GL-032, GL-033, CA-109: lo aplica el proceso periódico del trabajador al llegar T (ADR-008); la operación explícita de inicio aplica la misma regla.</bpmn:documentation>
       <bpmn:incoming>MAE_F89</bpmn:incoming>
       <bpmn:outgoing>MAE_F90</bpmn:outgoing>
     </bpmn:task>
@@ -1255,7 +1357,7 @@
       <bpmn:outgoing>MAE_F156</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SP03_BIniciado_def" signalRef="Signal_EventoIniciado" />
     </bpmn:boundaryEvent>
-    <bpmn:task id="SP03_CerrarIni" name="Cerrar la solicitud como no procedente por inicio del evento">
+    <bpmn:task id="SP03_CerrarIni" name="Cerrar la solicitud como «Cerrada por inicio del evento»">
       <bpmn:documentation>CA-070</bpmn:documentation>
       <bpmn:incoming>MAE_F156</bpmn:incoming>
       <bpmn:outgoing>MAE_F167</bpmn:outgoing>
@@ -1346,7 +1448,7 @@
         <bpmn:incoming>MAE_F175</bpmn:incoming>
         <bpmn:outgoing>MAE_F176</bpmn:outgoing>
       </bpmn:task>
-      <bpmn:task id="SP03_SE_SP08_Devolver" name="Efectuar la devolución dentro de los 5 días hábiles siguientes al cierre">
+      <bpmn:task id="SP03_SE_SP08_Devolver" name="Efectuar la devolución en 5 días hábiles desde el cierre (o desde el registro del pago, si es posterior)">
         <bpmn:documentation>SE-012, CA-097, CA-098</bpmn:documentation>
         <bpmn:incoming>MAE_F176</bpmn:incoming>
         <bpmn:outgoing>MAE_F177</bpmn:outgoing>
@@ -1384,6 +1486,20 @@
       <bpmn:outgoing>MAE_F182</bpmn:outgoing>
       <bpmn:messageEventDefinition id="SP04_Inicio_def" />
     </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="SP04_GwContr" name="¿La contratación está confirmada?">
+      <bpmn:documentation>C-14, GL-015, BN-004, SE-004, CA-101: un servicio adicional solo puede registrarse con la contratación confirmada. Con el Evento En gestión o Cerrado sin contratación no se registra la solicitud ni se evalúan el estado del Evento, el plazo mínimo o el saldo vencido. Un Evento Cancelado o En ejecución tuvo la contratación confirmada: la solicitud se registra y se resuelve en la compuerta siguiente (CA-099, CA-100).</bpmn:documentation>
+      <bpmn:incoming>MAE_F182</bpmn:incoming>
+      <bpmn:outgoing>MAE_F324</bpmn:outgoing>
+      <bpmn:outgoing>MAE_F325</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="SP04_NoRegistrar" name="No registrar la solicitud e informar al Cliente que un servicio adicional solo puede registrarse con la contratación confirmada">
+      <bpmn:documentation>CA-101: el Coordinador no registra la solicitud e informa al Cliente; no se evalúan el plazo mínimo ni el saldo vencido.</bpmn:documentation>
+      <bpmn:incoming>MAE_F325</bpmn:incoming>
+      <bpmn:outgoing>MAE_F326</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="SP04_FinNoRegistrada" name="Solicitud no registrada (contratación no confirmada)">
+      <bpmn:incoming>MAE_F326</bpmn:incoming>
+    </bpmn:endEvent>
     <bpmn:exclusiveGateway id="SP04_GwEvento" name="¿El Evento está cancelado o ya inició?">
       <bpmn:documentation>SE-004, O-01: después de registrar la solicitud, primero se verifica el Evento; si está cancelado o ya inició, la solicitud queda No procedente y se registra solo este motivo (CA-099, CA-100).</bpmn:documentation>
       <bpmn:incoming>MAE_F187</bpmn:incoming>
@@ -1399,8 +1515,8 @@
       <bpmn:incoming>MAE_F184</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:task id="SP04_Registrar" name="Registrar la solicitud de servicio adicional con su fecha">
-      <bpmn:documentation>BN-004, SE-004, O-01 (US-025): la solicitud se registra antes de verificar el Evento, el plazo y el saldo.</bpmn:documentation>
-      <bpmn:incoming>MAE_F182</bpmn:incoming>
+      <bpmn:documentation>BN-004, SE-004, O-01 (US-025): con la contratación confirmada (C-14, CA-101), la solicitud se registra antes de verificar el Evento, el plazo y el saldo.</bpmn:documentation>
+      <bpmn:incoming>MAE_F324</bpmn:incoming>
       <bpmn:outgoing>MAE_F187</bpmn:outgoing>
     </bpmn:task>
     <bpmn:subProcess id="SP04_Tramitar" name="Tramitar la solicitud de servicio adicional (solicitud en trámite)">
@@ -1667,7 +1783,7 @@
       <bpmn:outgoing>MAE_F233</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SP04_BIniciado_def" signalRef="Signal_EventoIniciado" />
     </bpmn:boundaryEvent>
-    <bpmn:task id="SP04_CerrarIni" name="Cerrar la solicitud como no procedente por inicio del evento">
+    <bpmn:task id="SP04_CerrarIni" name="Cerrar la solicitud como «Cerrada por inicio del evento»">
       <bpmn:documentation>CA-071, CA-080</bpmn:documentation>
       <bpmn:incoming>MAE_F233</bpmn:incoming>
       <bpmn:outgoing>MAE_F244</bpmn:outgoing>
@@ -1758,7 +1874,7 @@
         <bpmn:incoming>MAE_F252</bpmn:incoming>
         <bpmn:outgoing>MAE_F253</bpmn:outgoing>
       </bpmn:task>
-      <bpmn:task id="SP04_SE_SP08_Devolver" name="Efectuar la devolución dentro de los 5 días hábiles siguientes al cierre">
+      <bpmn:task id="SP04_SE_SP08_Devolver" name="Efectuar la devolución en 5 días hábiles desde el cierre (o desde el registro del pago, si es posterior)">
         <bpmn:documentation>SE-012, CA-097, CA-098</bpmn:documentation>
         <bpmn:incoming>MAE_F253</bpmn:incoming>
         <bpmn:outgoing>MAE_F254</bpmn:outgoing>
@@ -2000,7 +2116,7 @@
       <bpmn:outgoing>MAE_F297</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SP05_BIniciado_def" signalRef="Signal_EventoIniciado" />
     </bpmn:boundaryEvent>
-    <bpmn:task id="SP05_CerrarIni" name="Cerrar la sustitución como no procedente por inicio del evento">
+    <bpmn:task id="SP05_CerrarIni" name="Cerrar la sustitución como «Cerrada por inicio del evento»">
       <bpmn:documentation>CA-096: se registra que el reemplazo no se concretó</bpmn:documentation>
       <bpmn:incoming>MAE_F297</bpmn:incoming>
       <bpmn:outgoing>MAE_F306</bpmn:outgoing>
@@ -2080,7 +2196,7 @@
         <bpmn:incoming>MAE_F313</bpmn:incoming>
         <bpmn:outgoing>MAE_F314</bpmn:outgoing>
       </bpmn:task>
-      <bpmn:task id="SP05_SE_SP08_Devolver" name="Efectuar la devolución dentro de los 5 días hábiles siguientes al cierre">
+      <bpmn:task id="SP05_SE_SP08_Devolver" name="Efectuar la devolución en 5 días hábiles desde el cierre (o desde el registro del pago, si es posterior)">
         <bpmn:documentation>SE-012, CA-097, CA-098</bpmn:documentation>
         <bpmn:incoming>MAE_F314</bpmn:incoming>
         <bpmn:outgoing>MAE_F315</bpmn:outgoing>
@@ -2120,6 +2236,9 @@
     <bpmn:sequenceFlow id="MAE_F43" name="Sí" sourceRef="MAE_GwAceptada" targetRef="MAE_Contratacion" />
     <bpmn:sequenceFlow id="MAE_F44" sourceRef="MAE_Contratacion" targetRef="MAE_GwConfirmada" />
     <bpmn:sequenceFlow id="MAE_F45" name="No" sourceRef="MAE_GwConfirmada" targetRef="MAE_FinSinContr" />
+    <bpmn:sequenceFlow id="MAE_F327" sourceRef="SP02_PagoPost" targetRef="SP02_RegPost" />
+    <bpmn:sequenceFlow id="MAE_F328" sourceRef="SP02_RegPost" targetRef="SP02_DevPost" />
+    <bpmn:sequenceFlow id="MAE_F329" sourceRef="SP02_DevPost" targetRef="SP02_FinDevPost" />
     <bpmn:sequenceFlow id="MAE_F68" name="Sí" sourceRef="MAE_GwConfirmada" targetRef="MAE_Organizacion" />
     <bpmn:sequenceFlow id="MAE_F84" sourceRef="MAE_Organizacion" targetRef="MAE_Espera" />
     <bpmn:sequenceFlow id="MAE_F85" sourceRef="MAE_Espera" targetRef="MAE_EspInicio" />
@@ -2165,7 +2284,10 @@
     <bpmn:sequenceFlow id="MAE_F168" name="Cerrada por falta de pago" sourceRef="SP03_GwResultado" targetRef="SP03_UCierre" />
     <bpmn:sequenceFlow id="MAE_F180" sourceRef="SP03_UCierre" targetRef="SP03_DevImp" />
     <bpmn:sequenceFlow id="MAE_F181" sourceRef="SP03_DevImp" targetRef="SP03_FinImportes" />
-    <bpmn:sequenceFlow id="MAE_F182" sourceRef="SP04_Inicio" targetRef="SP04_Registrar" />
+    <bpmn:sequenceFlow id="MAE_F182" sourceRef="SP04_Inicio" targetRef="SP04_GwContr" />
+    <bpmn:sequenceFlow id="MAE_F324" name="Sí" sourceRef="SP04_GwContr" targetRef="SP04_Registrar" />
+    <bpmn:sequenceFlow id="MAE_F325" name="No" sourceRef="SP04_GwContr" targetRef="SP04_NoRegistrar" />
+    <bpmn:sequenceFlow id="MAE_F326" sourceRef="SP04_NoRegistrar" targetRef="SP04_FinNoRegistrada" />
     <bpmn:sequenceFlow id="MAE_F187" sourceRef="SP04_Registrar" targetRef="SP04_GwEvento" />
     <bpmn:sequenceFlow id="MAE_F183" name="Sí" sourceRef="SP04_GwEvento" targetRef="SP04_NoProcEv" />
     <bpmn:sequenceFlow id="MAE_F184" sourceRef="SP04_NoProcEv" targetRef="SP04_FinNoProcEv" />
@@ -2215,7 +2337,7 @@
     <bpmn:textAnnotation id="SP03_SE_SP08_Nota"><bpmn:text>No se devuelven ni se modifican los pagos del contrato original ni otros conceptos independientes; el cierre de la solicitud no cancela esas obligaciones (SE-012, CA-096).</bpmn:text></bpmn:textAnnotation>
     <bpmn:textAnnotation id="SP04_SE_SP08_Nota"><bpmn:text>No se devuelven ni se modifican los pagos del contrato original ni otros conceptos independientes; el cierre de la solicitud no cancela esas obligaciones (SE-012, CA-096).</bpmn:text></bpmn:textAnnotation>
     <bpmn:textAnnotation id="SP04_NotaEleg"><bpmn:text>Con la solicitud presentada a tiempo y la alternativa encontrada dentro del plazo, la elegibilidad se conserva durante la aprobación del Cliente y la autorización de Administración, siempre que el Evento no haya iniciado (CA-080).</bpmn:text></bpmn:textAnnotation>
-    <bpmn:textAnnotation id="SP05_NotaEstado"><bpmn:text>El aviso del proveedor recibido después del inicio del evento está fuera del alcance del sistema (decisión del equipo). Dentro del alcance: una sustitución que sigue pendiente al iniciar el evento no se confirma y se cierra como no procedente por inicio (borde «Evento iniciado»).</bpmn:text></bpmn:textAnnotation>
+    <bpmn:textAnnotation id="SP05_NotaEstado"><bpmn:text>El aviso del proveedor recibido después del inicio del evento está fuera del alcance del sistema (decisión del equipo). Dentro del alcance: una sustitución que sigue pendiente al iniciar el evento no se confirma y se cierra como «Cerrada por inicio del evento» (borde «Evento iniciado»).</bpmn:text></bpmn:textAnnotation>
     <bpmn:textAnnotation id="SP05_SE_SP08_Nota"><bpmn:text>No se devuelven ni se modifican los pagos del contrato original ni otros conceptos independientes; el cierre de la solicitud no cancela esas obligaciones (SE-012, CA-096).</bpmn:text></bpmn:textAnnotation>
     <bpmn:association id="SP06_NotaCanc_A" associationDirection="None" sourceRef="SP06_RegCancelacion" targetRef="SP06_NotaCanc" />
     <bpmn:association id="SP06_NotaSol_A" associationDirection="None" sourceRef="SP06_Moratorios" targetRef="SP06_NotaSol" />
@@ -2235,7 +2357,7 @@
       <bpmndi:BPMNShape id="Lane_MAE_Admin_di" bpmnElement="Lane_MAE_Admin" isHorizontal="true" bioc:fill="#D2C3F0" color:background-color="#D2C3F0" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="36" y="1030" width="39056" height="520" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MAE_Inicio_di" bpmnElement="MAE_Inicio" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="164" y="427" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="127" y="467" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MAE_Registrar_di" bpmnElement="MAE_Registrar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="302" y="400" width="160" height="90" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="MAE_Propuesta_di" bpmnElement="MAE_Propuesta" isExpanded="true" bioc:fill="none" color:background-color="none" bioc:stroke="#37474F" color:border-color="#37474F"><dc:Bounds x="490" y="254" width="1784" height="382" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="MAE_Propuesta_di" bpmnElement="MAE_Propuesta" isExpanded="true" bioc:fill="none" color:background-color="none" bioc:stroke="#37474F" color:border-color="#37474F"><dc:Bounds x="490" y="254" width="1784" height="476" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP01_Inicio_di" bpmnElement="SP01_Inicio" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="564" y="427" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="527" y="467" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP01_Elaborar_di" bpmnElement="SP01_Elaborar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="702" y="400" width="160" height="90" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP01_Union_di" bpmnElement="SP01_Union" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="957" y="420" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="887" y="402" width="90" height="15" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
@@ -2277,6 +2399,10 @@
       <bpmndi:BPMNShape id="SP02_Corregido_di" bpmnElement="SP02_Corregido" bioc:fill="#FFF2A8" color:background-color="#FFF2A8" bioc:stroke="#8F6C00" color:border-color="#8F6C00"><dc:Bounds x="4964" y="1337" width="36" height="36" /><bpmndi:BPMNLabel color:color="#8F6C00"><dc:Bounds x="4927" y="1377" width="110" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MAE_GwConfirmada_di" bpmnElement="MAE_GwConfirmada" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="5757" y="420" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="5687" y="376" width="90" height="41" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MAE_FinSinContr_di" bpmnElement="MAE_FinSinContr" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="5964" y="297" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="6008" y="303" width="110" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_PagoPost_di" bpmnElement="SP02_PagoPost" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="3682" y="1465" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="3645" y="1505" width="110" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_RegPost_di" bpmnElement="SP02_RegPost" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="3760" y="1438" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_DevPost_di" bpmnElement="SP02_DevPost" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="3980" y="1438" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_FinDevPost_di" bpmnElement="SP02_FinDevPost" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="4190" y="1465" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="4153" y="1505" width="110" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MAE_Organizacion_di" bpmnElement="MAE_Organizacion" isExpanded="true" bioc:fill="none" color:background-color="none" bioc:stroke="#37474F" color:border-color="#37474F"><dc:Bounds x="5890" y="384" width="4584" height="902" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MAE_OrgInicio_di" bpmnElement="MAE_OrgInicio" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="5964" y="427" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="5927" y="467" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MAE_OrgAnd_di" bpmnElement="MAE_OrgAnd" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="6157" y="420" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="6087" y="402" width="90" height="15" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
@@ -2413,13 +2539,16 @@
       <bpmndi:BPMNShape id="SP03_SE_SP08_Comunicar_di" bpmnElement="SP03_SE_SP08_Comunicar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="22302" y="920" width="160" height="90" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP03_SE_SP08_FinDevuelto_di" bpmnElement="SP03_SE_SP08_FinDevuelto" bioc:fill="#CBEBD1" color:background-color="#CBEBD1" bioc:stroke="#2E7D32" color:border-color="#2E7D32"><dc:Bounds x="22564" y="947" width="36" height="36" /><bpmndi:BPMNLabel color:color="#2E7D32"><dc:Bounds x="22527" y="987" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP03_FinImportes_di" bpmnElement="SP03_FinImportes" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="22764" y="947" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="22806" y="945" width="120" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_Inicio_di" bpmnElement="SP04_Inicio" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="23164" y="557" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="23127" y="597" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_GwEvento_di" bpmnElement="SP04_GwEvento" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="23470" y="550" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="23400" y="506" width="90" height="41" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_NoProcEv_di" bpmnElement="SP04_NoProcEv" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="23415" y="660" width="160" height="90" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_FinNoProcEv_di" bpmnElement="SP04_FinNoProcEv" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="23612" y="687" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="23575" y="727" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_Inicio_di" bpmnElement="SP04_Inicio" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="23120" y="557" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="23083" y="605" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_GwContr_di" bpmnElement="SP04_GwContr" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="23190" y="550" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="23222" y="478" width="96" height="41" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_NoRegistrar_di" bpmnElement="SP04_NoRegistrar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="23160" y="380" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_FinNoRegistrada_di" bpmnElement="SP04_FinNoRegistrada" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="23360" y="407" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="23323" y="447" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_GwEvento_di" bpmnElement="SP04_GwEvento" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="23510" y="550" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="23440" y="506" width="90" height="41" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_NoProcEv_di" bpmnElement="SP04_NoProcEv" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="23455" y="660" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_FinNoProcEv_di" bpmnElement="SP04_FinNoProcEv" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="23517" y="790" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="23480" y="830" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_Tramitar_di" bpmnElement="SP04_Tramitar" isExpanded="true" bioc:fill="none" color:background-color="none" bioc:stroke="#37474F" color:border-color="#37474F"><dc:Bounds x="23690" y="384" width="4384" height="902" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_IniSub_di" bpmnElement="SP04_IniSub" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="23764" y="557" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="23727" y="597" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_Registrar_di" bpmnElement="SP04_Registrar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="23240" y="530" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_Registrar_di" bpmnElement="SP04_Registrar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="23280" y="530" width="160" height="90" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_URet_di" bpmnElement="SP04_URet" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="24157" y="550" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="24087" y="532" width="90" height="15" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_Gw5_di" bpmnElement="SP04_Gw5" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="24357" y="550" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="24287" y="493" width="90" height="54" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_NoProc5_di" bpmnElement="SP04_NoProc5" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="24302" y="660" width="160" height="90" /></bpmndi:BPMNShape>
@@ -2558,7 +2687,7 @@
       <bpmndi:BPMNShape id="MAE_NotaBN005_di" bpmnElement="MAE_NotaBN005"><dc:Bounds x="6702.0" y="1325.0" width="430" height="70" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP03_SE_SP08_Nota_di" bpmnElement="SP03_SE_SP08_Nota"><dc:Bounds x="21702.0" y="1325.0" width="470" height="60" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_SE_SP08_Nota_di" bpmnElement="SP04_SE_SP08_Nota"><dc:Bounds x="30102.0" y="1325.0" width="470" height="60" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_NotaEleg_di" bpmnElement="SP04_NotaEleg"><dc:Bounds x="27322.0" y="413.0" width="330" height="64" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_NotaEleg_di" bpmnElement="SP04_NotaEleg"><dc:Bounds x="27322.0" y="413.0" width="330" height="80" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP05_NotaEstado_di" bpmnElement="SP05_NotaEstado"><dc:Bounds x="31542.0" y="170.0" width="360" height="84" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP05_SE_SP08_Nota_di" bpmnElement="SP05_SE_SP08_Nota"><dc:Bounds x="37902.0" y="1325.0" width="470" height="60" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="MAE_BandaA_di" bpmnElement="MAE_BandaA"><dc:Bounds x="92.0" y="-150" width="900" height="60" /></bpmndi:BPMNShape>
@@ -2592,7 +2721,7 @@
       <bpmndi:BPMNEdge id="MAE_F24_di" bpmnElement="MAE_F24"><di:waypoint x="4382" y="463" /><di:waypoint x="4382" y="1050" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F25_di" bpmnElement="MAE_F25"><di:waypoint x="4462" y="1095" /><di:waypoint x="4557" y="1095" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F26_di" bpmnElement="MAE_F26"><di:waypoint x="4582" y="1070" /><di:waypoint x="4582" y="575" /><di:waypoint x="4702" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="4590" y="1037" width="40" height="16" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MAE_F27_di" bpmnElement="MAE_F27"><di:waypoint x="4862" y="575" /><di:waypoint x="4964" y="575" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F27_di" bpmnElement="MAE_F27"><di:waypoint x="4862" y="575" /><di:waypoint x="4900" y="575" /><di:waypoint x="4900" y="1095" /><di:waypoint x="4920" y="1095" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F28_di" bpmnElement="MAE_F28"><di:waypoint x="4607" y="1095" /><di:waypoint x="4782" y="1095" /><di:waypoint x="4782" y="1200" /><bpmndi:BPMNLabel><dc:Bounds x="4612" y="1101" width="150" height="20" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F29_di" bpmnElement="MAE_F29"><di:waypoint x="3582" y="1113" /><di:waypoint x="3582" y="1225" /><di:waypoint x="4157" y="1225" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F30_di" bpmnElement="MAE_F30"><di:waypoint x="4182" y="1113" /><di:waypoint x="4182" y="1200" /></bpmndi:BPMNEdge>
@@ -2611,6 +2740,9 @@
       <bpmndi:BPMNEdge id="MAE_F43_di" bpmnElement="MAE_F43"><di:waypoint x="2407" y="445" /><di:waypoint x="2490" y="445" /><bpmndi:BPMNLabel><dc:Bounds x="2414" y="448" width="70" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F44_di" bpmnElement="MAE_F44"><di:waypoint x="5674" y="445" /><di:waypoint x="5757" y="445" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F45_di" bpmnElement="MAE_F45"><di:waypoint x="5782" y="420" /><di:waypoint x="5782" y="315" /><di:waypoint x="5964" y="315" /><bpmndi:BPMNLabel><dc:Bounds x="5788" y="354" width="150" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F327_di" bpmnElement="MAE_F327"><di:waypoint x="3718" y="1483" /><di:waypoint x="3760" y="1483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F328_di" bpmnElement="MAE_F328"><di:waypoint x="3920" y="1483" /><di:waypoint x="3980" y="1483" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F329_di" bpmnElement="MAE_F329"><di:waypoint x="4140" y="1483" /><di:waypoint x="4190" y="1483" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F46_di" bpmnElement="MAE_F46"><di:waypoint x="6800" y="1095" /><di:waypoint x="6902" y="1095" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F47_di" bpmnElement="MAE_F47"><di:waypoint x="7062" y="1095" /><di:waypoint x="7182" y="1095" /><di:waypoint x="7182" y="880" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F48_di" bpmnElement="MAE_F48"><di:waypoint x="7262" y="835" /><di:waypoint x="7357" y="835" /></bpmndi:BPMNEdge>
@@ -2747,12 +2879,15 @@
       <bpmndi:BPMNEdge id="MAE_F179_di" bpmnElement="MAE_F179"><di:waypoint x="22462" y="965" /><di:waypoint x="22564" y="965" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F180_di" bpmnElement="MAE_F180"><di:waypoint x="20807" y="315" /><di:waypoint x="20860" y="315" /><di:waypoint x="20860" y="1095" /><di:waypoint x="20890" y="1095" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F181_di" bpmnElement="MAE_F181"><di:waypoint x="22674" y="965" /><di:waypoint x="22764" y="965" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MAE_F182_di" bpmnElement="MAE_F182"><di:waypoint x="23200" y="575" /><di:waypoint x="23240" y="575" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MAE_F183_di" bpmnElement="MAE_F183"><di:waypoint x="23495" y="600" /><di:waypoint x="23495" y="660" /><bpmndi:BPMNLabel><dc:Bounds x="23501" y="616" width="150" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MAE_F184_di" bpmnElement="MAE_F184"><di:waypoint x="23575" y="705" /><di:waypoint x="23612" y="705" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MAE_F185_di" bpmnElement="MAE_F185"><di:waypoint x="23520" y="575" /><di:waypoint x="23690" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="23527" y="578" width="150" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F182_di" bpmnElement="MAE_F182"><di:waypoint x="23156" y="575" /><di:waypoint x="23190" y="575" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F324_di" bpmnElement="MAE_F324"><di:waypoint x="23240" y="575" /><di:waypoint x="23280" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="23244" y="579" width="30" height="16" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F325_di" bpmnElement="MAE_F325"><di:waypoint x="23215" y="550" /><di:waypoint x="23215" y="470" /><bpmndi:BPMNLabel><dc:Bounds x="23186" y="492" width="24" height="16" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F326_di" bpmnElement="MAE_F326"><di:waypoint x="23320" y="425" /><di:waypoint x="23360" y="425" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F183_di" bpmnElement="MAE_F183"><di:waypoint x="23535" y="600" /><di:waypoint x="23535" y="660" /><bpmndi:BPMNLabel><dc:Bounds x="23541" y="616" width="60" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F184_di" bpmnElement="MAE_F184"><di:waypoint x="23535" y="750" /><di:waypoint x="23535" y="790" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F185_di" bpmnElement="MAE_F185"><di:waypoint x="23560" y="575" /><di:waypoint x="23690" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="23567" y="578" width="60" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F186_di" bpmnElement="MAE_F186"><di:waypoint x="23800" y="575" /><di:waypoint x="24157" y="575" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MAE_F187_di" bpmnElement="MAE_F187"><di:waypoint x="23400" y="575" /><di:waypoint x="23470" y="575" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F187_di" bpmnElement="MAE_F187"><di:waypoint x="23440" y="575" /><di:waypoint x="23510" y="575" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F188_di" bpmnElement="MAE_F188"><di:waypoint x="24207" y="575" /><di:waypoint x="24357" y="575" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F189_di" bpmnElement="MAE_F189"><di:waypoint x="24382" y="600" /><di:waypoint x="24382" y="660" /><bpmndi:BPMNLabel><dc:Bounds x="24388" y="616" width="150" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F190_di" bpmnElement="MAE_F190"><di:waypoint x="24382" y="750" /><di:waypoint x="24382" y="817" /></bpmndi:BPMNEdge>
@@ -2828,7 +2963,7 @@
       <bpmndi:BPMNEdge id="MAE_F260_di" bpmnElement="MAE_F260"><di:waypoint x="31782" y="550" /><di:waypoint x="31782" y="490" /><bpmndi:BPMNLabel><dc:Bounds x="31790" y="501" width="82" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F261_di" bpmnElement="MAE_F261"><di:waypoint x="31782" y="400" /><di:waypoint x="31782" y="333" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F262_di" bpmnElement="MAE_F262"><di:waypoint x="31782" y="600" /><di:waypoint x="31782" y="687" /><bpmndi:BPMNLabel><dc:Bounds x="31790" y="605" width="82" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MAE_F263_di" bpmnElement="MAE_F263"><di:waypoint x="31807" y="575" /><di:waypoint x="31890" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="31806" y="581" width="76" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F263_di" bpmnElement="MAE_F263"><di:waypoint x="31807" y="575" /><di:waypoint x="31890" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="31814" y="581" width="76" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F264_di" bpmnElement="MAE_F264"><di:waypoint x="32000" y="575" /><di:waypoint x="32102" y="575" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F265_di" bpmnElement="MAE_F265"><di:waypoint x="32262" y="575" /><di:waypoint x="32357" y="575" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_F266_di" bpmnElement="MAE_F266"><di:waypoint x="32407" y="575" /><di:waypoint x="32502" y="575" /></bpmndi:BPMNEdge>
@@ -2891,6 +3026,7 @@
       <bpmndi:BPMNEdge id="MAE_M04_di" bpmnElement="MAE_M04" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="3182" y="70" /><di:waypoint x="3182" y="427" /><bpmndi:BPMNLabel><dc:Bounds x="3187" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_M05_di" bpmnElement="MAE_M05" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="3982" y="400" /><di:waypoint x="3982" y="70" /><bpmndi:BPMNLabel><dc:Bounds x="3987" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_M06_di" bpmnElement="MAE_M06" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="3482" y="70" /><di:waypoint x="3482" y="1095" /><di:waypoint x="3564" y="1095" /><bpmndi:BPMNLabel><dc:Bounds x="3487" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_M62_di" bpmnElement="MAE_M62" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="3700" y="70" /><di:waypoint x="3700" y="1465" /><bpmndi:BPMNLabel><dc:Bounds x="3705" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_M07_di" bpmnElement="MAE_M07" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="4082" y="70" /><di:waypoint x="4082" y="1095" /><di:waypoint x="4164" y="1095" /><bpmndi:BPMNLabel><dc:Bounds x="4087" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_M08_di" bpmnElement="MAE_M08" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="5262" y="1355" /><di:waypoint x="5282" y="1355" /><di:waypoint x="5282" y="70" /><bpmndi:BPMNLabel><dc:Bounds x="5287" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_M09_di" bpmnElement="MAE_M09" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="4882" y="70" /><di:waypoint x="4882" y="1310" /><di:waypoint x="4982" y="1310" /><di:waypoint x="4982" y="1337" /><bpmndi:BPMNLabel><dc:Bounds x="4887" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
@@ -2921,7 +3057,8 @@
       <bpmndi:BPMNEdge id="MAE_M34_di" bpmnElement="MAE_M34" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="20462" y="603" /><di:waypoint x="20482" y="603" /><di:waypoint x="20482" y="1600" /><bpmndi:BPMNLabel><dc:Bounds x="20487" y="1555" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_M35_di" bpmnElement="MAE_M35" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="30382" y="1050" /><di:waypoint x="30382" y="70" /><bpmndi:BPMNLabel><dc:Bounds x="30387" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_M36_di" bpmnElement="MAE_M36" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="30782" y="920" /><di:waypoint x="30782" y="70" /><bpmndi:BPMNLabel><dc:Bounds x="30787" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="MAE_M37_di" bpmnElement="MAE_M37" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="23182" y="70" /><di:waypoint x="23182" y="557" /><bpmndi:BPMNLabel><dc:Bounds x="23187" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_M37_di" bpmnElement="MAE_M37" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="23138" y="70" /><di:waypoint x="23138" y="557" /><bpmndi:BPMNLabel><dc:Bounds x="23143" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_M61_di" bpmnElement="MAE_M61" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="23300" y="380" /><di:waypoint x="23300" y="70" /><bpmndi:BPMNLabel><dc:Bounds x="23305" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_M38_di" bpmnElement="MAE_M38" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="24582" y="400" /><di:waypoint x="24582" y="70" /><bpmndi:BPMNLabel><dc:Bounds x="24587" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_M39_di" bpmnElement="MAE_M39" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="24747" y="620" /><di:waypoint x="24747" y="1600" /><bpmndi:BPMNLabel><dc:Bounds x="24647" y="1555" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="MAE_M40_di" bpmnElement="MAE_M40" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="24817" y="1600" /><di:waypoint x="24817" y="620" /><bpmndi:BPMNLabel><dc:Bounds x="24822" y="1555" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
@@ -2953,6 +3090,30 @@
       <bpmndi:BPMNEdge id="SP03_SE_SP08_Nota_A_di" bpmnElement="SP03_SE_SP08_Nota_A"><di:waypoint x="21782" y="1140" /><di:waypoint x="21712" y="1325" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP04_SE_SP08_Nota_A_di" bpmnElement="SP04_SE_SP08_Nota_A"><di:waypoint x="30182" y="1140" /><di:waypoint x="30112" y="1325" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP05_SE_SP08_Nota_A_di" bpmnElement="SP05_SE_SP08_Nota_A"><di:waypoint x="37982" y="1140" /><di:waypoint x="37912" y="1325" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="SP02_SinEfecto_di" bpmnElement="SP02_SinEfecto" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="4920" y="1050" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_GwRecibido_di" bpmnElement="SP02_GwRecibido" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="5145" y="1070" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="5198" y="1100" width="82" height="56" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_DevA_di" bpmnElement="SP02_DevA" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="5320" y="1050" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_FinDevA_di" bpmnElement="SP02_FinDevA" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="5550" y="1077" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="5513" y="1117" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_NotaDevA_di" bpmnElement="SP02_NotaDevA"><dc:Bounds x="5310" y="390" width="350" height="150" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_NotaEvT_di" bpmnElement="SP02_NotaEvT"><dc:Bounds x="2660" y="1248" width="620" height="36" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_EvT_di" bpmnElement="SP02_EvT" isExpanded="true" bioc:fill="none" color:background-color="none" bioc:stroke="#37474F" color:border-color="#37474F"><dc:Bounds x="2540" y="1070" width="760" height="220" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_EvT_Inicio_di" bpmnElement="SP02_EvT_Inicio" bioc:fill="#FFF2A8" color:background-color="#FFF2A8" bioc:stroke="#8F6C00" color:border-color="#8F6C00"><dc:Bounds x="2570" y="1162" width="36" height="36" /><bpmndi:BPMNLabel color:color="#8F6C00"><dc:Bounds x="2523" y="1202" width="130" height="66" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_EvT_Cerrar_di" bpmnElement="SP02_EvT_Cerrar" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="2660" y="1135" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_EvT_Devolver_di" bpmnElement="SP02_EvT_Devolver" bioc:fill="#D6C9F1" color:background-color="#D6C9F1" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="2880" y="1135" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP02_EvT_Fin_di" bpmnElement="SP02_EvT_Fin" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="3100" y="1162" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="3063" y="1202" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="MAE_F320_di" bpmnElement="MAE_F320"><di:waypoint x="5080" y="1095" /><di:waypoint x="5145" y="1095" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F321_di" bpmnElement="MAE_F321"><di:waypoint x="5170" y="1070" /><di:waypoint x="5170" y="575" /><di:waypoint x="5000" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="5178" y="632" width="40" height="16" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F322_di" bpmnElement="MAE_F322"><di:waypoint x="5195" y="1095" /><di:waypoint x="5320" y="1095" /><bpmndi:BPMNLabel><dc:Bounds x="5240" y="1075" width="30" height="16" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MAE_F323_di" bpmnElement="MAE_F323"><di:waypoint x="5480" y="1095" /><di:waypoint x="5550" y="1095" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_EvT_F01_di" bpmnElement="SP02_EvT_F01"><di:waypoint x="2606" y="1180" /><di:waypoint x="2660" y="1180" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_EvT_F02_di" bpmnElement="SP02_EvT_F02"><di:waypoint x="2820" y="1180" /><di:waypoint x="2880" y="1180" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP02_EvT_F03_di" bpmnElement="SP02_EvT_F03"><di:waypoint x="3040" y="1180" /><di:waypoint x="3100" y="1180" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="SP01_EvT_di" bpmnElement="SP01_EvT" isExpanded="true" bioc:fill="none" color:background-color="none" bioc:stroke="#37474F" color:border-color="#37474F"><dc:Bounds x="500" y="540" width="460" height="170" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP01_EvT_Inicio_di" bpmnElement="SP01_EvT_Inicio" bioc:fill="#FFF2A8" color:background-color="#FFF2A8" bioc:stroke="#8F6C00" color:border-color="#8F6C00"><dc:Bounds x="530" y="597" width="36" height="36" /><bpmndi:BPMNLabel color:color="#8F6C00"><dc:Bounds x="483" y="637" width="130" height="66" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP01_EvT_Cerrar_di" bpmnElement="SP01_EvT_Cerrar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="620" y="570" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP01_EvT_Fin_di" bpmnElement="SP01_EvT_Fin" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="840" y="597" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="803" y="637" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SP01_EvT_F01_di" bpmnElement="SP01_EvT_F01"><di:waypoint x="566" y="615" /><di:waypoint x="620" y="615" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP01_EvT_F02_di" bpmnElement="SP01_EvT_F02"><di:waypoint x="780" y="615" /><di:waypoint x="840" y="615" /></bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
