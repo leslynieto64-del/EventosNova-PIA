@@ -1,6 +1,7 @@
 @startuml secuencia-2-regularizacion-y-cancelacion
 ' Eventos Nova · Diagrama de secuencia 2 · Regla de excepción CU-03: saldo vencido, regularización y cancelación registrada por el Coordinador
 ' Trazabilidad: BN-005, BN-008, US-011, CA-025, CA-027; Domain Events SaldoVencidoRegularizado, PlazoRegularizacionVencido y EventoCancelado.
+' Actualizado el 29/10/2026: precondición con el pago tardío del saldo (D-2, C-06, CA-113) y rechazo de la cancelación con el evento ya iniciado (H-08).
 skinparam shadowing false
 skinparam defaultFontName Arial
 skinparam sequenceMessageAlign left
@@ -29,7 +30,7 @@ participant "Reacciones\nNotificacion" as RN
 participant "INotificador\nParticipantes" as NOT
 participant Evento as EV
 
-note over ADM, EC : Precondición: saldo del contrato original vencido y cargos moratorios comunicados\ncon una ventana de 24 horas naturales (activarProtocoloCobro()).
+note over ADM, EC : Precondición: vencimiento del saldo del contrato original registrado (registrarVencimientoSaldo())\ny cargos moratorios comunicados con una ventana de 24 horas naturales (activarProtocoloCobro()).\nD-2: un pago del saldo con fecha posterior a su límite no lo liquida; cuenta aquí si se efectuó dentro de la ventana.
 
 == Transacción 1 · Administración registra el resultado al vencer la ventana (raíz EstadoCuenta) ==
 ADM -> GC : resolverRegularizacionSaldoVencido(estadoCuentaId, revisadoEn)
@@ -79,7 +80,7 @@ note right of GC : Lectura: comprueba que Administración\nregistró el resultad
 GC -> UOW : iniciar()
 GC -> EV : cancelarPorFaltaDeRegularizacion(motivo, registradoPor, ahora, verificado)
 activate EV
-alt sin resultado No regularizado o sin motivo
+alt sin resultado No regularizado, sin motivo o el evento ya inició\nsegún su fecha y hora (H-08, BN-005)
   EV --> GC : ErrorDominio
   GC -> UOW : revertir()
   GC --> H : Resultado rechazo

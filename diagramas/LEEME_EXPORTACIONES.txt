@@ -1,0 +1,99 @@
+ESTADO DE LAS EXPORTACIONES DE DIAGRAMAS — Eventos Nova (24/10/2026, cierre de la fase 1)
+
+Las fuentes editables son los .drawio (página completa: título, leyenda y diagrama) y los .bpmn (BPMN 2.0 con DI),
+cuya geometría coincide con la del .drawio correspondiente. Todas las exportaciones de esta carpeta se regeneraron el
+24/10/2026 desde el .drawio actual y corresponden a la versión final de las fuentes.
+
+Fuente                                                   Exportaciones
+bpmn/BPMN_Eventos_Nova.drawio (.bpmn)                    BPMN_Eventos_Nova.svg, .png, .pdf y BPMN_Eventos_Nova_paginado.pdf (19 páginas A3)
+bpmn/BPMN_Eventos_Nova_SP01_Propuesta.drawio             …_SP01_Propuesta.svg, .png, .pdf
+bpmn/BPMN_Eventos_Nova_SP02_Contratacion.drawio          …_SP02_Contratacion.svg, .png, .pdf
+bpmn/BPMN_Eventos_Nova_SP03_Solicitud_de_cambio.drawio   …_SP03_Solicitud_de_cambio.svg, .png, .pdf
+bpmn/BPMN_Eventos_Nova_SP04_Servicio_adicional.drawio    …_SP04_Servicio_adicional.svg, .png, .pdf
+bpmn/BPMN_Eventos_Nova_SP05_Sustitucion_de_proveedor.drawio …_SP05_Sustitucion_de_proveedor.svg, .png, .pdf
+bpmn/BPMN_Eventos_Nova_SP06_Saldo_y_regularizacion.drawio …_SP06_Saldo_y_regularizacion.svg, .png, .pdf
+bpmn/BPMN_Eventos_Nova_SP07_Cancelacion_del_evento.drawio …_SP07_Cancelacion_del_evento.svg, .png, .pdf
+bpmn/BPMN_Eventos_Nova_SP08_Devolucion_SE-012.drawio     …_SP08_Devolucion_SE-012.svg, .png, .pdf
+dominio/mapa-dominio.drawio (páginas 01 a 05)            dominio/mapa-dominio.pdf (5 páginas)
+
+Cómo se generaron: renderizador propio de páginas draw.io ejecutado en Chromium (incluido en el entorno), con las
+fuentes Arial/Liberation Sans e Inter y medición real del texto. No es el exportador de draw.io: el aspecto puede
+diferir en detalles gráficos (símbolos de eventos, grosores) de lo que muestra draw.io, pero posiciones, textos,
+conexiones y colores salen de la fuente. Tamaños iguales a las exportaciones anteriores: SVG = tamaño de página,
+PNG a 1,5x (maestro a 1x), PDF = página a 0,75 pt/px (maestro reducido a 14 000 pt de ancho).
+
+clases/*.puml y secuencia/*.puml no cambiaron y conservan sus exportaciones. secuencia_1 documenta el prototipo
+anterior a la decisión B («importe distinto del 30 % pactado»); es documentación de implementación (ver informe).
+
+
+ACTUALIZACIÓN 28/10/2026 — dominio/mapa-dominio.pdf
+El PDF se regeneró desde dominio/mapa-dominio.drawio (modificado el 25/10/2026 19:23, etiquetas de «Importe incorrecto» de las decisiones
+E-3/E-4). El PDF anterior (24/10/2026) tenía todavía el texto «anticipo inferior al 30 %: se solicita…».
+Cómo: no se usó el renderizador propio del 24/10 (no disponible en este equipo) ni el exportador de la aplicación draw.io, sino el motor
+de dibujo oficial de draw.io (viewer-static.min.js, descargado de viewer.diagrams.net) ejecutado en Google Chrome sin interfaz; una página
+PDF por página 01 a 05 del .drawio, tamaño = página a 0,75 pt/px. La fuente `Inter` no está instalada: se sustituyó por Calibri/Arial
+(el texto es algo distinto en anchura; posiciones, conexiones y colores salen de la fuente). Comprobado: 5 páginas con los tamaños de
+página del .drawio; texto extraído (contiene la etiqueta nueva y ya no «anticipo inferior al 30 %: se solicita»); las cinco páginas se
+revisaron visualmente en capturas del mismo HTML (sin texto cortado). Las exportaciones BPMN, clases y secuencia no cambiaron.
+
+ACTUALIZACIÓN 28/10/2026 — secuencia/secuencia_1_confirmacion_contratacion
+La rama «importe distinto del 30 % pactado → Importe incorrecto» (anterior a las decisiones B y E-3/E-4) se sustituyó, en el .puml, por lo
+que hace hoy EstadoCuenta.registrar_y_verificar_pago (src/domain/estado_cuenta.py): rechazo del comprobante repetido sobre la misma
+obligación (mensaje literal del código), pago nuevo que se registra/verifica, obligación Liquidada cuando lo verificado cubre el
+anticipo (E-3), pago parcial que no es «Importe incorrecto» y deja la obligación Pendiente (E-3) y, con el anticipo ya Liquidado, pago
+menor verificado como adicional sin devolución ni aplicación al saldo (E-4). El resto de la secuencia no cambió. E-3 y E-4 son
+decisiones del equipo sin aprobación externa registrada (docs/architecture/DECISIONES_E1_E4.md).
+Exportaciones: PlantUML 1.2025.4 (plantuml.jar descargado de github.com/plantuml/plantuml en una carpeta temporal; no se instaló
+en el proyecto) con Java 26 → PNG (2270×2118) y SVG; el PDF se obtuvo imprimiendo el SVG con Google Chrome sin interfaz (una página de
+1703×1589 pt, igual criterio de tamaño que el PDF anterior, que también fue producido por Chromium). Las dimensiones difieren algo
+de las anteriores (2388×1922) por la versión de PlantUML y las fuentes. Comprobado: PNG revisado visualmente; PDF de una página con el
+texto nuevo (contiene «E-3», ya no «importe distinto del 30 %»). No se generó un SVG en el repositorio (no existía antes).
+
+(Nota: la frase del primer bloque sobre secuencia_1 y el prototipo anterior describe el estado del 24/10/2026; la actualización de arriba la reemplaza.)
+
+ACTUALIZACIÓN 28/10/2026 (tarde) — dominio/mapa-dominio.drawio y .pdf
+Dos etiquetas del mapa se ajustaron a las correcciones D-2 y D-3 (ver docs/ADR/ADR-008-llegada-de-t-y-pago-tardio-del-saldo.md):
+  * Estados de Contrato: la transición Firmado → Cerrado sin confirmar ahora dice «y contacto (CA-021) · o llega T (C-01)» (el mapa ya
+    tenía En preparación → Cerrado sin confirmar por «llega T sin firma»);
+  * Estados de ObligacionPago: Pendiente → Liquidada dice «pagos en plazo cubren el importe» (un pago del saldo posterior al límite no
+    liquida, C-06 / CA-113).
+Se regeneró mapa-dominio.pdf con el mismo procedimiento del 28/10 (draw.io viewer en Chrome, fuente Calibri en lugar de Inter): 5 páginas
+con los tamaños de la fuente; páginas 02 (Detalle A) y 04 (Detalle C) revisadas visualmente tras el cambio; coherencia con el código
+comprobada por tests/test_coherencia_diagramas.py. secuencia_1 no cambió (describe el registro y la verificación del pago).
+
+ACTUALIZACIÓN 29/10/2026 — cierre documental de D-1, D-2 y D-3 (ADR-008)
+Fuentes modificadas y exportaciones regeneradas (el resto de los diagramas no cambió):
+  * dominio/mapa-dominio.drawio (páginas 00, 02, 04 y 05): Estados de Contrato con «Desde T ya no se confirma (CA-110); cerrar el
+    Firmado al llegar T es decisión interna (ADR-008)»; En organización → En ejecución «llega T: inicio automático (CA-109)»; regla del
+    límite de EstadoCuenta sobre el pago tardío del saldo y el vencimiento de hecho (C-06, CA-113, GL-049, SE-006), con el recuadro
+    ampliado de 132 a 170 px; hecho de EventoIniciado. mapa-dominio.pdf (5 páginas, 01 a 05) regenerado con draw.io Desktop 24.7.17
+    (línea de comandos, xvfb) y la fuente Inter instalada; cada página se escaló a 0,75 pt/px, con los mismos tamaños de página que antes.
+    Todas las páginas se revisaron visualmente.
+  * clases/clases_1_dominio, clases_2_aplicacion y clases_3_cqrs_infraestructura (.puml): métodos existentes que faltaban
+    (Contrato.cerrarPorInicio, Evento.iniciadoEn, EstadoCuenta.saldoVencidoEn y aplicarCierreContratacion, Devolucion.pagoId/tipo,
+    GestionPagosService.aplicarCierreContratacion, GestionCierreEventoService.procesarEventosVencidos,
+    ReaccionesPagos.alCerrarseProcesoContratacion, IEventoRepository.listarTodos/listarConFechaVencida) y una nota sobre reloj_negocio.
+  * secuencia/secuencia_1 (.puml): bloque D-3b (no se confirma en T ni después; confirmación idempotente). secuencia/secuencia_2: la
+    precondición distingue el registro del vencimiento y el pago tardío (D-2) y el rechazo con el evento ya iniciado (H-08).
+    PNG con PlantUML 1.2025.4 (plantuml.jar descargado de GitHub a una carpeta temporal) y PDF imprimiendo el SVG con Chromium
+    (Playwright), una página de tamaño SVG × 0,75 pt/px. No se añadieron SVG de UML al repositorio. Las cinco PNG se revisaron visualmente.
+  * bpmn/BPMN_Eventos_Nova_SP02_Contratacion (.drawio y .bpmn) y bpmn/BPMN_Eventos_Nova (.drawio y .bpmn): anotación SP02_NotaEvT en el
+    subproceso «Llegada de T» (el contrato Firmado también se cierra y se avisa a las partes: decisiones internas; desde T no se confirma)
+    y documentación de SP02_EvT_Cerrar; en el maestro, la tarea MAE_RegInicio pasa a «Inicio automático del evento al llegar T (En
+    ejecución)». Exportaciones con draw.io Desktop 24.7.17: SVG de tamaño de página (texto como HTML de draw.io), PNG a 1,5x (SP-02) y
+    1x (maestro), PDF a 0,75 pt/px (SP-02) y reducido a 14 000 pt de ancho (maestro). BPMN_Eventos_Nova_paginado.pdf (19 páginas A3) se
+    reconstruyó desde el SVG nuevo del maestro con los mismos tramos, escala (59 %), índice y vista general que la versión anterior; su
+    maquetación la hizo un script propio en Chromium, no el renderizador del 24/10, por lo que el aspecto difiere en detalles (nombres de
+    carril tomados de la franja izquierda del maestro). Revisadas visualmente: SP-02 completa, las dos zonas modificadas del maestro y
+    las páginas 1, 3, 6 y 19 del paginado.
+  * Diferencia de aspecto: SP-02, el maestro y su versión paginada ahora salen del exportador oficial de draw.io; SP-01 y SP-03 a SP-08
+    conservan las exportaciones del 24/10 (renderizador propio). Contenido y fuente coinciden en todos.
+  * El informe de arquitectura (docs/informe) incorpora las figuras nuevas 3.2, 3.4, 3.5 y 11.1 a 11.5 (la 11.4 tenía todavía la
+    secuencia anterior a E-3/E-4).
+
+
+ACTUALIZACIÓN 29/10/2026 — terminología de D-3, E-3 y «Cerrada por inicio del evento»
+Se editaron los textos en .drawio, .bpmn y .svg de SP-02 («anticipo acumulado … para que lo complete (E-3)»; «contrato En preparación o Firmado, Cerrado sin confirmar (D-3)»), SP-03, SP-04 y SP-05 («Cerrada por inicio del evento» en lugar de «no procedente por inicio») y del maestro (mismas etiquetas). Los .svg de SP-03 a SP-05 se editaron línea a línea (mismas posiciones); no se rediseñó nada.
+Regenerados desde el .svg editado con Google Chrome sin interfaz (PNG a 1,5x, PDF a 0,75 pt/px): SP-02, SP-03, SP-04 y SP-05. Se compararon las dimensiones con las anteriores y se revisaron visualmente los textos modificados de SP-02 y SP-04.
+MAESTRO (continuación 29/10/2026): BPMN_Eventos_Nova.png (39 174 x 2 115 px, a 1x) y BPMN_Eventos_Nova.pdf (1 página, 14 000,88 x 756 pt) se regeneraron desde BPMN_Eventos_Nova.svg con Google Chrome sin interfaz. El PNG se revisó visualmente en tres zonas (SP-02 con las etiquetas D-3, SP-03 y el extremo derecho); el PDF no pudo abrirse visualmente (no hay lector de PDF en este equipo) y solo se comprobó su tamaño de página.
+PENDIENTE: BPMN_Eventos_Nova_paginado.pdf (19 páginas A3) conserva el texto anterior en las etiquetas modificadas (SP-02, SP-03, SP-04 y SP-05 dentro del maestro). Su composición por páginas no se pudo reproducir sin el generador original ni un visor de PDF; regenerarlo con el exportador de draw.io.

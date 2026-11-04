@@ -1,0 +1,77 @@
+Name                                                         Stmts   Miss Branch BrPart  Cover   Missing
+--------------------------------------------------------------------------------------------------------
+src\__init__.py                                                  0      0      0      0 100.0%
+src\api\__init__.py                                              0      0      0      0 100.0%
+src\api\dependencias.py                                         11      0      0      0 100.0%
+src\api\errores.py                                              52      0      4      0 100.0%
+src\api\esquemas.py                                             42      0      2      0 100.0%
+src\api\esquemas_operaciones.py                                 99      0      0      0 100.0%
+src\api\main.py                                                 59      0     10      1  98.6%   55->exit
+src\api\rutas_comunes.py                                        24      0      4      0 100.0%
+src\api\rutas_consultas.py                                      42      0      0      0 100.0%
+src\api\rutas_contratacion.py                                   34      0      0      0 100.0%
+src\api\rutas_eventos.py                                        36      0      0      0 100.0%
+src\api\rutas_pagos.py                                          40      0      0      0 100.0%
+src\api\rutas_propuestas.py                                     18      0      0      0 100.0%
+src\api\rutas_solicitudes.py                                    77      0      0      0 100.0%
+src\application\__init__.py                                      0      0      0      0 100.0%
+src\application\cqrs.py                                        343      0     48      0 100.0%
+src\application\puertos.py                                      29      0      0      0 100.0%
+src\application\reacciones.py                                  114      2     38      4  94.7%   78->75, 83->82, 86-87, 112->exit
+src\application\resultados.py                                   15      0      0      0 100.0%
+src\application\servicios.py                                   661     25    106      6  96.0%   106-107, 145-146, 162, 183-184, 205, 254-255, 333-334, 366-367, 376, 547-548, 556-557, 565-566, 575, 580-581, 821
+src\domain\__init__.py                                           0      0      0      0 100.0%
+src\domain\base.py                                              13      0      0      0 100.0%
+src\domain\contrato.py                                          85      1     22      1  98.1%   71
+src\domain\especificacion.py                                    92      0     10      0 100.0%
+src\domain\especificaciones.py                                  88      0      0      0 100.0%
+src\domain\estado_cuenta.py                                    322      2     90      3  98.8%   267, 286, 293->290
+src\domain\evento.py                                           179      4     58      4  96.6%   163, 171, 260, 262
+src\domain\eventos_dominio.py                                   80      0     58      0 100.0%
+src\domain\maquina_estados.py                                   59      0     16      0 100.0%
+src\domain\propuesta.py                                         46      0      6      0 100.0%
+src\domain\servicios_dominio.py                                 50      0      8      1  98.3%   89->91
+src\domain\solicitudes.py                                      386      0     86      0 100.0%
+src\domain\valores.py                                          253      0     26      0 100.0%
+src\ejecucion_paquete\__init__.py                                5      0      0      0 100.0%
+src\ejecucion_paquete\__main__.py                               19      1      8      1  92.6%   26
+src\ejecucion_paquete\casos.py                                  81      1     14      1  97.9%   61
+src\ejecucion_paquete\evidencias.py                            108      2     28      2  97.1%   41, 45
+src\ejecucion_paquete\mapeo.py                                  36      0      0      0 100.0%
+src\ejecucion_paquete\oraculo.py                                30      1      6      1  94.4%   50
+src\ejecucion_paquete\reglas_paquete.py                         43      0      0      0 100.0%
+src\ejecucion_paquete\totales.py                                30      0     16      0 100.0%
+src\ejecucion_paquete\transiciones.py                          247      0     76      0 100.0%
+src\infrastructure\__init__.py                                   0      0      0      0 100.0%
+src\infrastructure\adaptadores.py                               39      0      4      0 100.0%
+src\infrastructure\composicion.py                               19      0      0      0 100.0%
+src\infrastructure\esquema_postgresql.py                        85      0      2      0 100.0%
+src\infrastructure\persistencia\__init__.py                      0      0      0      0 100.0%
+src\infrastructure\persistencia\codec_eventos.py                81      0     42      1  99.2%   82->85
+src\infrastructure\persistencia\composicion_persistente.py      51      3     12      3  90.5%   41->43, 44->51, 49, 75-76
+src\infrastructure\persistencia\conexion.py                     92      2     16      0  98.1%   73-74
+src\infrastructure\persistencia\configuracion.py                43      0     12      0 100.0%
+src\infrastructure\persistencia\errores.py                      18      0      0      0 100.0%
+src\infrastructure\persistencia\mapeadores.py                  174      0     26      0 100.0%
+src\infrastructure\persistencia\outbox_sql.py                  127      3     24      1  97.4%   57, 146, 148
+src\infrastructure\persistencia\preparacion.py                  63      3     10      3  91.8%   42, 67, 75
+src\infrastructure\persistencia\repositorios_sql.py            107      0     20      0 100.0%
+src\infrastructure\persistencia\trabajador_outbox.py            45      1     12      1  96.5%   63
+src\infrastructure\persistencia\unidad_trabajo_sql.py           48      1     12      0  98.3%   40
+src\infrastructure\repositorios_memoria.py                      50      0      6      0 100.0%
+src\infrastructure\unidad_trabajo.py                            71      2     20      0  95.6%   65-66
+src\paquete_pia\__init__.py                                      6      0      0      0 100.0%
+src\paquete_pia\__main__.py                                     28      1      6      1  94.1%   42
+src\paquete_pia\dto.py                                          59      0      0      0 100.0%
+src\paquete_pia\errores.py                                      25      1      6      1  93.5%   34
+src\paquete_pia\esquema.py                                      37      0      0      0 100.0%
+src\paquete_pia\formatos.py                                     56      2     18      0  97.3%   51-52
+src\paquete_pia\lector.py                                       99      5     50      2  95.3%   74-76, 79-80, 143->exit
+src\paquete_pia\manifiesto.py                                   58      3     24      2  93.9%   40, 73-74
+--------------------------------------------------------------------------------------------------------
+TOTAL                                                         5429     66   1062     40  98.3%
+
+--- Resumen (scripts/verificar_cobertura.py sobre coverage json, misma ejecucion) ---
+Cobertura de sentencias: 98.78 % (5363 de 5429; sin cubrir 66)
+Cobertura de ramas:      95.86 % (1018 de 1062)
+OK: cumple el minimo de 80 %.

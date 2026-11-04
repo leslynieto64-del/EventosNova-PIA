@@ -1,0 +1,23 @@
+# Outbox en la base temporal eventosnova_humo_test tras los flujos de humo (E-1…E-4), 2026-10-25
+         tipo_evento         |  estado   | count 
+-----------------------------+-----------+-------
+ AnexoContratoRegistrado     | PROCESADO |     3
+ CambioSolicitado            | PROCESADO |     1
+ ContratacionConfirmada      | PROCESADO |     8
+ ContratoFirmado             | PROCESADO |    10
+ PagoVerificado              | PROCESADO |    10
+ PropuestaAceptada           | PROCESADO |    10
+ ProveedorNoDisponible       | PROCESADO |     7
+ ServicioAdicionalSolicitado | PROCESADO |     1
+(8 rows)
+
+-[ RECORD 1 ]-----------------------+---
+pagos_verificados                   | 10
+ev_pago_verificado                  | 10
+confirmaciones_duplicadas           | 0
+firmas_duplicadas                   | 0
+no_procesados                       | 0
+max_intentos                        | 0
+confirmaciones_sin_sus_2_reacciones | 0
+devoluciones                        | 0
+

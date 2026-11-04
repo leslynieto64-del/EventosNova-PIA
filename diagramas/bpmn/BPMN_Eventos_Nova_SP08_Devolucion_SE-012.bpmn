@@ -60,7 +60,7 @@
       <bpmn:incoming>SP08_F07</bpmn:incoming>
       <bpmn:outgoing>SP08_F08</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:task id="SP08_Devolver" name="Efectuar la devolución dentro de los 5 días hábiles siguientes al cierre">
+    <bpmn:task id="SP08_Devolver" name="Efectuar la devolución en 5 días hábiles desde el cierre (o desde el registro del pago, si es posterior)">
       <bpmn:documentation>SE-012, CA-097, CA-098</bpmn:documentation>
       <bpmn:incoming>SP08_F08</bpmn:incoming>
       <bpmn:outgoing>SP08_F09</bpmn:outgoing>

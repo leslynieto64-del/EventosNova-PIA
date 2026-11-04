@@ -73,6 +73,8 @@ package "Aplicación · interfaces (puertos)" <<Rectangle>> #F0FDF4 {
   }
   interface IEventoRepository {
     +obtenerPorId()
+    +listarTodos()
+    +listarConFechaVencida()
     +guardar()
   }
   interface ISolicitudCambioRepository {

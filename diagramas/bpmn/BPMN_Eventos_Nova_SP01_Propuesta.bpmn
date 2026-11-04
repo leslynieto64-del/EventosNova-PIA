@@ -22,6 +22,7 @@
         <bpmn:flowNodeRef>SP01_Aceptar</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP01_FinAceptada</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP01_NuevaVersion</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP01_EvT</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="SP01_Inicio" name="Información del evento registrada">
@@ -94,12 +95,31 @@
     <bpmn:sequenceFlow id="SP01_F10" sourceRef="SP01_NuevaVersion" targetRef="SP01_Union" />
     <bpmn:sequenceFlow id="SP01_F11" sourceRef="SP01_Cerrar" targetRef="SP01_FinCerrada" />
     <bpmn:sequenceFlow id="SP01_F12" sourceRef="SP01_Aceptar" targetRef="SP01_FinAceptada" />
+    <bpmn:subProcess id="SP01_EvT" name="Llegada de T con el Evento En gestión (inicio automático)" triggeredByEvent="true">
+      <bpmn:documentation>C-01 y C-02: al llegar T con el Evento En gestión durante la etapa de propuesta (CA-110; BN-010).</bpmn:documentation>
+      <bpmn:startEvent id="SP01_EvT_Inicio" name="Llega la fecha y hora de inicio del Evento (T) sin contratación confirmada" isInterrupting="true">
+        <bpmn:documentation>BN-010.</bpmn:documentation>
+        <bpmn:outgoing>SP01_EvT_F01</bpmn:outgoing>
+        <bpmn:timerEventDefinition id="SP01_EvT_Inicio_def"></bpmn:timerEventDefinition>
+      </bpmn:startEvent>
+      <bpmn:task id="SP01_EvT_Cerrar" name="Cerrar el proceso de contratación sin confirmar: el Evento En gestión pasa a Cerrado sin contratación (no Cancelado)">
+        <bpmn:documentation>C-01, CA-110: todavía no existe contrato firmado ni anticipo.</bpmn:documentation>
+        <bpmn:incoming>SP01_EvT_F01</bpmn:incoming>
+        <bpmn:outgoing>SP01_EvT_F02</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:endEvent id="SP01_EvT_Fin" name="Cerrado sin contratación (no Cancelado)">
+        <bpmn:documentation>CA-110.</bpmn:documentation>
+        <bpmn:incoming>SP01_EvT_F02</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SP01_EvT_F01" sourceRef="SP01_EvT_Inicio" targetRef="SP01_EvT_Cerrar" />
+      <bpmn:sequenceFlow id="SP01_EvT_F02" sourceRef="SP01_EvT_Cerrar" targetRef="SP01_EvT_Fin" />
+    </bpmn:subProcess>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram_SP01" name="Gestión de la propuesta">
     <bpmndi:BPMNPlane id="Plane_SP01" bpmnElement="Collab_SP01">
       <bpmndi:BPMNShape id="Part_SP01_Cliente_di" bpmnElement="Part_SP01_Cliente" isHorizontal="true" bioc:fill="#D4E7FA" color:background-color="#D4E7FA" bioc:stroke="#1E5A9C" color:border-color="#1E5A9C"><dc:Bounds x="0" y="0" width="2092" height="70" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Part_SP01_EN_di" bpmnElement="Part_SP01_EN" isHorizontal="true" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="0" y="120" width="2092" height="390" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Lane_SP01_Coord_di" bpmnElement="Lane_SP01_Coord" isHorizontal="true" bioc:fill="#A9E0D8" color:background-color="#A9E0D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="36" y="120" width="2056" height="390" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Part_SP01_EN_di" bpmnElement="Part_SP01_EN" isHorizontal="true" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="0" y="120" width="2092" height="500" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_SP01_Coord_di" bpmnElement="Lane_SP01_Coord" isHorizontal="true" bioc:fill="#A9E0D8" color:background-color="#A9E0D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="36" y="120" width="2056" height="500" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP01_Inicio_di" bpmnElement="SP01_Inicio" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="164" y="297" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="127" y="337" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP01_Elaborar_di" bpmnElement="SP01_Elaborar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="302" y="270" width="160" height="90" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP01_Union_di" bpmnElement="SP01_Union" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="557" y="290" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="487" y="272" width="90" height="15" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
@@ -126,6 +146,12 @@
       <bpmndi:BPMNEdge id="SP01_F12_di" bpmnElement="SP01_F12"><di:waypoint x="1662" y="315" /><di:waypoint x="1764" y="315" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP01_M01_di" bpmnElement="SP01_M01" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="982" y="270" /><di:waypoint x="982" y="70" /><bpmndi:BPMNLabel><dc:Bounds x="987" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP01_M02_di" bpmnElement="SP01_M02" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="1182" y="70" /><di:waypoint x="1182" y="297" /><bpmndi:BPMNLabel><dc:Bounds x="1187" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="SP01_EvT_di" bpmnElement="SP01_EvT" isExpanded="true" bioc:fill="none" color:background-color="none" bioc:stroke="#37474F" color:border-color="#37474F"><dc:Bounds x="100" y="410" width="460" height="170" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP01_EvT_Inicio_di" bpmnElement="SP01_EvT_Inicio" bioc:fill="#FFF2A8" color:background-color="#FFF2A8" bioc:stroke="#8F6C00" color:border-color="#8F6C00"><dc:Bounds x="130" y="467" width="36" height="36" /><bpmndi:BPMNLabel color:color="#8F6C00"><dc:Bounds x="83" y="507" width="130" height="66" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP01_EvT_Cerrar_di" bpmnElement="SP01_EvT_Cerrar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="220" y="440" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP01_EvT_Fin_di" bpmnElement="SP01_EvT_Fin" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="440" y="467" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="403" y="507" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SP01_EvT_F01_di" bpmnElement="SP01_EvT_F01"><di:waypoint x="166" y="485" /><di:waypoint x="220" y="485" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP01_EvT_F02_di" bpmnElement="SP01_EvT_F02"><di:waypoint x="380" y="485" /><di:waypoint x="440" y="485" /></bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

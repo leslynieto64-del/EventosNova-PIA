@@ -1,0 +1,58 @@
+# Publicación de la imagen de la aplicación (PIA: despliegue básico en una plataforma compatible con Docker).
+#
+# Este flujo SOLO se ejecuta al crear una etiqueta `v*` o manualmente; NO se ejecuta en cada commit y no despliega nada por sí mismo.
+# 1) Construye la imagen (target `app`: sin pruebas ni documentos) y la publica en GitHub Container Registry con el GITHUB_TOKEN.
+# 2) Opcionalmente, avisa a la plataforma de despliegue (Render, Railway, Fly.io...) mediante un «deploy hook» guardado en el
+#    secreto DEPLOY_HOOK_URL. Si el secreto no existe, ese paso se omite.
+# Acciones manuales del equipo (ver README, «Despliegue»): crear la etiqueta, definir DATABASE_URL y EVENTOSNOVA_PERSISTENCIA=postgresql
+# en la plataforma, ejecutar `python -m alembic upgrade head` como paso previo y el trabajador del Outbox como proceso aparte.
+name: Publicar imagen
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  imagen:
+    name: Construir y publicar la imagen
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      REGISTRO: ghcr.io
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Nombre de la imagen en minúsculas
+        run: echo "IMAGEN=${REGISTRO}/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: app
+          push: true
+          tags: |
+            ${{ env.IMAGEN }}:${{ github.ref_name }}
+            ${{ env.IMAGEN }}:latest
+
+      - name: Avisar a la plataforma de despliegue (opcional)
+        env:
+          DEPLOY_HOOK_URL: ${{ secrets.DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$DEPLOY_HOOK_URL" ]; then
+            curl -fsS -X POST "$DEPLOY_HOOK_URL"
+          else
+            echo "DEPLOY_HOOK_URL no está definido: se omite el aviso de despliegue."
+          fi

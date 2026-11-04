@@ -278,7 +278,7 @@
       <bpmn:outgoing>SP05_F39</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SP05_BIniciado_def" signalRef="Signal_EventoIniciado" />
     </bpmn:boundaryEvent>
-    <bpmn:task id="SP05_CerrarIni" name="Cerrar la sustitución como no procedente por inicio del evento">
+    <bpmn:task id="SP05_CerrarIni" name="Cerrar la sustitución como «Cerrada por inicio del evento»">
       <bpmn:documentation>CA-096: se registra que el reemplazo no se concretó</bpmn:documentation>
       <bpmn:incoming>SP05_F39</bpmn:incoming>
       <bpmn:outgoing>SP05_F48</bpmn:outgoing>
@@ -346,7 +346,7 @@
     <bpmn:sequenceFlow id="SP05_F48" sourceRef="SP05_CerrarIni" targetRef="SP05_UCierre" />
     <bpmn:sequenceFlow id="SP05_F49" sourceRef="SP05_UCierre" targetRef="SP05_DevImp" />
     <bpmn:sequenceFlow id="SP05_F50" sourceRef="SP05_DevImp" targetRef="SP05_FinImportes" />
-    <bpmn:textAnnotation id="SP05_NotaEstado"><bpmn:text>El aviso del proveedor recibido después del inicio del evento está fuera del alcance del sistema (decisión del equipo). Dentro del alcance: una sustitución que sigue pendiente al iniciar el evento no se confirma y se cierra como no procedente por inicio (borde «Evento iniciado»).</bpmn:text></bpmn:textAnnotation>
+    <bpmn:textAnnotation id="SP05_NotaEstado"><bpmn:text>El aviso del proveedor recibido después del inicio del evento está fuera del alcance del sistema (decisión del equipo). Dentro del alcance: una sustitución que sigue pendiente al iniciar el evento no se confirma y se cierra como «Cerrada por inicio del evento» (borde «Evento iniciado»).</bpmn:text></bpmn:textAnnotation>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="Diagram_SP05" name="Sustitución de proveedor">
     <bpmndi:BPMNPlane id="Plane_SP05" bpmnElement="Collab_SP05">
@@ -407,7 +407,7 @@
       <bpmndi:BPMNEdge id="SP05_F02_di" bpmnElement="SP05_F02"><di:waypoint x="382" y="550" /><di:waypoint x="382" y="490" /><bpmndi:BPMNLabel><dc:Bounds x="390" y="501" width="82" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP05_F03_di" bpmnElement="SP05_F03"><di:waypoint x="382" y="400" /><di:waypoint x="382" y="333" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP05_F04_di" bpmnElement="SP05_F04"><di:waypoint x="382" y="600" /><di:waypoint x="382" y="687" /><bpmndi:BPMNLabel><dc:Bounds x="390" y="605" width="82" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SP05_F05_di" bpmnElement="SP05_F05"><di:waypoint x="407" y="575" /><di:waypoint x="490" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="406" y="581" width="76" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP05_F05_di" bpmnElement="SP05_F05"><di:waypoint x="407" y="575" /><di:waypoint x="490" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="414" y="581" width="76" height="30" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP05_F06_di" bpmnElement="SP05_F06"><di:waypoint x="600" y="575" /><di:waypoint x="702" y="575" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP05_F07_di" bpmnElement="SP05_F07"><di:waypoint x="862" y="575" /><di:waypoint x="957" y="575" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP05_F08_di" bpmnElement="SP05_F08"><di:waypoint x="1007" y="575" /><di:waypoint x="1102" y="575" /></bpmndi:BPMNEdge>

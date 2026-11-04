@@ -4,11 +4,12 @@
   <bpmn:signal id="Signal_EventoCancelado" name="Evento cancelado" />
   <bpmn:signal id="Signal_SaldoRegularizado" name="Saldo vencido regularizado" />
   <bpmn:collaboration id="Collab_SP04">
-    <bpmn:documentation>Servicio adicional con al menos 5 días naturales: orden de verificación (evento, plazo y saldo vencido), disponibilidad y costo del proveedor sin cargo de Eventos Nova, búsqueda con espera del Cliente, aprobación del Cliente, autorización obligatoria de Administración, anexo, 24 horas naturales para que el Cliente pague y cierre «No autorizada» (BN-004, BN-006, BN-008, SE-004, SE-006, SE-012; US-012 a US-016, US-022, US-025; CA-071 a CA-083).</bpmn:documentation>
+    <bpmn:documentation>Servicio adicional: solo con la contratación confirmada (C-14, CA-101), la solicitud se registra y se verifica en orden (Evento no cancelado ni iniciado, al menos 5 días naturales y saldo vencido; solo el primer motivo, O-01), disponibilidad y costo del proveedor sin cargo de Eventos Nova, búsqueda con espera del Cliente, aprobación del Cliente, autorización obligatoria de Administración, anexo, 24 horas naturales para que el Cliente pague y cierre «No autorizada» (BN-004, BN-006, BN-008, SE-004, SE-006, SE-012; US-012 a US-016, US-022, US-025; CA-071 a CA-083, CA-099 a CA-101).</bpmn:documentation>
     <bpmn:participant id="Part_SP04_Cliente" name="Cliente" />
     <bpmn:participant id="Part_SP04_Proveedor" name="Proveedor" />
     <bpmn:participant id="Part_SP04_EN" name="Eventos Nova" processRef="Proc_SP04_ServicioAdicional" />
     <bpmn:messageFlow id="SP04_M01" name="Solicitud de servicio adicional" sourceRef="Part_SP04_Cliente" targetRef="SP04_Inicio" />
+    <bpmn:messageFlow id="SP04_M14" name="Aviso: servicio adicional no registrado" sourceRef="SP04_NoRegistrar" targetRef="Part_SP04_Cliente" />
     <bpmn:messageFlow id="SP04_M02" name="Aviso de saldo vencido" sourceRef="SP04_Detener" targetRef="Part_SP04_Cliente" />
     <bpmn:messageFlow id="SP04_M03" name="Consulta de disponibilidad" sourceRef="SP04_Actuales" targetRef="Part_SP04_Proveedor" />
     <bpmn:messageFlow id="SP04_M04" name="Disponibilidad, costo y condiciones" sourceRef="Part_SP04_Proveedor" targetRef="SP04_Actuales" />
@@ -26,6 +27,7 @@
     <bpmn:laneSet id="LaneSet_SP04">
       <bpmn:lane id="Lane_SP04_Coord" name="Coordinador">
         <bpmn:flowNodeRef>SP04_Inicio</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>SP04_GwContr</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP04_GwEvento</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP04_NoProcEv</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP04_FinNoProcEv</bpmn:flowNodeRef>
@@ -81,6 +83,8 @@
         <bpmn:flowNodeRef>SP04_UCierre</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP04_DevImp</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>SP04_FinImportes</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP04_NoRegistrar</bpmn:flowNodeRef>
+      <bpmn:flowNodeRef>SP04_FinNoRegistrada</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_SP04_Admin" name="Administración">
         <bpmn:flowNodeRef>SP04_Autorizar</bpmn:flowNodeRef>
@@ -96,20 +100,39 @@
       <bpmn:outgoing>SP04_F01</bpmn:outgoing>
       <bpmn:messageEventDefinition id="SP04_Inicio_def" />
     </bpmn:startEvent>
-    <bpmn:exclusiveGateway id="SP04_GwEvento" name="¿El Evento está cancelado o ya inició?">
-      <bpmn:documentation>SE-004: primero se verifica el Evento.</bpmn:documentation>
+    <bpmn:exclusiveGateway id="SP04_GwContr" name="¿La contratación está confirmada?">
+      <bpmn:documentation>C-14, GL-015, BN-004, SE-004, CA-101: un servicio adicional solo puede registrarse con la contratación confirmada. Con el Evento En gestión o Cerrado sin contratación no se registra la solicitud ni se evalúan el estado del Evento, el plazo mínimo o el saldo vencido. Un Evento Cancelado o En ejecución tuvo la contratación confirmada: la solicitud se registra y se resuelve en la compuerta siguiente (CA-099, CA-100).</bpmn:documentation>
       <bpmn:incoming>SP04_F01</bpmn:incoming>
+      <bpmn:outgoing>SP04_F67</bpmn:outgoing>
+      <bpmn:outgoing>SP04_F68</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="SP04_NoRegistrar" name="No registrar la solicitud e informar al Cliente que un servicio adicional solo puede registrarse con la contratación confirmada">
+      <bpmn:documentation>CA-101: el Coordinador no registra la solicitud e informa al Cliente; no se evalúan el plazo mínimo ni el saldo vencido.</bpmn:documentation>
+      <bpmn:incoming>SP04_F68</bpmn:incoming>
+      <bpmn:outgoing>SP04_F69</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="SP04_FinNoRegistrada" name="Solicitud no registrada (contratación no confirmada)">
+      <bpmn:incoming>SP04_F69</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="SP04_GwEvento" name="¿El Evento está cancelado o ya inició?">
+      <bpmn:documentation>SE-004, O-01: después de registrar la solicitud, primero se verifica el Evento; si está cancelado o ya inició, la solicitud queda No procedente y se registra solo este motivo (CA-099, CA-100).</bpmn:documentation>
+      <bpmn:incoming>SP04_F06</bpmn:incoming>
       <bpmn:outgoing>SP04_F02</bpmn:outgoing>
       <bpmn:outgoing>SP04_F04</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:task id="SP04_NoProcEv" name="Informar al Cliente que la solicitud no procede">
-      <bpmn:documentation>SE-004, SE-006</bpmn:documentation>
+    <bpmn:task id="SP04_NoProcEv" name="Registrar la solicitud como no procedente (Evento cancelado o iniciado) e informar al Cliente">
+      <bpmn:documentation>SE-004, O-01, CA-099, CA-100: primer motivo, Evento cancelado o Evento iniciado; el Coordinador informa al Cliente.</bpmn:documentation>
       <bpmn:incoming>SP04_F02</bpmn:incoming>
       <bpmn:outgoing>SP04_F03</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:endEvent id="SP04_FinNoProcEv" name="No procede">
+    <bpmn:endEvent id="SP04_FinNoProcEv" name="No procedente">
       <bpmn:incoming>SP04_F03</bpmn:incoming>
     </bpmn:endEvent>
+    <bpmn:task id="SP04_Registrar" name="Registrar la solicitud de servicio adicional con su fecha">
+      <bpmn:documentation>BN-004, SE-004, O-01 (US-025): con la contratación confirmada (C-14, CA-101), la solicitud se registra antes de verificar el Evento, el plazo y el saldo.</bpmn:documentation>
+      <bpmn:incoming>SP04_F67</bpmn:incoming>
+      <bpmn:outgoing>SP04_F06</bpmn:outgoing>
+    </bpmn:task>
     <bpmn:subProcess id="SP04_Tramitar" name="Tramitar la solicitud de servicio adicional (solicitud en trámite)">
       <bpmn:documentation>Mientras la solicitud está en trámite, las señales «Evento iniciado» y «Evento cancelado» la cierran.</bpmn:documentation>
       <bpmn:incoming>SP04_F04</bpmn:incoming>
@@ -117,24 +140,19 @@
       <bpmn:startEvent id="SP04_IniSub" name="Solicitud admitida">
         <bpmn:outgoing>SP04_F05</bpmn:outgoing>
       </bpmn:startEvent>
-      <bpmn:task id="SP04_Registrar" name="Registrar la solicitud de servicio adicional con su fecha">
-        <bpmn:documentation>BN-004 (US-025)</bpmn:documentation>
-        <bpmn:incoming>SP04_F05</bpmn:incoming>
-        <bpmn:outgoing>SP04_F06</bpmn:outgoing>
-      </bpmn:task>
       <bpmn:exclusiveGateway id="SP04_URet">
-        <bpmn:incoming>SP04_F06</bpmn:incoming>
+        <bpmn:incoming>SP04_F05</bpmn:incoming>
         <bpmn:incoming>SP04_F13</bpmn:incoming>
         <bpmn:outgoing>SP04_F07</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:exclusiveGateway id="SP04_Gw5" name="¿Faltan al menos 5 días naturales para el evento?">
-        <bpmn:documentation>BN-004, SE-004: el plazo se verifica antes que el saldo; se registra solo el primer motivo.</bpmn:documentation>
+        <bpmn:documentation>BN-004, SE-004, O-01: el plazo se verifica después del Evento y antes que el saldo; se registra solo el primer motivo.</bpmn:documentation>
         <bpmn:incoming>SP04_F07</bpmn:incoming>
         <bpmn:outgoing>SP04_F08</bpmn:outgoing>
         <bpmn:outgoing>SP04_F10</bpmn:outgoing>
       </bpmn:exclusiveGateway>
-      <bpmn:task id="SP04_NoProc5" name="Registrar la solicitud como no procedente e informar al Cliente">
-        <bpmn:documentation>CA-083</bpmn:documentation>
+      <bpmn:task id="SP04_NoProc5" name="Registrar la solicitud como no procedente (menos de 5 días naturales) e informar al Cliente">
+        <bpmn:documentation>CA-083, SE-004, O-01: primer motivo, menos de 5 días naturales; el Coordinador informa al Cliente.</bpmn:documentation>
         <bpmn:incoming>SP04_F08</bpmn:incoming>
         <bpmn:outgoing>SP04_F09</bpmn:outgoing>
       </bpmn:task>
@@ -318,8 +336,7 @@
       <bpmn:endEvent id="SP04_FinConfirmada" name="Servicio adicional confirmado">
         <bpmn:incoming>SP04_F50</bpmn:incoming>
       </bpmn:endEvent>
-      <bpmn:sequenceFlow id="SP04_F05" sourceRef="SP04_IniSub" targetRef="SP04_Registrar" />
-      <bpmn:sequenceFlow id="SP04_F06" sourceRef="SP04_Registrar" targetRef="SP04_URet" />
+      <bpmn:sequenceFlow id="SP04_F05" sourceRef="SP04_IniSub" targetRef="SP04_URet" />
       <bpmn:sequenceFlow id="SP04_F07" sourceRef="SP04_URet" targetRef="SP04_Gw5" />
       <bpmn:sequenceFlow id="SP04_F08" name="No" sourceRef="SP04_Gw5" targetRef="SP04_NoProc5" />
       <bpmn:sequenceFlow id="SP04_F09" sourceRef="SP04_NoProc5" targetRef="SP04_FinNoProc5" />
@@ -380,7 +397,7 @@
       <bpmn:outgoing>SP04_F52</bpmn:outgoing>
       <bpmn:signalEventDefinition id="SP04_BIniciado_def" signalRef="Signal_EventoIniciado" />
     </bpmn:boundaryEvent>
-    <bpmn:task id="SP04_CerrarIni" name="Cerrar la solicitud como no procedente por inicio del evento">
+    <bpmn:task id="SP04_CerrarIni" name="Cerrar la solicitud como «Cerrada por inicio del evento»">
       <bpmn:documentation>CA-071, CA-080</bpmn:documentation>
       <bpmn:incoming>SP04_F52</bpmn:incoming>
       <bpmn:outgoing>SP04_F63</bpmn:outgoing>
@@ -441,7 +458,11 @@
     <bpmn:endEvent id="SP04_FinImportes" name="Solicitud cerrada sin realizarse: importes resueltos">
       <bpmn:incoming>SP04_F66</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="SP04_F01" sourceRef="SP04_Inicio" targetRef="SP04_GwEvento" />
+    <bpmn:sequenceFlow id="SP04_F01" sourceRef="SP04_Inicio" targetRef="SP04_GwContr" />
+    <bpmn:sequenceFlow id="SP04_F67" name="Sí" sourceRef="SP04_GwContr" targetRef="SP04_Registrar" />
+    <bpmn:sequenceFlow id="SP04_F68" name="No" sourceRef="SP04_GwContr" targetRef="SP04_NoRegistrar" />
+    <bpmn:sequenceFlow id="SP04_F69" sourceRef="SP04_NoRegistrar" targetRef="SP04_FinNoRegistrada" />
+    <bpmn:sequenceFlow id="SP04_F06" sourceRef="SP04_Registrar" targetRef="SP04_GwEvento" />
     <bpmn:sequenceFlow id="SP04_F02" name="Sí" sourceRef="SP04_GwEvento" targetRef="SP04_NoProcEv" />
     <bpmn:sequenceFlow id="SP04_F03" sourceRef="SP04_NoProcEv" targetRef="SP04_FinNoProcEv" />
     <bpmn:sequenceFlow id="SP04_F04" name="No" sourceRef="SP04_GwEvento" targetRef="SP04_Tramitar" />
@@ -470,13 +491,16 @@
       <bpmndi:BPMNShape id="Part_SP04_EN_di" bpmnElement="Part_SP04_EN" isHorizontal="true" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="0" y="120" width="6692" height="1170" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_SP04_Coord_di" bpmnElement="Lane_SP04_Coord" isHorizontal="true" bioc:fill="#A9E0D8" color:background-color="#A9E0D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="36" y="120" width="6656" height="910" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_SP04_Admin_di" bpmnElement="Lane_SP04_Admin" isHorizontal="true" bioc:fill="#D2C3F0" color:background-color="#D2C3F0" bioc:stroke="#5B4A9B" color:border-color="#5B4A9B"><dc:Bounds x="36" y="1030" width="6656" height="260" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_Inicio_di" bpmnElement="SP04_Inicio" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="164" y="557" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="127" y="597" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_GwEvento_di" bpmnElement="SP04_GwEvento" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="357" y="550" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="287" y="506" width="90" height="41" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_NoProcEv_di" bpmnElement="SP04_NoProcEv" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="302" y="660" width="160" height="90" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_FinNoProcEv_di" bpmnElement="SP04_FinNoProcEv" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="564" y="687" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="527" y="727" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_Inicio_di" bpmnElement="SP04_Inicio" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="120" y="557" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="83" y="605" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_GwContr_di" bpmnElement="SP04_GwContr" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="190" y="550" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="222" y="478" width="96" height="41" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_NoRegistrar_di" bpmnElement="SP04_NoRegistrar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="160" y="380" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_FinNoRegistrada_di" bpmnElement="SP04_FinNoRegistrada" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="360" y="407" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="323" y="447" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_GwEvento_di" bpmnElement="SP04_GwEvento" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="510" y="550" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="440" y="506" width="90" height="41" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_NoProcEv_di" bpmnElement="SP04_NoProcEv" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="455" y="660" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_FinNoProcEv_di" bpmnElement="SP04_FinNoProcEv" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="517" y="790" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="480" y="830" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_Tramitar_di" bpmnElement="SP04_Tramitar" isExpanded="true" bioc:fill="none" color:background-color="none" bioc:stroke="#37474F" color:border-color="#37474F"><dc:Bounds x="690" y="384" width="4384" height="902" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_IniSub_di" bpmnElement="SP04_IniSub" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="764" y="557" width="36" height="36" /><bpmndi:BPMNLabel color:color="#263238"><dc:Bounds x="727" y="597" width="110" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_Registrar_di" bpmnElement="SP04_Registrar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="902" y="530" width="160" height="90" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SP04_Registrar_di" bpmnElement="SP04_Registrar" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="280" y="530" width="160" height="90" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_URet_di" bpmnElement="SP04_URet" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="1157" y="550" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="1087" y="532" width="90" height="15" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_Gw5_di" bpmnElement="SP04_Gw5" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="1357" y="550" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="1287" y="493" width="90" height="54" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_NoProc5_di" bpmnElement="SP04_NoProc5" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="1302" y="660" width="160" height="90" /></bpmndi:BPMNShape>
@@ -534,13 +558,16 @@
       <bpmndi:BPMNShape id="SP04_UCierre_di" bpmnElement="SP04_UCierre" bioc:fill="#FFFFFF" color:background-color="#FFFFFF" bioc:stroke="#263238" color:border-color="#263238"><dc:Bounds x="6157" y="290" width="50" height="50" /><bpmndi:BPMNLabel><dc:Bounds x="6087" y="272" width="90" height="15" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_DevImp_di" bpmnElement="SP04_DevImp" bioc:fill="#A6E1D8" color:background-color="#A6E1D8" bioc:stroke="#0F766E" color:border-color="#0F766E"><dc:Bounds x="6302" y="270" width="160" height="90" /></bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="SP04_FinImportes_di" bpmnElement="SP04_FinImportes" bioc:fill="#F8CFC7" color:background-color="#F8CFC7" bioc:stroke="#B3261E" color:border-color="#B3261E"><dc:Bounds x="6564" y="297" width="36" height="36" /><bpmndi:BPMNLabel color:color="#B3261E"><dc:Bounds x="6527" y="337" width="120" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="SP04_NotaEleg_di" bpmnElement="SP04_NotaEleg"><dc:Bounds x="4322.0" y="413.0" width="330" height="64" /></bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="SP04_F01_di" bpmnElement="SP04_F01"><di:waypoint x="200" y="575" /><di:waypoint x="357" y="575" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SP04_F02_di" bpmnElement="SP04_F02"><di:waypoint x="382" y="600" /><di:waypoint x="382" y="660" /><bpmndi:BPMNLabel><dc:Bounds x="388" y="616" width="150" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SP04_F03_di" bpmnElement="SP04_F03"><di:waypoint x="462" y="705" /><di:waypoint x="564" y="705" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SP04_F04_di" bpmnElement="SP04_F04"><di:waypoint x="407" y="575" /><di:waypoint x="690" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="414" y="578" width="150" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SP04_F05_di" bpmnElement="SP04_F05"><di:waypoint x="800" y="575" /><di:waypoint x="902" y="575" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SP04_F06_di" bpmnElement="SP04_F06"><di:waypoint x="1062" y="575" /><di:waypoint x="1157" y="575" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="SP04_NotaEleg_di" bpmnElement="SP04_NotaEleg"><dc:Bounds x="4322.0" y="413.0" width="330" height="80" /></bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SP04_F01_di" bpmnElement="SP04_F01"><di:waypoint x="156" y="575" /><di:waypoint x="190" y="575" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP04_F67_di" bpmnElement="SP04_F67"><di:waypoint x="240" y="575" /><di:waypoint x="280" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="244" y="579" width="30" height="16" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP04_F68_di" bpmnElement="SP04_F68"><di:waypoint x="215" y="550" /><di:waypoint x="215" y="470" /><bpmndi:BPMNLabel><dc:Bounds x="186" y="492" width="24" height="16" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP04_F69_di" bpmnElement="SP04_F69"><di:waypoint x="320" y="425" /><di:waypoint x="360" y="425" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP04_F02_di" bpmnElement="SP04_F02"><di:waypoint x="535" y="600" /><di:waypoint x="535" y="660" /><bpmndi:BPMNLabel><dc:Bounds x="541" y="616" width="60" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP04_F03_di" bpmnElement="SP04_F03"><di:waypoint x="535" y="750" /><di:waypoint x="535" y="790" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP04_F04_di" bpmnElement="SP04_F04"><di:waypoint x="560" y="575" /><di:waypoint x="690" y="575" /><bpmndi:BPMNLabel><dc:Bounds x="567" y="578" width="60" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP04_F05_di" bpmnElement="SP04_F05"><di:waypoint x="800" y="575" /><di:waypoint x="1157" y="575" /></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP04_F06_di" bpmnElement="SP04_F06"><di:waypoint x="440" y="575" /><di:waypoint x="510" y="575" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP04_F07_di" bpmnElement="SP04_F07"><di:waypoint x="1207" y="575" /><di:waypoint x="1357" y="575" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP04_F08_di" bpmnElement="SP04_F08"><di:waypoint x="1382" y="600" /><di:waypoint x="1382" y="660" /><bpmndi:BPMNLabel><dc:Bounds x="1388" y="616" width="150" height="28" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP04_F09_di" bpmnElement="SP04_F09"><di:waypoint x="1382" y="750" /><di:waypoint x="1382" y="817" /></bpmndi:BPMNEdge>
@@ -601,7 +628,8 @@
       <bpmndi:BPMNEdge id="SP04_F64_di" bpmnElement="SP04_F64"><di:waypoint x="5182" y="600" /><di:waypoint x="5182" y="835" /><di:waypoint x="6182" y="835" /><di:waypoint x="6182" y="340" /><bpmndi:BPMNLabel><dc:Bounds x="5192" y="839" width="150" height="20" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP04_F65_di" bpmnElement="SP04_F65"><di:waypoint x="6207" y="315" /><di:waypoint x="6302" y="315" /></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP04_F66_di" bpmnElement="SP04_F66"><di:waypoint x="6462" y="315" /><di:waypoint x="6564" y="315" /></bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="SP04_M01_di" bpmnElement="SP04_M01" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="182" y="70" /><di:waypoint x="182" y="557" /><bpmndi:BPMNLabel><dc:Bounds x="187" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP04_M01_di" bpmnElement="SP04_M01" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="138" y="70" /><di:waypoint x="138" y="557" /><bpmndi:BPMNLabel><dc:Bounds x="143" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SP04_M14_di" bpmnElement="SP04_M14" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="300" y="380" /><di:waypoint x="300" y="70" /><bpmndi:BPMNLabel><dc:Bounds x="305" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP04_M02_di" bpmnElement="SP04_M02" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="1582" y="400" /><di:waypoint x="1582" y="70" /><bpmndi:BPMNLabel><dc:Bounds x="1587" y="75" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP04_M03_di" bpmnElement="SP04_M03" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="1747" y="620" /><di:waypoint x="1747" y="1340" /><bpmndi:BPMNLabel><dc:Bounds x="1647" y="1295" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="SP04_M04_di" bpmnElement="SP04_M04" bioc:stroke="#5F6B73" color:border-color="#5F6B73"><di:waypoint x="1817" y="1340" /><di:waypoint x="1817" y="620" /><bpmndi:BPMNLabel><dc:Bounds x="1822" y="1295" width="95" height="40" /></bpmndi:BPMNLabel></bpmndi:BPMNEdge>

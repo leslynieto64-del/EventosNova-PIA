@@ -1,0 +1,45 @@
+# Eventos Nova — PRUEBA DE INSTALACIÓN LIMPIA (desechable, aislada de desarrollo y de las pruebas manuales).
+# Levanta PostgreSQL 18 en memoria (tmpfs, SIN volúmenes), migra desde cero y sirve la API en modo producción detrás de un proxy simulado.
+#   LIMPIA_PG_CLAVE=<clave temporal> docker compose -f docker-compose.instalacion-limpia.yml up -d --build
+#   docker compose -f docker-compose.instalacion-limpia.yml down      # SIN -v: no hay volúmenes; los datos desaparecen al detener la base
+# Puerto 127.0.0.1:8090. No usa .env ni toca los contenedores eventosnova-*.
+name: eventosnova-limpia
+
+x-app: &app
+  build: { context: ., target: app }
+  image: eventosnova-app:limpia
+  environment: &env
+    DATABASE_URL: postgresql://eventosnova:${LIMPIA_PG_CLAVE:?Defina LIMPIA_PG_CLAVE (clave temporal)}@db-limpia:5432/eventosnova
+    EVENTOSNOVA_PERSISTENCIA: postgresql
+    EVENTOSNOVA_ENTORNO: produccion
+    FORWARDED_ALLOW_IPS: "*"
+
+services:
+  db-limpia:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: eventosnova
+      POSTGRES_USER: eventosnova
+      POSTGRES_PASSWORD: ${LIMPIA_PG_CLAVE:?Defina LIMPIA_PG_CLAVE (clave temporal)}
+    tmpfs: [/var/lib/postgresql]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventosnova -d eventosnova"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  migrar:
+    <<: *app
+    command: ["python", "-m", "alembic", "upgrade", "head"]
+    depends_on: { db-limpia: { condition: service_healthy } }
+    restart: "no"
+
+  api-limpia:
+    <<: *app
+    ports: ["127.0.0.1:8090:8000"]
+    depends_on: { migrar: { condition: service_completed_successfully } }
+
+  worker-limpia:
+    <<: *app
+    command: ["python", "-m", "infrastructure.persistencia.trabajador_outbox", "--intervalo", "2"]
+    depends_on: { migrar: { condition: service_completed_successfully } }

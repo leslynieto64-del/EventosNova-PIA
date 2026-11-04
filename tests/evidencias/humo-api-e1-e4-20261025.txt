@@ -1,0 +1,16 @@
+OK   E-3 primer parcial 1500 → Verificado {'pago_id': 'PG-0828f6fd-1356-469a-ae47-73063c89eb96', 'estado': 'Verificado'}
+OK   E-3 tras 1500 el anticipo sigue pendiente (evento En gestión) En gestión
+OK   E-3 comprobante repetido → 422 Ya existe un pago registrado con ese comprobante para esta obligación.
+OK   E-3 segundo parcial completa 3000 
+OK   E-3 acumulado liquida y confirma (En organización) ('En organización', '3000.00')
+OK   E-4 pago de 1000 tras liquidar → Verificado {'pago_id': 'PG-930bfbd1-e64e-4ce6-b377-53b4c2042caa', 'estado': 'Verificado'}
+OK   E-4 saldo del contrato sin cambios (7000.00) y pagos 4000.00 ('7000.00', '4000.00')
+OK   E-4 sin devoluciones {'devoluciones': []}
+OK   E-4 reintento duplicado → 422 
+OK   E-2 cambio con evento D y contrato C → 422 
+OK   E-2 servicio adicional cruzado → 422 
+OK   E-2 sustitución cruzada → 422 
+OK   E-2 cambio coincidente → 201 
+OK   E-2 servicio adicional coincidente → 201 
+OK   E-2 sustitución coincidente → 201 
+TOTAL 15 de 15
