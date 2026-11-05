@@ -325,6 +325,35 @@ class BaseSeguridad:
         self.assertEqual(admin.post('/usuarios', {**base, 'rol': COORDINADOR, 'proveedor_id': self.proveedor('X')}).status_code, 422)
         self.assertEqual(admin.post('/usuarios', {**base, 'rol': PROVEEDOR, 'proveedor_id': self.proveedor('Y')}).status_code, 201)
 
+    def test_solo_el_rol_proveedor_se_vincula_a_un_proveedor_y_un_rechazo_no_deja_cuentas_a_medias(self):
+        """Formulario «Crear cuenta»: Administración y Coordinación (y cualquier rol inexistente, como Cliente, que no tiene cuenta) nunca quedan
+        vinculados a un proveedor; un proveedor en blanco no cuenta como vínculo; el identificador con espacios se normaliza."""
+        admin = self.cliente(ADMINISTRADOR)
+        pv = self.proveedor('Vinculable')
+        base = {'nombre': 'Cuenta Prueba', 'contrasena': CLAVE}
+        cuentas = lambda: admin.get('/usuarios').json()['datos']['usuarios']          # noqa: E731
+        antes = len(cuentas())
+        for i, rol in enumerate((ADMINISTRADOR, COORDINADOR)):
+            r = admin.post('/usuarios', {**base, 'correo': f'sin-vinculo-{i}@ejemplo.mx', 'rol': rol, 'proveedor_id': pv})
+            self.assertEqual(r.status_code, 422, rol)
+            self.assertIn('Solo las cuentas con rol proveedor', r.json()['detalle'])
+        for cuerpo in ({'rol': 'cliente', 'proveedor_id': pv}, {'rol': 'cliente'}):
+            self.assertEqual(admin.post('/usuarios', {**base, 'correo': 'cliente@ejemplo.mx', **cuerpo}).status_code, 422, cuerpo)
+        self.assertEqual(len(cuentas()), antes, 'un rechazo no debe crear ninguna cuenta')
+        for i, vacio in enumerate(('', '   ', None)):                                    # «sin proveedor» en blanco: la cuenta se crea sin vínculo
+            r = admin.post('/usuarios', {**base, 'correo': f'vacio-{i}@ejemplo.mx', 'rol': COORDINADOR, 'proveedor_id': vacio})
+            self.assertEqual(r.status_code, 201, vacio)
+            self.assertIsNone(r.json()['datos']['proveedorId'])
+        for vacio in ('', '   ', None):                                                  # un proveedor sin proveedor del catálogo no se acepta
+            r = admin.post('/usuarios', {**base, 'correo': 'pv-vacio@ejemplo.mx', 'rol': PROVEEDOR, 'proveedor_id': vacio})
+            self.assertEqual(r.status_code, 422, vacio)
+        r = admin.post('/usuarios', {**base, 'correo': 'pv-espacios@ejemplo.mx', 'rol': PROVEEDOR, 'proveedor_id': f'  {pv}  '})
+        self.assertEqual(r.status_code, 201)
+        self.assertEqual(r.json()['datos']['proveedorId'], pv)
+        despues = cuentas()
+        self.assertEqual(len(despues) - antes, 4)                                         # 3 de coordinación sin vínculo + 1 de proveedor
+        self.assertEqual([u['correo'] for u in despues if u['proveedorId'] and u['rol'] != PROVEEDOR], [])
+
     def test_actualizar_nombre_y_correo_de_una_cuenta_no_cambia_el_rol_y_cierra_sesiones_si_cambia_el_correo(self):
         admin, coord = self.cliente(ADMINISTRADOR), self.cliente(COORDINADOR)
         otro = self.cliente(COORDINADOR)

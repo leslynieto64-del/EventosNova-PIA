@@ -298,6 +298,7 @@ class ServicioSeguridad:
     def crear_usuario(self, correo: str, nombre: str, rol: str, contrasena: str, proveedor_id: Optional[str] = None) -> Usuario:
         correo = (correo or "").strip().lower()
         nombre = " ".join((nombre or "").split())
+        proveedor_id = (proveedor_id or "").strip() or None          # «» y «  » equivalen a no indicar proveedor
         if not RE_CORREO.match(correo):
             raise ValueError("Indique un correo válido.")
         if not nombre:
