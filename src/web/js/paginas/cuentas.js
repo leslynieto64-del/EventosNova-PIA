@@ -7,9 +7,20 @@ import { aviso, botonAccion, cargarEn, ejecutarAccion, h, insignia, tabla, tarje
 
 export function cuentas(contenedor) {
   const salida = h('div');
-  const pintar = () => cargarEn(salida, async () => ({ u: (await GET('/usuarios')).datos.usuarios, p: (await GET('/proveedores')).datos.proveedores }), ({ u, p }) => {
+  const filtro = { texto: '', rol: '', estado: '' };            // solo afecta lo que se muestra; la lista completa viene del servidor
+  let cargado = null;
+  const coincide = (x, nombreProveedor) => {
+    const q = filtro.texto.trim().toLowerCase();
+    if (filtro.rol && x.rol !== filtro.rol) return false;
+    if (filtro.estado && (x.activo ? 'activa' : 'desactivada') !== filtro.estado) return false;
+    return !q || [x.nombre, x.correo, nombreProveedor[x.proveedorId] || ''].some((t) => String(t).toLowerCase().includes(q));
+  };
+  const pintarTabla = (pintar) => {
+    const { u, p } = cargado;
     const nombreProveedor = Object.fromEntries(p.map((x) => [x.proveedorId, x.nombre]));
-    return tarjeta(`${u.length} cuenta(s)`, tabla([
+    const visibles = u.filter((x) => coincide(x, nombreProveedor));
+    const hay = visibles.length !== u.length;
+    return tarjeta(hay ? `${visibles.length} de ${u.length} cuenta(s)` : `${u.length} cuenta(s)`, tabla([
       { titulo: 'Persona', celda: (x) => h('div', null, x.nombre, h('div', { class: 'peq' }, x.correo)) },
       { titulo: 'Rol', celda: (x) => ETIQUETA_ROL[x.rol] || x.rol },
       { titulo: 'Proveedor', celda: (x) => (x.proveedorId ? (nombreProveedor[x.proveedorId] || x.proveedorId) : '—') },
@@ -20,8 +31,23 @@ export function cuentas(contenedor) {
           : botonAccion(x.activo ? ACCIONES.desactivarCuenta : ACCIONES.activarCuenta, { usuario: x }, pintar, { clase: 'btn btn-peq' }),
         botonAccion(ACCIONES.editarCuenta, { usuario: x }, pintar, { clase: 'btn btn-peq', texto: 'Editar' }),
         botonAccion(ACCIONES.restablecerContrasena, { usuario: x }, pintar, { clase: 'btn btn-peq' })) },
-    ], u, { vacioTitulo: 'No hay cuentas' }));
+    ], visibles, { vacioTitulo: u.length ? 'Ninguna cuenta coincide con la búsqueda' : 'No hay cuentas', vacioDetalle: u.length ? 'Cambia o limpia los filtros para ver las demás cuentas.' : undefined }));
+  };
+  const tablaEn = h('div');
+  const repintarTabla = () => { if (cargado) tablaEn.replaceChildren(pintarTabla(pintar)); };
+  const pintar = () => cargarEn(salida, async () => ({ u: (await GET('/usuarios')).datos.usuarios, p: (await GET('/proveedores')).datos.proveedores }), (datos) => {
+    cargado = datos;
+    tablaEn.replaceChildren(pintarTabla(pintar));
+    return tablaEn;
   });
+  const opciones = (lista) => lista.map(([v, t]) => h('option', { value: v }, t));
+  const barra = h('form', { class: 'barra-filtros', role: 'search', onsubmit: (ev) => ev.preventDefault() },
+    h('div', { class: 'campo' }, h('label', { for: 'cu-buscar' }, 'Buscar'),
+      h('input', { id: 'cu-buscar', type: 'search', placeholder: 'Nombre, correo o proveedor', autocomplete: 'off', oninput: (ev) => { filtro.texto = ev.target.value; repintarTabla(); } })),
+    h('div', { class: 'campo' }, h('label', { for: 'cu-rol' }, 'Rol'),
+      h('select', { id: 'cu-rol', onchange: (ev) => { filtro.rol = ev.target.value; repintarTabla(); } }, opciones([['', 'Todos los roles'], ...Object.entries(ETIQUETA_ROL)]))),
+    h('div', { class: 'campo' }, h('label', { for: 'cu-estado' }, 'Estado'),
+      h('select', { id: 'cu-estado', onchange: (ev) => { filtro.estado = ev.target.value; repintarTabla(); } }, opciones([['', 'Todas'], ['activa', 'Activas'], ['desactivada', 'Desactivadas']]))));
   contenedor.replaceChildren(
     h('header', { class: 'pagina-cab' }, h('h1', null, 'Cuentas'),
       h('p', null, 'Quién puede entrar a la aplicación y con qué rol. Una cuenta nueva solo recibe los permisos de su rol; las de proveedor se vinculan a un proveedor del catálogo.'),
@@ -30,6 +56,6 @@ export function cuentas(contenedor) {
         try { proveedores = (await GET('/proveedores')).datos.proveedores; } catch (e) { aviso('error', e.message); return; }
         await ejecutarAccion(ACCIONES.crearCuenta, { proveedores }, pintar);
       } }, 'Crear cuenta'))),
-    salida);
+    barra, salida);
   pintar();
 }
