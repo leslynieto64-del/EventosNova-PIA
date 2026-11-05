@@ -205,6 +205,10 @@ function validarCampo(campo, v) {
   return null;
 }
 
+/** Un resumen puede traer varios párrafos separados por salto de línea; el que empieza con «Atención:» se destaca como advertencia. */
+const parrafosResumen = (texto) => String(texto).split('\n').filter(Boolean)
+  .map((p) => h('p', p.startsWith('Atención:') ? { class: 'aviso-fuerte', role: 'alert' } : null, p));
+
 /**
  * Abre un formulario modal. def: {titulo, intro, campos:[{nombre,etiqueta,tipo,requerido,ayuda,valor,opciones,visibleSi,vacio,reiniciarAlOcultar}],
  * resumen(valores)→texto de confirmación, aviso (texto destacado), peligro, textoEnviar, enviar(valores)→Promise<respuesta>}.
@@ -321,7 +325,7 @@ export function abrirFormulario(def) {
     function mostrarEnConfirmacion(si, v) {
       forma.hidden = si; vistaConfirmacion.hidden = !si;
       if (si) {
-        vistaConfirmacion.replaceChildren(...sinVacios(h('p', null, def.resumen ? def.resumen(v) : 'Confirma que deseas ejecutar esta operación.'),
+        vistaConfirmacion.replaceChildren(...sinVacios(...parrafosResumen(def.resumen ? def.resumen(v) : 'Confirma que deseas ejecutar esta operación.'),
           def.aviso ? h('p', { class: 'aviso-fuerte' }, def.aviso) : null));      // un aviso ausente no se pinta (el DOM escribiría «null»)
         pie.replaceChildren(
           h('button', { type: 'button', class: 'btn', onclick: () => mostrarEnConfirmacion(false) }, campos.length ? 'Volver' : 'Cancelar'),

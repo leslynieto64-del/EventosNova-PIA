@@ -113,6 +113,7 @@ export const ACCIONES = {
   // ------------------------------------------------------------ contrato
   comunicarPolitica: {
     titulo: 'Comunicar política de no reembolso', textoEnviar: 'Registrar comunicación',
+    aviso: 'Antes de registrar, revisa que la comunicación no se haya registrado ya: un segundo registro reemplaza la fecha anterior.',
     intro: (c) => `Registra que se comunicó al Cliente la política de no reembolso del contrato ${c.contratoId}. Debe hacerse antes de la firma.`,
     campos: () => [FECHA('fecha', 'Fecha de la comunicación')],
     enviar: (v, c) => POST(`/contratos/${encodeURIComponent(c.contratoId)}/comunicacion-politica-no-reembolso`, { fecha: v.fecha }),
@@ -158,7 +159,13 @@ export const ACCIONES = {
       f('comprobante', 'Referencia del comprobante', 'texto', { requerido: true, ayuda: 'No se puede repetir el mismo comprobante en una misma obligación.' }),
       f('verificar_ahora', 'Verificar el pago ahora', 'bool', { valor: true, ayuda: 'Si lo desmarcas, el pago queda Registrado y se verifica después.' }),
     ],
-    resumen: (v, c) => { const o = c.obligaciones.find((x) => x.obligacionId === v.obligacion_id); return `Se registrará un pago de ${fmtImporte(v.importe)} para «${o ? o.concepto : v.obligacion_id}»${v.verificar_ahora ? ' y se verificará de inmediato' : ''}.`; },
+    // COR-07: solo advierte; las reglas aprobadas permiten registrar un importe mayor al saldo y el servidor sigue decidiendo.
+    resumen: (v, c) => {
+      const o = c.obligaciones.find((x) => x.obligacionId === v.obligacion_id);
+      const excede = o && o.saldo !== undefined && o.saldo !== null && Number(v.importe) > Number(o.saldo);
+      return `Se registrará un pago de ${fmtImporte(v.importe)} para «${o ? etiquetaConcepto(o.concepto) : v.obligacion_id}»${v.verificar_ahora ? ' y se verificará de inmediato' : ''}.`
+        + (excede ? `\nAtención: el importe supera el saldo pendiente de esta obligación (${fmtImporte(o.saldo)}). Las reglas vigentes lo permiten, pero el excedente no se devuelve automáticamente; confirma que el importe y el comprobante son correctos.` : '');
+    },
     enviar: (v, c) => POST(`/estados-cuenta/${encodeURIComponent(c.estadoCuentaId)}/pagos`, { obligacion_id: v.obligacion_id, importe: v.importe, fecha: v.fecha, comprobante: v.comprobante, verificar_ahora: v.verificar_ahora }),
     despues: (r, c) => r.datos.pago_id && registro.guardarPago({ pagoId: r.datos.pago_id, estadoCuentaId: c.estadoCuentaId, eventoId: c.eventoId, estado: r.datos.estado }),
     exito: (r) => (r.datos.pago_id ? `Identificador del pago: ${r.datos.pago_id}` : null),
