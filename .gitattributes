@@ -2,3 +2,7 @@
 # Sin esta regla, Git con core.autocrlf podría convertir los saltos de línea y el manifiesto SHA-256 no coincidiría.
 datos/paquete_pia/*.csv -text
 datos/paquete_pia/MANIFIESTO.sha256 -text
+
+# Referencias de comportamiento: se comparan byte a byte (SHA-256) en test_oraculo_diferencias_e1_e4; Git no debe convertir sus saltos de linea
+# (con core.autocrlf=true un checkout nuevo en Windows las pasaba a CRLF y el hash dejaba de coincidir).
+tests/referencias/*.json -text
