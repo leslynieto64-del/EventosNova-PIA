@@ -273,7 +273,7 @@ export const ACCIONES = {
     // Los candidatos (D-P2) son los proveedores registrados, activos y que ofrecen el servicio. Su disponibilidad en la fecha la confirma el proveedor al responder.
     campos: (c) => [f('proveedor_id', 'Proveedor', 'select', { requerido: true, opciones: c.candidatos,
       ayuda: 'Solo aparecen los proveedores candidatos: registrados, activos y que ofrecen este servicio. Que estén libres en la fecha del evento lo confirma el proveedor al responder; si falta alguno, regístralo en Proveedores indicando que ofrece este servicio.' })],
-    resumen: (v, c) => `Se asignará el proveedor ${v.proveedor_id} al servicio «${c.servicio}». Quedará «Pendiente de confirmación del proveedor».`,
+    resumen: (v, c) => `Se asignará el proveedor ${((c.candidatos || []).find((x) => x.valor === v.proveedor_id) || {}).texto || v.proveedor_id} al servicio «${c.servicio}». Quedará «Pendiente de confirmación del proveedor».`,
     enviar: (v, c) => POST(`/eventos/${encodeURIComponent(c.eventoId)}/servicios/${encodeURIComponent(c.servicioId)}/proveedor`, { proveedor_id: v.proveedor_id }),
   },
   respuestaProveedor: {

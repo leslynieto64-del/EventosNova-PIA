@@ -136,6 +136,38 @@ export function copiable(texto) {
 // ---------------------------------------------------------------- formularios
 const RE_IMPORTE = /^\d+(\.\d+)?$/;
 
+/** Botón «Mostrar/Ocultar» para un campo de contraseña. Solo cambia cómo se ve lo escrito; el valor no se modifica ni se guarda. */
+export function conOjo(input) {
+  const boton = h('button', { type: 'button', class: 'btn btn-peq btn-ojo', 'aria-label': 'Mostrar contraseña', 'aria-pressed': 'false' }, 'Mostrar');
+  boton.addEventListener('click', () => {
+    const ver = input.type === 'password';
+    input.type = ver ? 'text' : 'password';
+    boton.textContent = ver ? 'Ocultar' : 'Mostrar';
+    boton.setAttribute('aria-label', ver ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    boton.setAttribute('aria-pressed', String(ver));
+  });
+  return h('div', { class: 'campo-clave' }, input, boton);
+}
+
+const UMBRAL_BUSQUEDA = 6;           // con más opciones que esto, la lista desplegable ofrece un cuadro de búsqueda
+
+/** Cuadro de búsqueda para una lista desplegable: filtra las opciones por texto sin cambiar el valor que se envía. */
+function busquedaSelect(select, campo) {
+  const todas = campo.opciones;
+  const caja = h('input', { type: 'search', class: 'busca-opciones', placeholder: 'Buscar por nombre…', autocomplete: 'off', 'aria-label': `Buscar: ${campo.etiqueta}` });
+  const estado = h('div', { class: 'peq busca-estado', 'aria-live': 'polite' });
+  caja.addEventListener('input', () => {
+    const q = caja.value.trim().toLowerCase();
+    const actual = select.value;
+    const visibles = todas.filter((o) => !q || String(o.texto).toLowerCase().includes(q) || String(o.valor).toLowerCase().includes(q) || o.valor === actual);
+    const sinVacia = [...select.options].filter((o) => o.value === '');
+    select.replaceChildren(...sinVacia, ...visibles.map((o) => h('option', { value: o.valor, selected: String(o.valor) === String(actual) }, o.texto)));
+    estado.textContent = q ? (visibles.length ? `${visibles.length} coincidencia(s).` : 'Sin coincidencias.') : '';
+  });
+  caja.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') ev.preventDefault(); });   // Enter no envía el formulario desde la búsqueda
+  return h('div', { class: 'busca-contenedor' }, caja, estado);
+}
+
 function crearControl(campo, id, valor) {
   const comunes = { id, name: campo.nombre, 'aria-describedby': `${id}-ayuda ${id}-error`, required: campo.requerido ? true : null };
   switch (campo.tipo) {
@@ -195,10 +227,12 @@ export function abrirFormulario(def) {
       const id = `f-${i}-${c.nombre}`;
       const ctl = crearControl(c, id, c.valor);
       controles.set(c.nombre, ctl);
+      const buscable = c.tipo === 'select' && (c.buscable ?? c.opciones.length > UMBRAL_BUSQUEDA);
       const fila = h('div', { class: `campo ${c.tipo === 'bool' ? 'campo-bool' : ''}` },
         c.tipo === 'bool'
           ? h('label', { for: id }, ctl, h('span', null, c.etiqueta))
-          : [h('label', { for: id }, c.etiqueta, c.requerido ? h('span', { class: 'req', 'aria-hidden': 'true' }, ' *') : h('span', { class: 'opc' }, ' (opcional)')), ctl],
+          : [h('label', { for: id }, c.etiqueta, c.requerido ? h('span', { class: 'req', 'aria-hidden': 'true' }, ' *') : h('span', { class: 'opc' }, ' (opcional)')),
+            buscable ? busquedaSelect(ctl, c) : null, c.tipo === 'contrasena' ? conOjo(ctl) : ctl],
         c.ayuda ? h('div', { class: 'ayuda', id: `${id}-ayuda` }, c.ayuda) : h('span', { id: `${id}-ayuda` }),
         h('div', { class: 'error-campo', id: `${id}-error`, role: 'alert' }));
       filas.set(c.nombre, fila);

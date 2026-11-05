@@ -197,3 +197,6 @@ dialog.modal > .modal-cuerpo { flex: 1 1 auto; min-height: 0; max-height: none; 
   .barra-superior { z-index: 20; }
 }
 @media (prefers-reduced-motion: reduce) { .menu-fondo, .lateral { transition: none; } }
+/* Contraseña con botón mostrar/ocultar y listas con búsqueda */
+.campo-clave { display: flex; gap: .4rem; align-items: stretch; } .campo-clave input { flex: 1 1 auto; min-width: 0; } .btn-ojo { white-space: nowrap; min-width: 5.2rem; }
+.busca-contenedor { display: flex; flex-direction: column; gap: .2rem; } .busca-opciones { width: 100%; } .busca-estado:empty { display: none; }
