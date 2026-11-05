@@ -478,7 +478,7 @@ ACCIONES.crearCuenta = {
     f('correo', 'Correo (será su usuario)', 'texto', { requerido: true }),
     f('rol', 'Rol', 'select', { requerido: true, opciones: [{ valor: 'coordinador', texto: 'Coordinación' }, { valor: 'administrador', texto: 'Administración' }, { valor: 'proveedor', texto: 'Proveedor' }],
       ayuda: 'Coordinación: eventos, propuestas, contratos y solicitudes. Administración: pagos, devoluciones, autorizaciones y cuentas. Proveedor: solo sus servicios.' }),
-    f('proveedor_id', 'Proveedor al que pertenece', 'select', { requerido: true, visibleSi: (v) => v.rol === 'proveedor', opciones: c.proveedores.map((p) => ({ valor: p.proveedorId, texto: p.nombre })),
+    f('proveedor_id', 'Proveedor al que pertenece', 'select', { requerido: true, vacio: 'Selecciona un proveedor', reiniciarAlOcultar: true, visibleSi: (v) => v.rol === 'proveedor', opciones: c.proveedores.map((p) => ({ valor: p.proveedorId, texto: p.nombre })),
       ayuda: 'Solo las cuentas de proveedor se vinculan a un proveedor del catálogo.' }),
     f('contrasena', 'Contraseña inicial', 'contrasena', { requerido: true, minLongitud: 12, ayuda: 'Mínimo 12 caracteres. Compártela por un medio seguro; no se vuelve a mostrar.' })],
   resumen: (v) => `Se creará la cuenta de ${v.nombre} (${v.correo}) con el rol «${v.rol}».`,

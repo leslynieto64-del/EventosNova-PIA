@@ -174,7 +174,7 @@ function validarCampo(campo, v) {
 }
 
 /**
- * Abre un formulario modal. def: {titulo, intro, campos:[{nombre,etiqueta,tipo,requerido,ayuda,valor,opciones,visibleSi}],
+ * Abre un formulario modal. def: {titulo, intro, campos:[{nombre,etiqueta,tipo,requerido,ayuda,valor,opciones,visibleSi,vacio,reiniciarAlOcultar}],
  * resumen(valores)→texto de confirmación, aviso (texto destacado), peligro, textoEnviar, enviar(valores)→Promise<respuesta>}.
  * Devuelve la respuesta del backend si la operación se completó, o null si se canceló.
  */
@@ -218,7 +218,15 @@ export function abrirFormulario(def) {
     const visible = (c, v) => !c.visibleSi || c.visibleSi(v);
     function actualizarVisibilidad() {
       const v = valores();
-      for (const c of campos) filas.get(c.nombre).hidden = !visible(c, v);
+      for (const c of campos) {
+        const fila = filas.get(c.nombre), ahoraVisible = visible(c, v);
+        fila.hidden = !ahoraVisible;
+        if (!ahoraVisible && c.reiniciarAlOcultar) {                // el valor de un campo que deja de aplicar no se conserva (p. ej. el proveedor al cambiar el rol)
+          const ctl = controles.get(c.nombre);
+          if (ctl.value !== '') ctl.value = '';
+          fila.classList.remove('invalido'); fila.querySelector('.error-campo').textContent = ''; ctl.removeAttribute('aria-invalid');
+        }
+      }
     }
 
     const marcar = (nombre, mensaje) => {
