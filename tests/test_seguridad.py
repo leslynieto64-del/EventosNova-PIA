@@ -307,7 +307,12 @@ class BaseSeguridad:
         self.assertEqual(b.post(f'{base}/respuesta-proveedor', {'proveedor_id': pb, 'disponible': True}).status_code, 422)   # propio pero no asignado: regla de negocio
         self.assertEqual(b.get(f'/proveedores/{pb}/eventos/{evento}').status_code, 404)                                     # no ve el evento
         self.assertEqual(a.get(f'/proveedores/{pa}/eventos/{evento}').status_code, 200)
-        propias = a.get('/mis-asignaciones')                                                                                  # sin conocer el id del evento
+        # COR-05: el proveedor no recibe las condiciones comerciales del contrato del Cliente (importes, anticipos, saldos)
+        for vista in (a.get(f'/proveedores/{pa}/eventos/{evento}').json(), a.get('/mis-asignaciones').json()['eventos'][0]):
+            self.assertTrue(vista['servicios'])
+            for s in vista['servicios']:
+                self.assertEqual(set(s), {'servicioContratadoId', 'servicio', 'estado', 'respuesta'})
+        propias = a.get('/mis-asignaciones')                                                                                 # sin conocer el id del evento
         self.assertEqual(propias.status_code, 200)
         self.assertEqual([(e['eventoId'], [x['servicioContratadoId'] for x in e['servicios']]) for e in propias.json()['eventos']], [(evento, [servicio])])
         self.assertEqual(b.get('/mis-asignaciones').json()['eventos'], [])                                                    # B no ve lo de A

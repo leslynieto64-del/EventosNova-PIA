@@ -99,7 +99,7 @@ export function proveedor(contenedor) {
   const propio = rol() === 'proveedor' ? sesion.usuario.proveedorId : null;       // la cuenta de proveedor solo consulta SU proveedor (el servidor también lo exige)
   const consultar = (p, v) => cargarEn(salida, () => GET(`/proveedores/${encodeURIComponent(p)}/eventos/${encodeURIComponent(v)}`), (r) => tarjeta(`${r.tipoEvento || r.tipo || 'Evento'} · ${v}`, h('div', null,
     h('p', null, `${r.fecha || ''} ${r.hora || ''} · ${r.lugar || ''} · ${r.invitadosAproximados ?? ''} invitados aproximados`),
-    tabla([{ titulo: 'Servicio', celda: (s) => s.servicio }, { titulo: 'Condiciones', celda: (s) => s.condiciones },
+    tabla([{ titulo: 'Servicio', celda: (s) => s.servicio },
       { titulo: 'Estado', celda: (s) => h('div', null, insignia(s.estado), s.respuesta ? h('div', { class: 'peq' }, textoRespuesta(s.respuesta)) : null) },
       { titulo: 'Acciones', celda: (s) => (s.estado === 'Pendiente de confirmación del proveedor'
         ? botonAccion(ACCIONES.respuestaProveedor, { eventoId: v, servicioId: s.servicioContratadoId, servicio: s.servicio, proveedorId: p }, () => consultar(p, v), { clase: 'btn btn-peq btn-primario' })
@@ -110,8 +110,8 @@ export function proveedor(contenedor) {
       h('h4', null, `${e.tipoEvento} · ${e.eventoId}`),
       h('div', { class: 'fila-estado' }, insignia(e.estadoEvento)),
       h('p', null, `${e.fecha} ${e.hora} · ${e.lugar} · ${e.invitadosAproximados} invitados aproximados`),
-      tabla([{ titulo: 'Servicio', celda: (s) => s.servicio }, { titulo: 'Condiciones', celda: (s) => s.condiciones },
-      { titulo: 'Estado', celda: (s) => h('div', null, insignia(s.estado), s.respuesta ? h('div', { class: 'peq' }, textoRespuesta(s.respuesta)) : null) },
+      tabla([{ titulo: 'Servicio', celda: (s) => s.servicio },
+        { titulo: 'Estado', celda: (s) => h('div', null, insignia(s.estado), s.respuesta ? h('div', { class: 'peq' }, textoRespuesta(s.respuesta)) : null) },
         { titulo: 'Acciones', celda: (s) => (s.estado === 'Pendiente de confirmación del proveedor'
           ? botonAccion(ACCIONES.respuestaProveedor, { eventoId: e.eventoId, servicioId: s.servicioContratadoId, servicio: s.servicio, proveedorId: propio }, cargarAsignaciones, { clase: 'btn btn-peq btn-primario' })
           : h('span', { class: 'peq' }, 'Sin acciones pendientes')) }], e.servicios))))
