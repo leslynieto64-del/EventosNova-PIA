@@ -1,0 +1,20 @@
+eventos-nova/
+├── src/
+│   ├── domain/            agregados, valores, máquinas de estado, reglas
+│   ├── application/       servicios, CQRS, reacciones, puertos, seguridad
+│   ├── infrastructure/    repositorios, Unit of Work, adaptadores, esquema
+│   ├── api/               FastAPI: main, rutas_*, esquemas, seguridad
+│   ├── web/               interfaz HTML + CSS + JavaScript (/app/)
+│   ├── paquete_pia/       lector del paquete oficial de datos del PIA
+│   └── ejecucion_paquete/ ejecución del paquete oficial (F2)
+├── migraciones/           Alembic: env.py y versions/0001 ... 0009
+├── scripts/               OpenAPI, bases de prueba, administrador, Playwright
+├── tests/                 82 módulos de prueba (unittest) y evidencias
+├── docs/                  BRD.md, architecture/, api/openapi.json, ADR/
+├── .github/workflows/     ci.yml y publicar-imagen.yml
+├── Dockerfile             targets app y tests
+├── docker-compose.yml     db, migrate, api, worker y tests
+├── .env.example           variables sin secretos
+├── render.yaml            blueprint de despliegue (borrador)
+├── alembic.ini, requirements*.txt, .coveragerc
+└── README.md
