@@ -40,13 +40,19 @@ async function proveedoresDelServicio(servicio, excluirId) {
 
 const cuerpoDecision = (v) => ({ actor: v.actor, aprobada: v.aprobada, fecha: v.fecha, motivo: v.motivo || '' });
 
-const DATOS_PROPUESTOS = [
-  f('cambiar_datos', 'El cambio modifica los datos del evento (tipo, fecha, lugar o invitados)', 'bool', {}),
-  f('tipo', 'Tipo de evento', 'texto', { requerido: true, visibleSi: (v) => v.cambiar_datos }),
-  f('fecha_hora', 'Nueva fecha y hora del evento', 'fechahora', { requerido: true, visibleSi: (v) => v.cambiar_datos }),
-  f('lugar', 'Lugar', 'texto', { requerido: true, visibleSi: (v) => v.cambiar_datos }),
-  f('invitados_aproximados', 'Invitados aproximados', 'entero', { requerido: true, minimo: 1, visibleSi: (v) => v.cambiar_datos }),
-];
+// COR-16: los datos actuales del evento (c.evento, de la consulta administrativa) se muestran como valor inicial; solo se envían si el usuario marca
+// «El cambio modifica los datos del evento». Al aprobarse, el cambio reemplaza los datos del evento por los de esta solicitud.
+const datosPropuestos = (c) => {
+  const e = (c && c.evento) || {};
+  return [
+    f('cambiar_datos', 'El cambio modifica los datos del evento (tipo, fecha, lugar o invitados)', 'bool', {
+      ayuda: 'Al marcarlo se muestran los datos actuales del evento. Modifica solo lo que cambie: los demás se conservan tal como están.' }),
+    f('tipo', 'Tipo de evento', 'texto', { requerido: true, valor: e.tipoEvento, visibleSi: (v) => v.cambiar_datos }),
+    f('fecha_hora', 'Nueva fecha y hora del evento', 'fechahora', { requerido: true, valor: e.fechaHora, visibleSi: (v) => v.cambiar_datos }),
+    f('lugar', 'Lugar', 'texto', { requerido: true, valor: e.lugar, visibleSi: (v) => v.cambiar_datos }),
+    f('invitados_aproximados', 'Invitados aproximados', 'entero', { requerido: true, minimo: 1, valor: e.invitadosAproximados === undefined ? undefined : String(e.invitadosAproximados), visibleSi: (v) => v.cambiar_datos }),
+  ];
+};
 
 export const ACCIONES = {
   // ------------------------------------------------------------ eventos y propuestas
@@ -297,8 +303,8 @@ export const ACCIONES = {
     campos: (c) => [
       f('contrato_id', 'Contrato', 'select', { requerido: true, opciones: c.contratos.map((x) => ({ valor: x.contratoId, texto: `${x.contratoId} — ${x.estado}` })), valor: c.contratos[0] && c.contratos[0].contratoId }),
       f('descripcion', 'Descripción del cambio', 'textarea', { requerido: true }),
-      f('tarifa_vigente', 'Tarifa vigente del cargo por cambio tardío', 'importe', { requerido: true, ayuda: 'La política de Eventos Nova la define; el sistema la usa si el cambio se pide con poca anticipación.' }),
-      ...DATOS_PROPUESTOS],
+      f('tarifa_vigente', 'Tarifa vigente del cargo por cambio tardío', 'importe', { requerido: true, ayuda: 'Escribe la tarifa autorizada por Eventos Nova (política vigente); no uses otro importe. Solo se cobra si el cambio se pide con menos de 7 días naturales y resulta viable.' }),
+      ...datosPropuestos(c)],
     enviar: (v, c) => POST('/solicitudes-cambio', {
       evento_id: c.eventoId, contrato_id: v.contrato_id, descripcion: v.descripcion, tarifa_vigente: v.tarifa_vigente,
       datos_propuestos: v.cambiar_datos ? { tipo: v.tipo, fecha_hora: v.fecha_hora, lugar: v.lugar, invitados_aproximados: Number(v.invitados_aproximados) } : null }),
