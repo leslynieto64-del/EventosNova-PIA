@@ -1,7 +1,7 @@
 /* Operaciones de negocio de la API, declaradas una sola vez: formulario, texto de confirmación y petición real.
    Cada acción recibe un «contexto» con los identificadores que necesita (evento, contrato, estado de cuenta, solicitud…). */
 import { POST, GET } from './api.js';
-import { fmtImporte, fmtFechaHora } from './negocio.js';
+import { etiquetaConcepto, fmtImporte, fmtFechaHora } from './negocio.js';
 import { registro } from './registro.js';
 import { rol } from './sesion.js';
 
@@ -146,7 +146,7 @@ export const ACCIONES = {
     titulo: 'Registrar pago', textoEnviar: 'Registrar pago',
     intro: (c) => `Registra un pago recibido del Cliente en el estado de cuenta ${c.estadoCuentaId}. No se procesa ningún cobro: solo se anota el pago ya efectuado.`,
     campos: (c) => [
-      f('obligacion_id', 'Obligación que se paga', 'select', { requerido: true, opciones: c.obligaciones.map((o) => ({ valor: o.obligacionId, texto: `${o.concepto} — saldo ${fmtImporte(o.saldo)}${o.estado === 'Vencida' ? ' (vencida)' : ''}` })) }),
+      f('obligacion_id', 'Obligación que se paga', 'select', { requerido: true, opciones: c.obligaciones.map((o) => ({ valor: o.obligacionId, texto: `${etiquetaConcepto(o.concepto)} — saldo ${fmtImporte(o.saldo)}${o.estado === 'Vencida' ? ' (vencida)' : ''}` })) }),
       f('importe', 'Importe pagado', 'importe', { requerido: true, positivo: true, ayuda: 'Los pagos parciales se acumulan; el anticipo mínimo puede cubrirse con varios pagos.' }),
       FECHA('fecha', 'Fecha en que el Cliente efectuó el pago', 'Es la fecha efectiva del pago según el comprobante; decide si cumplió el plazo.'),
       f('comprobante', 'Referencia del comprobante', 'texto', { requerido: true, ayuda: 'No se puede repetir el mismo comprobante en una misma obligación.' }),
@@ -191,7 +191,7 @@ export const ACCIONES = {
   },
   ejecutarDevolucion: {
     titulo: 'Registrar devolución efectuada', textoEnviar: 'Registrar devolución',
-    intro: (c) => `Registra que se devolvió ${fmtImporte(c.importe)} (${c.concepto}). La devolución real se hace fuera del sistema.`,
+    intro: (c) => `Registra que se devolvió ${fmtImporte(c.importe)} (${etiquetaConcepto(c.concepto)}). La devolución real se hace fuera del sistema.`,
     campos: () => [f('comprobante', 'Comprobante de la devolución', 'texto', { ayuda: 'Opcional. Si lo dejas vacío, el sistema usa su ejecutor de devoluciones (hoy una simulación).' })],
     resumen: (v, c) => `Se registrará como efectuada la devolución de ${fmtImporte(c.importe)}.`,
     enviar: (v, c) => POST(`/estados-cuenta/${encodeURIComponent(c.estadoCuentaId)}/devoluciones/${encodeURIComponent(c.devolucionId)}/ejecucion`, v.comprobante ? { comprobante: v.comprobante } : undefined),

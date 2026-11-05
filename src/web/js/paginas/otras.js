@@ -1,7 +1,7 @@
 /* Pagos y devoluciones, solicitudes, seguimiento, consulta de proveedor y estado del sistema. */
 import { GET, api } from '../api.js';
 import { ACCIONES } from '../acciones.js';
-import { fmtFechaHora, fmtImporte } from '../negocio.js';
+import { etiquetaConcepto, etiquetaTipoDevolucion, etiquetaTipoSolicitud, fmtFechaHora, fmtImporte } from '../negocio.js';
 import { botonAccion, cargarEn, celdaProveedor, copiable, datos, h, insignia, tabla, tarjeta, textoRespuesta, aviso, vacio } from '../ui.js';
 import { tablaSolicitudes } from './evento.js';
 import { estado as sesion, rol } from '../sesion.js';
@@ -20,15 +20,15 @@ export function pagos(contenedor, _p, consulta) {
     cargarEn(salida, () => Promise.all([GET('/pagos-pendientes', { evento_id: eventoId }), GET('/devoluciones-pendientes', { evento_id: eventoId })]), ([p, d]) => h('div', null,
       tarjeta(`Pagos pendientes o vencidos (${p.pagos.length})`, tabla([
         { titulo: 'Evento', celda: (x) => h('a', { href: `#/evento/${x.eventoId}` }, x.eventoId) },
-        { titulo: 'Concepto', celda: (x) => x.concepto },
+        { titulo: 'Concepto', celda: (x) => etiquetaConcepto(x.concepto) },
         { titulo: 'Importe', clase: 'num', celda: (x) => fmtImporte(x.importe) }, { titulo: 'Pagado', clase: 'num', celda: (x) => fmtImporte(x.pagado) },
         { titulo: 'Saldo', clase: 'num', celda: (x) => fmtImporte(x.saldo) }, { titulo: 'Fecha límite', celda: (x) => fmtFechaHora(x.fechaLimite) },
         { titulo: 'Estado', celda: (x) => h('div', null, insignia(x.estado), x.estado === 'Vencida' ? h('div', { class: 'peq' }, 'El plazo de pago aparece vencido.') : null) },
         { titulo: 'Acción', celda: (x) => botonAccion(ACCIONES.registrarPago, { eventoId: x.eventoId, estadoCuentaId: x.estadoCuentaId, contratoId: x.contratoId, obligaciones: [x] }, pintar, { clase: 'btn btn-peq btn-primario', texto: 'Registrar pago' }) },
       ], p.pagos, { vacioTitulo: 'No hay pagos pendientes', vacioDetalle: 'Todas las obligaciones están al corriente o sin efecto.' })),
       tarjeta(`Devoluciones pendientes (${d.devoluciones.length})`, tabla([
-        { titulo: 'Evento', celda: (x) => h('a', { href: `#/evento/${x.eventoId}` }, x.eventoId) }, { titulo: 'Tipo', celda: (x) => x.tipo },
-        { titulo: 'Concepto', celda: (x) => x.concepto }, { titulo: 'Importe', clase: 'num', celda: (x) => fmtImporte(x.importe) },
+        { titulo: 'Evento', celda: (x) => h('a', { href: `#/evento/${x.eventoId}` }, x.eventoId) }, { titulo: 'Tipo', celda: (x) => etiquetaTipoDevolucion(x.tipo) },
+        { titulo: 'Concepto', celda: (x) => etiquetaConcepto(x.concepto) }, { titulo: 'Importe', clase: 'num', celda: (x) => fmtImporte(x.importe) },
         { titulo: 'Fecha límite', celda: (x) => fmtFechaHora(x.fechaLimite) },
         { titulo: 'Plazo', celda: (x) => (x.vencida ? h('span', { class: 'etiqueta-alerta' }, 'Fuera de plazo') : 'En plazo') },
         { titulo: 'Acción', celda: (x) => botonAccion(ACCIONES.ejecutarDevolucion, { eventoId: x.eventoId, estadoCuentaId: x.estadoCuentaId, devolucionId: x.devolucionId, importe: x.importe, concepto: x.concepto }, pintar, { clase: 'btn btn-peq' }, ) },
@@ -50,7 +50,7 @@ export function solicitudes(contenedor, _p, consulta) {
   const pintar = () => cargarEn(salida, () => GET('/solicitudes', { estado: f.estado, tipo: f.tipo, evento_id: f.evento }),
     (r) => tarjeta(`${r.solicitudes.length} solicitud(es)`, tablaSolicitudes(r.solicitudes, pintar, { conEvento: true })));
   const sel = (id, etiqueta, clave, opciones) => h('div', { class: 'campo' }, h('label', { for: id }, etiqueta),
-    h('select', { id, onchange: (e) => { f[clave] = e.target.value; } }, h('option', { value: '' }, 'Todos'), opciones.map((o) => h('option', { value: o, selected: f[clave] === o ? true : null }, o))));
+    h('select', { id, onchange: (e) => { f[clave] = e.target.value; } }, h('option', { value: '' }, 'Todos'), opciones.map((o) => h('option', { value: o, selected: f[clave] === o ? true : null }, clave === 'tipo' ? etiquetaTipoSolicitud(o) : o))));
   contenedor.replaceChildren(cabecera('Solicitudes', 'Cambios, servicios adicionales y sustituciones de proveedor. Para registrar una solicitud nueva abre el evento correspondiente.'),
     filtroEvento(f.evento, (v) => { f.evento = v; pintar(); }, [sel('f-tipo', 'Tipo', 'tipo', ['cambio', 'servicio adicional', 'sustitución de proveedor']), sel('f-estado', 'Estado', 'estado', ESTADOS_SOLICITUD)]), salida);
   pintar();
