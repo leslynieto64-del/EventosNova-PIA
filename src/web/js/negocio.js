@@ -69,3 +69,21 @@ export const AYUDA_ESTADO = {
   'Vencida': 'El plazo de pago terminó sin que se cubriera el importe.',
   'Sin efecto': 'La obligación ya no se cobra.',
 };
+
+/** COR-06: etiquetas legibles de valores internos que la API devuelve tal cual. Solo se usan para mostrar; los filtros y las operaciones siguen usando el valor interno. */
+const CONCEPTOS = {
+  Anticipo: 'Anticipo', SaldoContratoOriginal: 'Saldo del contrato original', SustitucionProveedor: 'Sustitución de proveedor',
+  Cambio: 'Costo del cambio', CargoCambioTardio: 'Cargo por cambio tardío', CargosMoratorios: 'Cargos moratorios', ServicioAdicional: 'Servicio adicional',
+};
+export const etiquetaConcepto = (v) => CONCEPTOS[v] || v;
+const TIPOS_SOLICITUD = { cambio: 'Cambio', 'servicio adicional': 'Servicio adicional', 'sustitución de proveedor': 'Sustitución de proveedor' };
+export const etiquetaTipoSolicitud = (v) => TIPOS_SOLICITUD[v] || v;
+// El tipo de la devolución por solicitud no realizada llega como el código de su regla; el usuario ve su nombre.
+export const etiquetaTipoDevolucion = (v) => (/^SE-012$/.test(v) ? 'Solicitud no realizada' : v);
+
+/** COR-17: qué significa cada estado de un pago (el estado oficial no se cambia). Solo los pagos «Verificado» se suman a lo pagado. */
+export const AYUDA_PAGO = {
+  Registrado: 'Registrado, pendiente de verificación: todavía no se suma a lo pagado.',
+  Verificado: 'Verificado: ya se suma a lo pagado.',
+  'Importe incorrecto': 'El importe no coincidió al verificar.',
+};

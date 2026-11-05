@@ -2,7 +2,7 @@
    habilitan según el estado oficial devuelto, y el backend sigue siendo quien acepta o rechaza cada operación. */
 import { GET } from '../api.js';
 import { ACCIONES, accionesDeSolicitud, candidatosParaAsignar, consultarDisponibilidad, resumenProveedor } from '../acciones.js';
-import { AYUDA_ESTADO, fmtFechaHora, fmtImporte } from '../negocio.js';
+import { AYUDA_ESTADO, AYUDA_PAGO, etiquetaConcepto, etiquetaTipoDevolucion, etiquetaTipoSolicitud, fmtFechaHora, fmtImporte } from '../negocio.js';
 import { registro } from '../registro.js';
 import { puede } from '../sesion.js';
 import { aviso, botonAccion, cajaError, cargando, celdaProveedor, copiable, datos, dialogoInfo, ejecutarAccion, h, insignia, tabla, tarjeta, textoRespuesta, vacio } from '../ui.js';
@@ -47,17 +47,20 @@ function pagosVista(ec, pendientes, ctxBase, refrescar, evento) {
     h('div', { class: 'rejilla-2' }, ob('Anticipo (mínimo 30 %)', ec.anticipo, anticipoPend), ob('Saldo del contrato original', ec.saldoContratoOriginal, saldoPend)),
     h('p', { class: 'peq' }, 'El anticipo es un mínimo del 30 %: puede cubrirse con varios pagos parciales que se acumulan (criterio adoptado por el equipo, aún sin aprobación formal).'),
     h('h4', null, 'Pagos registrados'),
+    ec.pagosRegistrados.some((p) => p.estado === 'Registrado')
+      ? h('p', { class: 'caja-aviso' }, `Hay ${ec.pagosRegistrados.filter((p) => p.estado === 'Registrado').length} pago(s) registrado(s) pendiente(s) de verificación. Mientras no se verifiquen, no se suman a lo pagado ni reducen el saldo.`) : null,
     tabla([
-      { titulo: 'Concepto', celda: (p) => p.concepto }, { titulo: 'Importe', clase: 'num', celda: (p) => fmtImporte(p.importe) },
-      { titulo: 'Fecha del pago', celda: (p) => fmtFechaHora(p.fecha) }, { titulo: 'Estado', celda: (p) => insignia(p.estado) },
-      { titulo: 'Verificado', celda: (p) => (p.verificadoEn ? fmtFechaHora(p.verificadoEn) : '—') },
+      { titulo: 'Concepto', celda: (p) => etiquetaConcepto(p.concepto) }, { titulo: 'Importe', clase: 'num', celda: (p) => fmtImporte(p.importe) },
+      { titulo: 'Fecha del pago', celda: (p) => fmtFechaHora(p.fecha) },
+      { titulo: 'Estado', celda: (p) => h('div', null, insignia(p.estado), AYUDA_PAGO[p.estado] ? h('div', { class: 'peq' }, AYUDA_PAGO[p.estado]) : null) },
+      { titulo: 'Verificado', celda: (p) => (p.verificadoEn ? fmtFechaHora(p.verificadoEn) : 'Pendiente de verificación') },
     ], ec.pagosRegistrados, { vacioTitulo: 'Aún no hay pagos registrados', vacioDetalle: 'Cuando se registre un pago aparecerá aquí con su estado.' }),
     ec.obligacionesAdicionales.length ? [h('h4', null, 'Otras obligaciones'), tabla([
-      { titulo: 'Concepto', celda: (o) => o.concepto }, { titulo: 'Importe', clase: 'num', celda: (o) => fmtImporte(o.importe) },
-      { titulo: 'Pagado', clase: 'num', celda: (o) => fmtImporte(o.pagado) }, { titulo: 'Saldo', clase: 'num', celda: (o) => fmtImporte(o.saldo) },
+      { titulo: 'Concepto', celda: (o) => etiquetaConcepto(o.concepto) }, { titulo: 'Importe', clase: 'num', celda: (o) => fmtImporte(o.importe) },
+      { titulo: 'Pagado (verificado)', clase: 'num', celda: (o) => fmtImporte(o.pagado) }, { titulo: 'Saldo', clase: 'num', celda: (o) => fmtImporte(o.saldo) },
       { titulo: 'Plazo', celda: (o) => fmtFechaHora(o.plazo) }, { titulo: 'Estado', celda: (o) => insignia(o.estado) }], ec.obligacionesAdicionales)] : null,
     ec.devoluciones.length ? [h('h4', null, 'Devoluciones'), tabla([
-      { titulo: 'Tipo', celda: (d) => d.tipo }, { titulo: 'Concepto', celda: (d) => d.concepto }, { titulo: 'Importe', clase: 'num', celda: (d) => fmtImporte(d.importe) },
+      { titulo: 'Tipo', celda: (d) => etiquetaTipoDevolucion(d.tipo) }, { titulo: 'Concepto', celda: (d) => etiquetaConcepto(d.concepto) }, { titulo: 'Importe', clase: 'num', celda: (d) => fmtImporte(d.importe) },
       { titulo: 'Fecha límite', celda: (d) => fmtFechaHora(d.fechaLimite) }, { titulo: 'Estado', celda: (d) => insignia(d.estado) },
       { titulo: 'Acción', celda: (d) => (d.estado === 'Pendiente' ? botonAccion(ACCIONES.ejecutarDevolucion, { ...ctx, devolucionId: d.devolucionId, importe: d.importe, concepto: d.concepto }, refrescar, { clase: 'btn btn-peq' }) : (d.fechaDevolucion ? fmtFechaHora(d.fechaDevolucion) : '—')) },
     ], ec.devoluciones)] : null,
@@ -203,7 +206,7 @@ export async function evento(contenedor, [eventoId]) {
 export function tablaSolicitudes(lista, refrescar, { conEvento = false, pendientes = {} } = {}) {
   return tabla([
     conEvento ? { titulo: 'Evento', celda: (s) => h('a', { href: `#/evento/${s.eventoId}` }, s.eventoId) } : null,
-    { titulo: 'Tipo', celda: (s) => s.tipoSolicitud },
+    { titulo: 'Tipo', celda: (s) => etiquetaTipoSolicitud(s.tipoSolicitud) },
     { titulo: 'Solicitud', celda: (s) => h('div', null, copiable(s.solicitudId), s.servicioAfectado ? h('div', { class: 'peq' }, s.servicioAfectado) : null) },
     { titulo: 'Estado', celda: (s) => h('div', null, insignia(s.estadoActual), AYUDA_ESTADO[s.estadoActual] ? h('div', { class: 'peq' }, AYUDA_ESTADO[s.estadoActual]) : null,
       pendientes[s.solicitudId] ? h('div', { class: 'peq' }, `Pendiente: ${pendientes[s.solicitudId].accionPendiente}`) : null) },

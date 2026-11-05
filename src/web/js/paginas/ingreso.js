@@ -1,7 +1,7 @@
 /* Pantalla de inicio de sesión. Las credenciales las valida SIEMPRE el servidor; esta pantalla solo las envía. */
 import { ErrorApi } from '../api.js';
 import { iniciar } from '../sesion.js';
-import { h } from '../ui.js';
+import { conOjo, h } from '../ui.js';
 
 export function ingreso(contenedor, { mensaje, alIniciar }) {
   const alerta = h('div', { class: 'alerta-ingreso', role: 'alert', hidden: mensaje ? null : true }, mensaje || '');
@@ -20,7 +20,7 @@ export function ingreso(contenedor, { mensaje, alIniciar }) {
     }
   } },
   h('div', { class: 'campo' }, h('label', { for: 'ing-correo' }, 'Correo'), correo),
-  h('div', { class: 'campo' }, h('label', { for: 'ing-clave' }, 'Contraseña'), clave),
+  h('div', { class: 'campo' }, h('label', { for: 'ing-clave' }, 'Contraseña'), conOjo(clave)),
   h('div', { class: 'ingreso-aviso', 'aria-live': 'polite' }, alerta), boton);
   contenedor.replaceChildren(h('section', { class: 'ingreso' },
     h('div', { class: 'ingreso-marca' }, h('span', { class: 'marca-sello', 'aria-hidden': 'true' }, 'EN'), h('span', null, 'Eventos Nova')),

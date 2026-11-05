@@ -210,8 +210,7 @@ class ConsultarServicioAsignadoQuery:
 class ServicioAsignadoViewModel:
     servicioContratadoId: str
     servicio: str
-    condiciones: str                 # condiciones acordadas del servicio; el modelo no tiene cantidades propias
-    estado: str                      # situación del proveedor respecto del servicio
+    estado: str                     # situación del proveedor respecto del servicio
     respuesta: Optional[dict] = None   # S-5: la respuesta y su procedencia (None mientras el proveedor no haya respondido)
 
 
@@ -252,7 +251,7 @@ class ConsultarServicioAsignadoHandler:
         d = ev.datos
         return InformacionEventoProveedorViewModel(
             ev.id, d.tipo, d.fecha_hora.date().isoformat(), d.fecha_hora.strftime("%H:%M"), d.lugar, d.invitados_aproximados,
-            [ServicioAsignadoViewModel(s.servicio_contratado_id, s.servicio, s.condiciones.descripcion, s.estado.value, _respuesta_dict(s))
+            [ServicioAsignadoViewModel(s.servicio_contratado_id, s.servicio, s.estado.value, _respuesta_dict(s))
              for s in propios], ev.estado.value)
 
 

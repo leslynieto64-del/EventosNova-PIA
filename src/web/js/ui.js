@@ -136,6 +136,38 @@ export function copiable(texto) {
 // ---------------------------------------------------------------- formularios
 const RE_IMPORTE = /^\d+(\.\d+)?$/;
 
+/** Botón «Mostrar/Ocultar» para un campo de contraseña. Solo cambia cómo se ve lo escrito; el valor no se modifica ni se guarda. */
+export function conOjo(input) {
+  const boton = h('button', { type: 'button', class: 'btn btn-peq btn-ojo', 'aria-label': 'Mostrar contraseña', 'aria-pressed': 'false' }, 'Mostrar');
+  boton.addEventListener('click', () => {
+    const ver = input.type === 'password';
+    input.type = ver ? 'text' : 'password';
+    boton.textContent = ver ? 'Ocultar' : 'Mostrar';
+    boton.setAttribute('aria-label', ver ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    boton.setAttribute('aria-pressed', String(ver));
+  });
+  return h('div', { class: 'campo-clave' }, input, boton);
+}
+
+const UMBRAL_BUSQUEDA = 6;           // con más opciones que esto, la lista desplegable ofrece un cuadro de búsqueda
+
+/** Cuadro de búsqueda para una lista desplegable: filtra las opciones por texto sin cambiar el valor que se envía. */
+function busquedaSelect(select, campo) {
+  const todas = campo.opciones;
+  const caja = h('input', { type: 'search', class: 'busca-opciones', placeholder: 'Buscar por nombre…', autocomplete: 'off', 'aria-label': `Buscar: ${campo.etiqueta}` });
+  const estado = h('div', { class: 'peq busca-estado', 'aria-live': 'polite' });
+  caja.addEventListener('input', () => {
+    const q = caja.value.trim().toLowerCase();
+    const actual = select.value;
+    const visibles = todas.filter((o) => !q || String(o.texto).toLowerCase().includes(q) || String(o.valor).toLowerCase().includes(q) || o.valor === actual);
+    const sinVacia = [...select.options].filter((o) => o.value === '');
+    select.replaceChildren(...sinVacia, ...visibles.map((o) => h('option', { value: o.valor, selected: String(o.valor) === String(actual) }, o.texto)));
+    estado.textContent = q ? (visibles.length ? `${visibles.length} coincidencia(s).` : 'Sin coincidencias.') : '';
+  });
+  caja.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') ev.preventDefault(); });   // Enter no envía el formulario desde la búsqueda
+  return h('div', { class: 'busca-contenedor' }, caja, estado);
+}
+
 function crearControl(campo, id, valor) {
   const comunes = { id, name: campo.nombre, 'aria-describedby': `${id}-ayuda ${id}-error`, required: campo.requerido ? true : null };
   switch (campo.tipo) {
@@ -173,8 +205,12 @@ function validarCampo(campo, v) {
   return null;
 }
 
+/** Un resumen puede traer varios párrafos separados por salto de línea; el que empieza con «Atención:» se destaca como advertencia. */
+const parrafosResumen = (texto) => String(texto).split('\n').filter(Boolean)
+  .map((p) => h('p', p.startsWith('Atención:') ? { class: 'aviso-fuerte', role: 'alert' } : null, p));
+
 /**
- * Abre un formulario modal. def: {titulo, intro, campos:[{nombre,etiqueta,tipo,requerido,ayuda,valor,opciones,visibleSi}],
+ * Abre un formulario modal. def: {titulo, intro, campos:[{nombre,etiqueta,tipo,requerido,ayuda,valor,opciones,visibleSi,vacio,reiniciarAlOcultar}],
  * resumen(valores)→texto de confirmación, aviso (texto destacado), peligro, textoEnviar, enviar(valores)→Promise<respuesta>}.
  * Devuelve la respuesta del backend si la operación se completó, o null si se canceló.
  */
@@ -195,10 +231,12 @@ export function abrirFormulario(def) {
       const id = `f-${i}-${c.nombre}`;
       const ctl = crearControl(c, id, c.valor);
       controles.set(c.nombre, ctl);
+      const buscable = c.tipo === 'select' && (c.buscable ?? c.opciones.length > UMBRAL_BUSQUEDA);
       const fila = h('div', { class: `campo ${c.tipo === 'bool' ? 'campo-bool' : ''}` },
         c.tipo === 'bool'
           ? h('label', { for: id }, ctl, h('span', null, c.etiqueta))
-          : [h('label', { for: id }, c.etiqueta, c.requerido ? h('span', { class: 'req', 'aria-hidden': 'true' }, ' *') : h('span', { class: 'opc' }, ' (opcional)')), ctl],
+          : [h('label', { for: id }, c.etiqueta, c.requerido ? h('span', { class: 'req', 'aria-hidden': 'true' }, ' *') : h('span', { class: 'opc' }, ' (opcional)')),
+            buscable ? busquedaSelect(ctl, c) : null, c.tipo === 'contrasena' ? conOjo(ctl) : ctl],
         c.ayuda ? h('div', { class: 'ayuda', id: `${id}-ayuda` }, c.ayuda) : h('span', { id: `${id}-ayuda` }),
         h('div', { class: 'error-campo', id: `${id}-error`, role: 'alert' }));
       filas.set(c.nombre, fila);
@@ -218,7 +256,15 @@ export function abrirFormulario(def) {
     const visible = (c, v) => !c.visibleSi || c.visibleSi(v);
     function actualizarVisibilidad() {
       const v = valores();
-      for (const c of campos) filas.get(c.nombre).hidden = !visible(c, v);
+      for (const c of campos) {
+        const fila = filas.get(c.nombre), ahoraVisible = visible(c, v);
+        fila.hidden = !ahoraVisible;
+        if (!ahoraVisible && c.reiniciarAlOcultar) {                // el valor de un campo que deja de aplicar no se conserva (p. ej. el proveedor al cambiar el rol)
+          const ctl = controles.get(c.nombre);
+          if (ctl.value !== '') ctl.value = '';
+          fila.classList.remove('invalido'); fila.querySelector('.error-campo').textContent = ''; ctl.removeAttribute('aria-invalid');
+        }
+      }
     }
 
     const marcar = (nombre, mensaje) => {
@@ -279,7 +325,7 @@ export function abrirFormulario(def) {
     function mostrarEnConfirmacion(si, v) {
       forma.hidden = si; vistaConfirmacion.hidden = !si;
       if (si) {
-        vistaConfirmacion.replaceChildren(...sinVacios(h('p', null, def.resumen ? def.resumen(v) : 'Confirma que deseas ejecutar esta operación.'),
+        vistaConfirmacion.replaceChildren(...sinVacios(...parrafosResumen(def.resumen ? def.resumen(v) : 'Confirma que deseas ejecutar esta operación.'),
           def.aviso ? h('p', { class: 'aviso-fuerte' }, def.aviso) : null));      // un aviso ausente no se pinta (el DOM escribiría «null»)
         pie.replaceChildren(
           h('button', { type: 'button', class: 'btn', onclick: () => mostrarEnConfirmacion(false) }, campos.length ? 'Volver' : 'Cancelar'),

@@ -287,15 +287,16 @@ class ConsultaDelProveedor(unittest.TestCase):
         vm = e.app.queries.servicio_asignado.handle(ConsultarServicioAsignadoQuery('PV-1', e.evento_id))
         self.assertEqual((vm.eventoId, vm.tipoEvento, vm.fecha, vm.hora, vm.lugar, vm.invitadosAproximados),
                          (e.evento_id, 'Boda', '2026-11-20', '18:00', 'Salón', 100))
-        self.assertEqual([(s.servicioContratadoId, s.servicio, s.condiciones, s.estado) for s in vm.servicios],
-                         [(e.servicio_id, 'Banquete', 'Condiciones acordadas', 'Pendiente de confirmación del proveedor')])
+        self.assertEqual([(s.servicioContratadoId, s.servicio, s.estado) for s in vm.servicios],   # COR-05: sin condiciones comerciales del Cliente
+                         [(e.servicio_id, 'Banquete', 'Pendiente de confirmación del proveedor')])
 
     def test_cada_proveedor_ve_solo_sus_servicios(self):                                    # BN-007
         e = self.preparar()
         vm1 = e.app.queries.servicio_asignado.handle(ConsultarServicioAsignadoQuery('PV-1', e.evento_id))
         vm2 = e.app.queries.servicio_asignado.handle(ConsultarServicioAsignadoQuery('PV-2', e.evento_id))
         self.assertEqual([s.servicio for s in vm1.servicios], ['Banquete'])
-        self.assertEqual([(s.servicio, s.condiciones) for s in vm2.servicios], [('Música', 'DJ 4 horas')])
+        self.assertEqual([s.servicio for s in vm2.servicios], ['Música'])
+        self.assertFalse(hasattr(vm2.servicios[0], 'condiciones'))          # COR-05
 
     def test_proveedor_sin_servicios_o_evento_inexistente_no_obtiene_datos(self):             # BN-007
         e = self.preparar()

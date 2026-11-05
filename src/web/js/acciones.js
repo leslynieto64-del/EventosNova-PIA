@@ -1,7 +1,7 @@
 /* Operaciones de negocio de la API, declaradas una sola vez: formulario, texto de confirmación y petición real.
    Cada acción recibe un «contexto» con los identificadores que necesita (evento, contrato, estado de cuenta, solicitud…). */
 import { POST, GET } from './api.js';
-import { fmtImporte, fmtFechaHora } from './negocio.js';
+import { etiquetaConcepto, fmtImporte, fmtFechaHora } from './negocio.js';
 import { registro } from './registro.js';
 import { rol } from './sesion.js';
 
@@ -40,13 +40,19 @@ async function proveedoresDelServicio(servicio, excluirId) {
 
 const cuerpoDecision = (v) => ({ actor: v.actor, aprobada: v.aprobada, fecha: v.fecha, motivo: v.motivo || '' });
 
-const DATOS_PROPUESTOS = [
-  f('cambiar_datos', 'El cambio modifica los datos del evento (tipo, fecha, lugar o invitados)', 'bool', {}),
-  f('tipo', 'Tipo de evento', 'texto', { requerido: true, visibleSi: (v) => v.cambiar_datos }),
-  f('fecha_hora', 'Nueva fecha y hora del evento', 'fechahora', { requerido: true, visibleSi: (v) => v.cambiar_datos }),
-  f('lugar', 'Lugar', 'texto', { requerido: true, visibleSi: (v) => v.cambiar_datos }),
-  f('invitados_aproximados', 'Invitados aproximados', 'entero', { requerido: true, minimo: 1, visibleSi: (v) => v.cambiar_datos }),
-];
+// COR-16: los datos actuales del evento (c.evento, de la consulta administrativa) se muestran como valor inicial; solo se envían si el usuario marca
+// «El cambio modifica los datos del evento». Al aprobarse, el cambio reemplaza los datos del evento por los de esta solicitud.
+const datosPropuestos = (c) => {
+  const e = (c && c.evento) || {};
+  return [
+    f('cambiar_datos', 'El cambio modifica los datos del evento (tipo, fecha, lugar o invitados)', 'bool', {
+      ayuda: 'Al marcarlo se muestran los datos actuales del evento. Modifica solo lo que cambie: los demás se conservan tal como están.' }),
+    f('tipo', 'Tipo de evento', 'texto', { requerido: true, valor: e.tipoEvento, visibleSi: (v) => v.cambiar_datos }),
+    f('fecha_hora', 'Nueva fecha y hora del evento', 'fechahora', { requerido: true, valor: e.fechaHora, visibleSi: (v) => v.cambiar_datos }),
+    f('lugar', 'Lugar', 'texto', { requerido: true, valor: e.lugar, visibleSi: (v) => v.cambiar_datos }),
+    f('invitados_aproximados', 'Invitados aproximados', 'entero', { requerido: true, minimo: 1, valor: e.invitadosAproximados === undefined ? undefined : String(e.invitadosAproximados), visibleSi: (v) => v.cambiar_datos }),
+  ];
+};
 
 export const ACCIONES = {
   // ------------------------------------------------------------ eventos y propuestas
@@ -107,6 +113,7 @@ export const ACCIONES = {
   // ------------------------------------------------------------ contrato
   comunicarPolitica: {
     titulo: 'Comunicar política de no reembolso', textoEnviar: 'Registrar comunicación',
+    aviso: 'Antes de registrar, revisa que la comunicación no se haya registrado ya: un segundo registro reemplaza la fecha anterior.',
     intro: (c) => `Registra que se comunicó al Cliente la política de no reembolso del contrato ${c.contratoId}. Debe hacerse antes de la firma.`,
     campos: () => [FECHA('fecha', 'Fecha de la comunicación')],
     enviar: (v, c) => POST(`/contratos/${encodeURIComponent(c.contratoId)}/comunicacion-politica-no-reembolso`, { fecha: v.fecha }),
@@ -146,13 +153,19 @@ export const ACCIONES = {
     titulo: 'Registrar pago', textoEnviar: 'Registrar pago',
     intro: (c) => `Registra un pago recibido del Cliente en el estado de cuenta ${c.estadoCuentaId}. No se procesa ningún cobro: solo se anota el pago ya efectuado.`,
     campos: (c) => [
-      f('obligacion_id', 'Obligación que se paga', 'select', { requerido: true, opciones: c.obligaciones.map((o) => ({ valor: o.obligacionId, texto: `${o.concepto} — saldo ${fmtImporte(o.saldo)}${o.estado === 'Vencida' ? ' (vencida)' : ''}` })) }),
+      f('obligacion_id', 'Obligación que se paga', 'select', { requerido: true, opciones: c.obligaciones.map((o) => ({ valor: o.obligacionId, texto: `${etiquetaConcepto(o.concepto)} — saldo ${fmtImporte(o.saldo)}${o.estado === 'Vencida' ? ' (vencida)' : ''}` })) }),
       f('importe', 'Importe pagado', 'importe', { requerido: true, positivo: true, ayuda: 'Los pagos parciales se acumulan; el anticipo mínimo puede cubrirse con varios pagos.' }),
       FECHA('fecha', 'Fecha en que el Cliente efectuó el pago', 'Es la fecha efectiva del pago según el comprobante; decide si cumplió el plazo.'),
       f('comprobante', 'Referencia del comprobante', 'texto', { requerido: true, ayuda: 'No se puede repetir el mismo comprobante en una misma obligación.' }),
       f('verificar_ahora', 'Verificar el pago ahora', 'bool', { valor: true, ayuda: 'Si lo desmarcas, el pago queda Registrado y se verifica después.' }),
     ],
-    resumen: (v, c) => { const o = c.obligaciones.find((x) => x.obligacionId === v.obligacion_id); return `Se registrará un pago de ${fmtImporte(v.importe)} para «${o ? o.concepto : v.obligacion_id}»${v.verificar_ahora ? ' y se verificará de inmediato' : ''}.`; },
+    // COR-07: solo advierte; las reglas aprobadas permiten registrar un importe mayor al saldo y el servidor sigue decidiendo.
+    resumen: (v, c) => {
+      const o = c.obligaciones.find((x) => x.obligacionId === v.obligacion_id);
+      const excede = o && o.saldo !== undefined && o.saldo !== null && Number(v.importe) > Number(o.saldo);
+      return `Se registrará un pago de ${fmtImporte(v.importe)} para «${o ? etiquetaConcepto(o.concepto) : v.obligacion_id}»${v.verificar_ahora ? ' y se verificará de inmediato' : ''}.`
+        + (excede ? `\nAtención: el importe supera el saldo pendiente de esta obligación (${fmtImporte(o.saldo)}). Las reglas vigentes lo permiten, pero el excedente no se devuelve automáticamente; confirma que el importe y el comprobante son correctos.` : '');
+    },
     enviar: (v, c) => POST(`/estados-cuenta/${encodeURIComponent(c.estadoCuentaId)}/pagos`, { obligacion_id: v.obligacion_id, importe: v.importe, fecha: v.fecha, comprobante: v.comprobante, verificar_ahora: v.verificar_ahora }),
     despues: (r, c) => r.datos.pago_id && registro.guardarPago({ pagoId: r.datos.pago_id, estadoCuentaId: c.estadoCuentaId, eventoId: c.eventoId, estado: r.datos.estado }),
     exito: (r) => (r.datos.pago_id ? `Identificador del pago: ${r.datos.pago_id}` : null),
@@ -191,7 +204,7 @@ export const ACCIONES = {
   },
   ejecutarDevolucion: {
     titulo: 'Registrar devolución efectuada', textoEnviar: 'Registrar devolución',
-    intro: (c) => `Registra que se devolvió ${fmtImporte(c.importe)} (${c.concepto}). La devolución real se hace fuera del sistema.`,
+    intro: (c) => `Registra que se devolvió ${fmtImporte(c.importe)} (${etiquetaConcepto(c.concepto)}). La devolución real se hace fuera del sistema.`,
     campos: () => [f('comprobante', 'Comprobante de la devolución', 'texto', { ayuda: 'Opcional. Si lo dejas vacío, el sistema usa su ejecutor de devoluciones (hoy una simulación).' })],
     resumen: (v, c) => `Se registrará como efectuada la devolución de ${fmtImporte(c.importe)}.`,
     enviar: (v, c) => POST(`/estados-cuenta/${encodeURIComponent(c.estadoCuentaId)}/devoluciones/${encodeURIComponent(c.devolucionId)}/ejecucion`, v.comprobante ? { comprobante: v.comprobante } : undefined),
@@ -273,7 +286,7 @@ export const ACCIONES = {
     // Los candidatos (D-P2) son los proveedores registrados, activos y que ofrecen el servicio. Su disponibilidad en la fecha la confirma el proveedor al responder.
     campos: (c) => [f('proveedor_id', 'Proveedor', 'select', { requerido: true, opciones: c.candidatos,
       ayuda: 'Solo aparecen los proveedores candidatos: registrados, activos y que ofrecen este servicio. Que estén libres en la fecha del evento lo confirma el proveedor al responder; si falta alguno, regístralo en Proveedores indicando que ofrece este servicio.' })],
-    resumen: (v, c) => `Se asignará el proveedor ${v.proveedor_id} al servicio «${c.servicio}». Quedará «Pendiente de confirmación del proveedor».`,
+    resumen: (v, c) => `Se asignará el proveedor ${((c.candidatos || []).find((x) => x.valor === v.proveedor_id) || {}).texto || v.proveedor_id} al servicio «${c.servicio}». Quedará «Pendiente de confirmación del proveedor».`,
     enviar: (v, c) => POST(`/eventos/${encodeURIComponent(c.eventoId)}/servicios/${encodeURIComponent(c.servicioId)}/proveedor`, { proveedor_id: v.proveedor_id }),
   },
   respuestaProveedor: {
@@ -297,8 +310,8 @@ export const ACCIONES = {
     campos: (c) => [
       f('contrato_id', 'Contrato', 'select', { requerido: true, opciones: c.contratos.map((x) => ({ valor: x.contratoId, texto: `${x.contratoId} — ${x.estado}` })), valor: c.contratos[0] && c.contratos[0].contratoId }),
       f('descripcion', 'Descripción del cambio', 'textarea', { requerido: true }),
-      f('tarifa_vigente', 'Tarifa vigente del cargo por cambio tardío', 'importe', { requerido: true, ayuda: 'La política de Eventos Nova la define; el sistema la usa si el cambio se pide con poca anticipación.' }),
-      ...DATOS_PROPUESTOS],
+      f('tarifa_vigente', 'Tarifa vigente del cargo por cambio tardío', 'importe', { requerido: true, ayuda: 'Escribe la tarifa autorizada por Eventos Nova (política vigente); no uses otro importe. Solo se cobra si el cambio se pide con menos de 7 días naturales y resulta viable.' }),
+      ...datosPropuestos(c)],
     enviar: (v, c) => POST('/solicitudes-cambio', {
       evento_id: c.eventoId, contrato_id: v.contrato_id, descripcion: v.descripcion, tarifa_vigente: v.tarifa_vigente,
       datos_propuestos: v.cambiar_datos ? { tipo: v.tipo, fecha_hora: v.fecha_hora, lugar: v.lugar, invitados_aproximados: Number(v.invitados_aproximados) } : null }),
@@ -478,7 +491,7 @@ ACCIONES.crearCuenta = {
     f('correo', 'Correo (será su usuario)', 'texto', { requerido: true }),
     f('rol', 'Rol', 'select', { requerido: true, opciones: [{ valor: 'coordinador', texto: 'Coordinación' }, { valor: 'administrador', texto: 'Administración' }, { valor: 'proveedor', texto: 'Proveedor' }],
       ayuda: 'Coordinación: eventos, propuestas, contratos y solicitudes. Administración: pagos, devoluciones, autorizaciones y cuentas. Proveedor: solo sus servicios.' }),
-    f('proveedor_id', 'Proveedor al que pertenece', 'select', { requerido: true, visibleSi: (v) => v.rol === 'proveedor', opciones: c.proveedores.map((p) => ({ valor: p.proveedorId, texto: p.nombre })),
+    f('proveedor_id', 'Proveedor al que pertenece', 'select', { requerido: true, vacio: 'Selecciona un proveedor', reiniciarAlOcultar: true, visibleSi: (v) => v.rol === 'proveedor', opciones: c.proveedores.map((p) => ({ valor: p.proveedorId, texto: p.nombre })),
       ayuda: 'Solo las cuentas de proveedor se vinculan a un proveedor del catálogo.' }),
     f('contrasena', 'Contraseña inicial', 'contrasena', { requerido: true, minLongitud: 12, ayuda: 'Mínimo 12 caracteres. Compártela por un medio seguro; no se vuelve a mostrar.' })],
   resumen: (v) => `Se creará la cuenta de ${v.nombre} (${v.correo}) con el rol «${v.rol}».`,
