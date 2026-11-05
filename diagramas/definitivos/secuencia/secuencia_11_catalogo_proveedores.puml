@@ -1,0 +1,21 @@
+@startuml secuencia_11_catalogo_proveedores
+skinparam defaultFontName Arial
+autonumber
+participant "Coordinador" as C
+participant "Administrador" as AD
+participant "API FastAPI + aplicar_seguridad" as API
+participant "GestionCatalogoProveedoresService" as GCat
+participant "ProveedorRepositorySQL" as PR
+participant "PostgreSQL (proveedor)" as PG
+C -> API : POST /proveedores
+API -> GCat : registrar_proveedor()
+GCat -> PR : guardar(Proveedor.registrar())
+PR -> PG : INSERT (nombre único)
+C -> API : GET /proveedores · GET /proveedores/{id}
+API -> GCat : listar_proveedores() / consultar_proveedor()
+C -> API : POST /proveedores/{id}/edicion
+API --> C : 403: permiso proveedores.editar solo del Administrador
+AD -> API : POST /proveedores/{id}/desactivacion | /activacion | /edicion
+API -> GCat : cambiar_actividad_proveedor() / editar_proveedor()
+GCat -> PR : actualizar() (conserva historial y asignaciones)
+@enduml

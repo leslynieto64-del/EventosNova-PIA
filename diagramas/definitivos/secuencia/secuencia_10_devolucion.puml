@@ -1,0 +1,18 @@
+@startuml secuencia_10_devolucion
+skinparam defaultFontName Arial
+autonumber
+participant "Administrador" as AD
+participant "API FastAPI + aplicar_seguridad" as API
+participant "ConsultarDevolucionesPendientesHandler" as Q
+participant "GestionPagosService" as GPa
+participant "EstadoCuenta.Devolucion" as EC
+participant "IEjecutorDevoluciones (simulado)" as EXT
+AD -> API : GET /devoluciones-pendientes
+API -> Q : handle(ConsultarDevolucionesPendientesQuery)
+Q --> API : DevolucionesPendientesViewModel
+AD -> API : POST /estados-cuenta/{ec}/devoluciones/{dev}/ejecucion
+API -> GPa : registrar_y_ejecutar_devolucion()
+GPa -> EXT : ejecutar(devolución)
+GPa -> EC : registrar_devolucion_efectuada() → «Efectuada»; DevolucionRegistrada
+API --> AD : 200 con comprobante y fecha
+@enduml

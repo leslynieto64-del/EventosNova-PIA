@@ -1,0 +1,27 @@
+@startuml secuencia_03_contratacion_anticipo
+skinparam defaultFontName Arial
+autonumber
+participant "Coordinador" as C
+participant "Administrador" as AD
+participant "API FastAPI + aplicar_seguridad" as API
+participant "FormalizarContratacionService" as FC
+participant "GestionPagosService" as GPa
+participant "Contrato / EstadoCuenta / Evento" as AG
+participant "IVerificadorPagos (simulado)" as EXT
+C -> API : POST /propuestas/{id}/contrato
+API -> FC : preparar_contrato()
+C -> API : POST /contratos/{id}/comunicacion-politica-no-reembolso
+C -> API : POST /contratos/{id}/firma
+API -> FC : registrar_firma_contrato()
+FC -> AG : firmar() → ContratoFirmado
+AG --> GPa : reacción: registrar_obligacion_anticipo() (plazo 3 días hábiles)
+AD -> API : POST /estados-cuenta/{id}/pagos
+API -> GPa : registrar_y_verificar_pago()
+GPa -> EXT : verificar(comprobante) fuera de la transacción
+GPa -> AG : Pago «Verificado»; obligación «Liquidada»; PagoVerificado
+C -> API : POST /contratos/{id}/confirmacion
+API -> FC : confirmar_contratacion()
+FC -> AG : ContratoEstaFirmado ∧ PoliticaNoReembolsoComunicada ∧ AnticipoVerificado
+AG -> AG : Contrato «Contratación confirmada»; Evento «En organización»
+note over C, AG : alterno: seguimiento-anticipo; 24 h sin pago → «Cerrado sin contratación»
+@enduml

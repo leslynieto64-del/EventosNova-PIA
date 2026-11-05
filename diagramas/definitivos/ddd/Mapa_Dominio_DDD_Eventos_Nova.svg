@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1840" height="1058" viewBox="0 0 1840 1058">
+<defs><marker id="block" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker><marker id="open" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,5 L0,10" fill="none" stroke="#333" stroke-width="1.2"/></marker><marker id="tri" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L13,6 L0,12 z" fill="#fff" stroke="#333" stroke-width="1.2"/></marker><marker id="diamond" markerWidth="16" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,5 L8,1 L15,5 L8,9 z" fill="#333"/></marker><marker id="odiamond" markerWidth="16" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,5 L8,1 L15,5 L8,9 z" fill="#fff" stroke="#333"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="30.0" y="40.0" font-family="Arial" font-size="20" text-anchor="start" fill="#1F4E79" font-weight="bold">Mapa de dominio DDD · Eventos Nova (estado implementado)</text>
+<text x="30.0" y="62.0" font-family="Arial" font-size="12" text-anchor="start" fill="#444">Subdominios, contextos, 7 raíces de agregado, entidades internas, objetos de valor, servicios de dominio y relaciones por identificador</text>
+<rect x="30.0" y="108.0" width="1010.0" height="400.0" rx="4" fill="#EEF5FC" stroke="#7EA6D3" stroke-width="1.5"/>
+<text x="40.0" y="126.0" font-family="Arial" font-size="12" text-anchor="start" fill="#1F4E79" font-weight="bold">Subdominio principal · Contexto Gestión del evento y contratación</text>
+<rect x="30.0" y="568.0" width="1010.0" height="250.0" rx="4" fill="#F3EEF8" stroke="#A68BC4" stroke-width="1.5"/>
+<text x="40.0" y="586.0" font-family="Arial" font-size="12" text-anchor="start" fill="#1F4E79" font-weight="bold">Subdominio principal · Contexto Solicitudes posteriores a la contratación</text>
+<rect x="1080.0" y="108.0" width="360.0" height="400.0" rx="4" fill="#EEF8F1" stroke="#7DB58D" stroke-width="1.5"/>
+<text x="1090.0" y="126.0" font-family="Arial" font-size="12" text-anchor="start" fill="#1F4E79" font-weight="bold">Subdominio principal · Contexto Finanzas del contrato</text>
+<rect x="1080.0" y="568.0" width="360.0" height="160.0" rx="4" fill="#FDF5E8" stroke="#D3A256" stroke-width="1.5"/>
+<text x="1090.0" y="586.0" font-family="Arial" font-size="12" text-anchor="start" fill="#1F4E79" font-weight="bold">Soporte · Catálogo de proveedores</text>
+<rect x="1480.0" y="108.0" width="330.0" height="220.0" rx="4" fill="#F5F5F5" stroke="#666666" stroke-width="1.5"/>
+<text x="1490.0" y="126.0" font-family="Arial" font-size="12" text-anchor="start" fill="#1F4E79" font-weight="bold">Genérico · Identidad y acceso</text>
+<rect x="1480.0" y="358.0" width="330.0" height="370.0" rx="4" fill="#F5F5F5" stroke="#666666" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="1490.0" y="376.0" font-family="Arial" font-size="12" text-anchor="start" fill="#1F4E79" font-weight="bold">Genérico · Integraciones simuladas</text>
+<rect x="30.0" y="858.0" width="1780.0" height="170.0" rx="4" fill="#FFFFFF" stroke="#333333" stroke-width="1.5"/>
+<text x="40.0" y="876.0" font-family="Arial" font-size="12" text-anchor="start" fill="#1F4E79" font-weight="bold">Lógica de dominio transversal</text>
+<rect x="50.0" y="148.0" width="300.0" height="114.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="50.0" y="148.0" width="300.0" height="38.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="200.0" y="161.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">«raíz de agregado»</text>
+<text x="200.0" y="173.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">Propuesta</text>
+<line x1="50.0" y1="186.0" x2="350.0" y2="186.0" stroke="#D6B656"/>
+<text x="56.0" y="200.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Entidades internas: VersionPropuesta</text>
+<line x1="50.0" y1="207.0" x2="350.0" y2="207.0" stroke="#D6B656"/>
+<text x="56.0" y="221.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Objetos de valor: ContenidoPropuesta</text>
+<line x1="50.0" y1="228.0" x2="350.0" y2="228.0" stroke="#D6B656"/>
+<text x="56.0" y="242.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Estados: En elaboración, En revisión del Cliente,</text>
+<text x="56.0" y="255.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Aceptada, Cerrada por no aceptación</text>
+<rect x="375.0" y="148.0" width="300.0" height="127.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="375.0" y="148.0" width="300.0" height="38.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="525.0" y="161.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">«raíz de agregado»</text>
+<text x="525.0" y="173.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">Contrato</text>
+<line x1="375.0" y1="186.0" x2="675.0" y2="186.0" stroke="#D6B656"/>
+<text x="381.0" y="200.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Entidades internas: AnexoContrato</text>
+<line x1="375.0" y1="207.0" x2="675.0" y2="207.0" stroke="#D6B656"/>
+<text x="381.0" y="221.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Objetos de valor: CondicionesContractuales,</text>
+<text x="381.0" y="234.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PoliticaNoReembolso, EvidenciaAnticipo</text>
+<line x1="375.0" y1="241.0" x2="675.0" y2="241.0" stroke="#D6B656"/>
+<text x="381.0" y="255.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Estados: En preparación, Firmado, Contratación</text>
+<text x="381.0" y="268.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">confirmada, Cerrado sin confirmar</text>
+<rect x="700.0" y="148.0" width="320.0" height="153.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="700.0" y="148.0" width="320.0" height="38.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="860.0" y="161.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">«raíz de agregado»</text>
+<text x="860.0" y="173.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">Evento</text>
+<line x1="700.0" y1="186.0" x2="1020.0" y2="186.0" stroke="#D6B656"/>
+<text x="706.0" y="200.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Entidades internas: ServicioContratado,</text>
+<text x="706.0" y="213.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">SolicitudCancelacion</text>
+<line x1="700.0" y1="220.0" x2="1020.0" y2="220.0" stroke="#D6B656"/>
+<text x="706.0" y="234.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Objetos de valor: DatosEvento, RespuestaProveedor,</text>
+<text x="706.0" y="247.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">RevisionAdministrativa, MotivoCancelacionEvento</text>
+<line x1="700.0" y1="254.0" x2="1020.0" y2="254.0" stroke="#D6B656"/>
+<text x="706.0" y="268.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Estados: En gestión, En organización, En</text>
+<text x="706.0" y="281.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">ejecución, Finalizado, Cancelado, Cerrado sin</text>
+<text x="706.0" y="294.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">contratación</text>
+<rect x="50.0" y="608.0" width="300.0" height="119.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="50.0" y="608.0" width="300.0" height="38.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="200.0" y="621.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">«raíz de agregado»</text>
+<text x="200.0" y="633.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">SolicitudCambio</text>
+<line x1="50.0" y1="646.0" x2="350.0" y2="646.0" stroke="#D6B656"/>
+<text x="56.0" y="660.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Objetos de valor: ResultadoViabilidad,</text>
+<text x="56.0" y="673.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">ImpactoModificacion, Decision, TarifaCargoTardio,</text>
+<text x="56.0" y="686.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">AnticipacionSolicitud</text>
+<line x1="50.0" y1="693.0" x2="350.0" y2="693.0" stroke="#D6B656"/>
+<text x="56.0" y="707.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Estados: 14 estados (Registrada ... Cerrada por</text>
+<text x="56.0" y="720.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">evento cancelado)</text>
+<rect x="375.0" y="608.0" width="300.0" height="106.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="375.0" y="608.0" width="300.0" height="38.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="525.0" y="621.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">«raíz de agregado»</text>
+<text x="525.0" y="633.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">SolicitudServicioAdicional</text>
+<line x1="375.0" y1="646.0" x2="675.0" y2="646.0" stroke="#D6B656"/>
+<text x="381.0" y="660.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Objetos de valor: DisponibilidadProveedor,</text>
+<text x="381.0" y="673.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Decision, AnticipacionSolicitud</text>
+<line x1="375.0" y1="680.0" x2="675.0" y2="680.0" stroke="#D6B656"/>
+<text x="381.0" y="694.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Estados: 15 estados (Registrada ... Cerrada por</text>
+<text x="381.0" y="707.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">evento cancelado)</text>
+<rect x="700.0" y="608.0" width="320.0" height="106.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="700.0" y="608.0" width="320.0" height="38.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="860.0" y="621.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">«raíz de agregado»</text>
+<text x="860.0" y="633.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">SustitucionProveedor</text>
+<line x1="700.0" y1="646.0" x2="1020.0" y2="646.0" stroke="#D6B656"/>
+<text x="706.0" y="660.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Objetos de valor: AlternativaPropuesta, Importe</text>
+<text x="706.0" y="673.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">(costo adicional)</text>
+<line x1="700.0" y1="680.0" x2="1020.0" y2="680.0" stroke="#D6B656"/>
+<text x="706.0" y="694.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Estados: 7 estados (En búsqueda de alternativa ...</text>
+<text x="706.0" y="707.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Cerrada por evento cancelado)</text>
+<rect x="1100.0" y="148.0" width="320.0" height="192.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="1100.0" y="148.0" width="320.0" height="38.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="1260.0" y="161.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">«raíz de agregado»</text>
+<text x="1260.0" y="173.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">EstadoCuenta (uno por contrato)</text>
+<line x1="1100.0" y1="186.0" x2="1420.0" y2="186.0" stroke="#D6B656"/>
+<text x="1106.0" y="200.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Entidades internas: ObligacionPago, Pago,</text>
+<text x="1106.0" y="213.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Devolucion</text>
+<line x1="1100.0" y1="220.0" x2="1420.0" y2="220.0" stroke="#D6B656"/>
+<text x="1106.0" y="234.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Objetos de valor: Importe, PlazoPago; conceptos:</text>
+<text x="1106.0" y="247.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Anticipo, SaldoContratoOriginal, Cambio,</text>
+<text x="1106.0" y="260.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">CargoCambioTardio, CargosMoratorios,</text>
+<text x="1106.0" y="273.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">ServicioAdicional, SustitucionProveedor</text>
+<line x1="1100.0" y1="280.0" x2="1420.0" y2="280.0" stroke="#D6B656"/>
+<text x="1106.0" y="294.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Estados: Obligación: Pendiente, Vencida,</text>
+<text x="1106.0" y="307.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Liquidada, Sin efecto; Pago: Registrado,</text>
+<text x="1106.0" y="320.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Verificado, Importe incorrecto; Devolución:</text>
+<text x="1106.0" y="333.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">Pendiente, Efectuada</text>
+<rect x="1100.0" y="608.0" width="320.0" height="72.0" fill="#FFFFFF" stroke="#D79B00" stroke-width="1.3"/>
+<rect x="1100.0" y="608.0" width="320.0" height="38.0" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.3"/>
+<text x="1260.0" y="621.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">«objeto de valor / registro»</text>
+<text x="1260.0" y="633.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222" font-weight="bold">Proveedor</text>
+<line x1="1100.0" y1="646.0" x2="1420.0" y2="646.0" stroke="#D79B00"/>
+<text x="1106.0" y="660.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">proveedor_id, nombre, servicios, contacto,</text>
+<text x="1106.0" y="673.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">registrado_en, activo (D-P1, migraciones 0005 y 0007)</text>
+<rect x="1500.0" y="153.0" width="290.0" height="150.0" rx="10" fill="#FFFFFF" stroke="#333333" stroke-width="1.5"/>
+<text x="1645.0" y="219.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Usuario, Sesión e intentos de acceso; roles</text>
+<text x="1645.0" y="231.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Administrador, Coordinador y Proveedor; matriz</text>
+<text x="1645.0" y="244.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">deny-by-default (S-1, S-9)</text>
+<rect x="1500.0" y="403.0" width="290.0" height="170.0" rx="10" fill="#FFFFFF" stroke="#333333" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="1645.0" y="466.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Puertos: IVerificadorPagos,</text>
+<text x="1645.0" y="479.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">IEjecutorDevoluciones, INotificadorParticipantes,</text>
+<text x="1645.0" y="491.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">IConsultaDisponibilidadProveedor. No existe</text>
+<text x="1645.0" y="504.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">integración real con pasarela de pagos ni</text>
+<text x="1645.0" y="516.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">mensajería.</text>
+<rect x="50.0" y="903.0" width="330.0" height="100.0" rx="10" fill="#D0F0EC" stroke="#2F8F83" stroke-width="1.5"/>
+<text x="215.0" y="950.4" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Servicios de dominio: EvaluarImpactoCambio (GL-039) y</text>
+<text x="215.0" y="962.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">EvaluarRegularizacionDeSolicitudes</text>
+<rect x="410.0" y="903.0" width="420.0" height="100.0" rx="10" fill="#D0F0EC" stroke="#2F8F83" stroke-width="1.5"/>
+<text x="620.0" y="944.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Specification: 12 reglas (AnticipacionMinima, SinSaldoVencido,</text>
+<text x="620.0" y="956.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">AnticipoVerificado, ContratoEstaFirmado, EventoNoIniciado...) con</text>
+<text x="620.0" y="969.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">combinadores Y, O, No, ConMotivo</text>
+<rect x="860.0" y="903.0" width="420.0" height="100.0" rx="10" fill="#D0F0EC" stroke="#2F8F83" stroke-width="1.5"/>
+<text x="1070.0" y="944.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">State Machine: MaquinaEstados genérica; máquinas de Evento, Contrato,</text>
+<text x="1070.0" y="956.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">ObligacionPago, Pago, Devolución, SolicitudCambio, ServicioAdicional y</text>
+<text x="1070.0" y="969.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Sustitución</text>
+<rect x="1310.0" y="903.0" width="480.0" height="100.0" rx="10" fill="#D0F0EC" stroke="#2F8F83" stroke-width="1.5"/>
+<text x="1550.0" y="950.4" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">31 eventos de dominio (EventoDominio), guardados en el Outbox y despachados a</text>
+<text x="1550.0" y="962.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">reacciones en transacciones propias (ADR-004, ADR-005)</text>
+<path d="M200.0,148.0 L200.0,132.0 L940.0,132.0 L940.0,148.0" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#open)"/>
+<rect x="541.8" y="124.8" width="56.4" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="570.0" y="134.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">evento_id</text>
+<path d="M525.0,275.0 L525.0,338.0 L200.0,338.0 L200.0,262.0" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#open)"/>
+<rect x="299.8" y="324.5" width="112.4" height="27.0" fill="#FFFFFF" opacity="0.92"/>
+<text x="356.0" y="334.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">propuesta_id,</text>
+<text x="356.0" y="347.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">version_aceptada_id</text>
+<path d="M1260.0,340.0 L1260.0,538.0 L440.0,538.0 L440.0,338.0 L435.0,275.0" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#open)"/>
+<rect x="783.6" y="530.8" width="67.6" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="817.4" y="540.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">contrato_id</text>
+<path d="M200.0,608.0 L200.0,553.0 L790.0,553.0 L780.0,301.0" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#open)"/>
+<rect x="517.8" y="533.2" width="151.6" height="39.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="593.6" y="543.2" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">evento_id, contrato_id,</text>
+<text x="593.6" y="555.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">estado_cuenta_id (las tres</text>
+<text x="593.6" y="568.2" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">solicitudes)</text>
+<path d="M1020.0,654.2 L1100.0,650.8" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#open)"/>
+<rect x="992.6" y="639.0" width="134.8" height="27.0" fill="#FFFFFF" opacity="0.92"/>
+<text x="1060.0" y="649.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">proveedor_original_id /</text>
+<text x="1060.0" y="661.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">alternativas</text>
+<path d="M1015.7,301.0 L1030.0,308.0 L1030.0,568.0 L1260.0,568.0 L1260.0,608.0" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#open)"/>
+<rect x="940.2" y="557.8" width="179.6" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="1030.0" y="567.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">ServicioContratado.proveedor_id</text>
+<path d="M1645.0,303.0 L1645.0,338.0 L1450.0,338.0 L1450.0,648.0 L1420.0,644.0" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#open)"/>
+<rect x="1388.2" y="379.6" width="123.6" height="27.0" fill="#FFFFFF" opacity="0.92"/>
+<text x="1450.0" y="389.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">cuenta de Proveedor →</text>
+<text x="1450.0" y="402.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">proveedor_id</text>
+<path d="M525.0,148.0 L525.0,96.0 L1260.0,96.0 L1260.0,148.0" fill="none" stroke="#2F8F83" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="811.1" y="82.5" width="162.8" height="27.0" fill="#FFFFFF" opacity="0.92"/>
+<text x="892.5" y="92.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">ContratoFirmado → obligación</text>
+<text x="892.5" y="105.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">de anticipo</text>
+<path d="M860.0,608.0 L860.0,301.0" fill="none" stroke="#2F8F83" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="773.0" y="441.0" width="174.0" height="27.0" fill="#FFFFFF" opacity="0.92"/>
+<text x="860.0" y="451.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">SustitucionProveedorConfirmada</text>
+<text x="860.0" y="463.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">→ reasignar proveedor</text>
+</svg>

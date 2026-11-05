@@ -1,0 +1,27 @@
+@startuml secuencia_06_solicitud_de_cambio
+skinparam defaultFontName Arial
+autonumber
+participant "Coordinador" as C
+participant "Administrador" as AD
+participant "API FastAPI + aplicar_seguridad" as API
+participant "GestionCambiosEventoService" as GC
+participant "SolicitudCambio" as SC
+participant "GestionPagosService" as GPa
+participant "Evento" as EV
+C -> API : POST /solicitudes-cambio
+API -> GC : registrar_solicitud_cambio()
+GC -> SC : SinSaldoVencido; anticipación ≥ 7 días o tarifa tardía
+C -> API : POST .../viabilidad
+API -> GC : evaluar_viabilidad_cambio() (EvaluarImpactoCambio)
+C -> API : POST .../decision-cliente (costo y condiciones, D-P3)
+API -> GC : registrar_decision_cliente_cambio()
+AD -> API : POST .../autorizacion
+API -> GC : registrar_autorizacion_administracion_cambio()
+C -> API : POST .../anexo · POST .../solicitud-pago
+API -> GPa : comunicar_solicitud_pago_cambio() (24 h)
+C -> API : POST .../confirmacion
+API -> GC : confirmar_cambio()
+GC -> SC : confirmar() → CambioConfirmado
+SC --> EV : reacción: aplicar_cambio_confirmado()
+note over C, SC : cierres: falta de pago, inicio del evento, evento cancelado
+@enduml

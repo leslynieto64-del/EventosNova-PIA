@@ -1,0 +1,23 @@
+@startuml secuencia_05_llegada_de_t_y_finalizacion
+skinparam defaultFontName Arial
+autonumber
+participant "Trabajador (worker)" as W
+participant "GestionCierreEventoService" as GCE
+participant "Evento / Contrato / solicitudes" as EV
+participant "UnitOfWorkSQL + OutboxSQL" as UoW
+participant "PostgreSQL" as PG
+participant "Coordinador" as C
+W -> GCE : procesar_eventos_vencidos(ahora) cada 2 s
+GCE -> PG : listar_con_fecha_vencida()
+GCE -> GCE : por evento: procesar_inicio_evento()
+GCE -> EV : Evento.iniciar() → «En ejecución»; EventoIniciado
+GCE -> EV : cerrar_por_inicio_evento() en solicitudes abiertas
+GCE -> EV : En gestión: cerrar_sin_contratacion(); Contrato cerrar_por_inicio()
+GCE -> UoW : confirmar(): agregados + outbox_evento
+UoW -> PG : COMMIT
+W -> UoW : DespachadorOutboxSQL.despachar() (SKIP LOCKED)
+== Finalización ==
+C -> GCE : POST /eventos/{id}/finalizacion → finalizar_evento()
+GCE -> EV : finalizar() solo desde «En ejecución» → «Finalizado»
+C -> GCE : respaldo: POST /eventos/{id}/inicio (rechazado antes de T)
+@enduml

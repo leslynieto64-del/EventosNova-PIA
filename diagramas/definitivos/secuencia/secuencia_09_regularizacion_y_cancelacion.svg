@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1422" height="991" viewBox="0 0 1422 991">
+<defs><marker id="block" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker><marker id="open" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,5 L0,10" fill="none" stroke="#333" stroke-width="1.2"/></marker><marker id="tri" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L13,6 L0,12 z" fill="#fff" stroke="#333" stroke-width="1.2"/></marker><marker id="diamond" markerWidth="16" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,5 L8,1 L15,5 L8,9 z" fill="#333"/></marker><marker id="odiamond" markerWidth="16" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,5 L8,1 L15,5 L8,9 z" fill="#fff" stroke="#333"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="30.0" y="40.0" font-family="Arial" font-size="20" text-anchor="start" fill="#1F4E79" font-weight="bold">Secuencia 9 · Saldo vencido, regularización y cancelación (CU-03)</text>
+<text x="30.0" y="62.0" font-family="Arial" font-size="12" text-anchor="start" fill="#444">US-011, US-026 a US-028 · 24 h para regularizar · no reembolso (C-12)</text>
+<rect x="30.0" y="96.0" width="150.0" height="46.0" rx="0" fill="#FFFFFF" stroke="#333333" stroke-width="1.5"/>
+<text x="105.0" y="122.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b" font-weight="bold">Administrador</text>
+<rect x="200.0" y="96.0" width="150.0" height="46.0" rx="0" fill="#FFFFFF" stroke="#333333" stroke-width="1.5"/>
+<text x="275.0" y="122.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b" font-weight="bold">Coordinador</text>
+<rect x="370.0" y="96.0" width="150.0" height="46.0" rx="0" fill="#DAE8FC" stroke="#6C8EBF" stroke-width="1.5"/>
+<text x="445.0" y="116.3" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b" font-weight="bold">API FastAPI +</text>
+<text x="445.0" y="128.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b" font-weight="bold">aplicar_seguridad</text>
+<rect x="540.0" y="96.0" width="150.0" height="46.0" rx="0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.5"/>
+<text x="615.0" y="122.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b" font-weight="bold">GestionPagosService</text>
+<rect x="710.0" y="96.0" width="150.0" height="46.0" rx="0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.5"/>
+<text x="785.0" y="122.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b" font-weight="bold">GestionCierreEventoService</text>
+<rect x="880.0" y="96.0" width="150.0" height="46.0" rx="0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.5"/>
+<text x="955.0" y="122.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b" font-weight="bold">EstadoCuenta</text>
+<rect x="1050.0" y="96.0" width="150.0" height="46.0" rx="0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.5"/>
+<text x="1125.0" y="122.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b" font-weight="bold">Evento</text>
+<rect x="30.0" y="711.0" width="1170.0" height="24.0" rx="0" fill="#F5F5F5" stroke="#666666" stroke-width="1.5"/>
+<text x="615.0" y="726.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b" font-weight="bold">Cancelación solicitada por el Cliente</text>
+<line x1="105.0" y1="142.0" x2="105.0" y2="961.0" stroke="#8a8a8a" stroke-width="1.2" stroke-dasharray="6,5"/>
+<line x1="275.0" y1="142.0" x2="275.0" y2="961.0" stroke="#8a8a8a" stroke-width="1.2" stroke-dasharray="6,5"/>
+<line x1="445.0" y1="142.0" x2="445.0" y2="961.0" stroke="#8a8a8a" stroke-width="1.2" stroke-dasharray="6,5"/>
+<line x1="615.0" y1="142.0" x2="615.0" y2="961.0" stroke="#8a8a8a" stroke-width="1.2" stroke-dasharray="6,5"/>
+<line x1="785.0" y1="142.0" x2="785.0" y2="961.0" stroke="#8a8a8a" stroke-width="1.2" stroke-dasharray="6,5"/>
+<line x1="955.0" y1="142.0" x2="955.0" y2="961.0" stroke="#8a8a8a" stroke-width="1.2" stroke-dasharray="6,5"/>
+<line x1="1125.0" y1="142.0" x2="1125.0" y2="961.0" stroke="#8a8a8a" stroke-width="1.2" stroke-dasharray="6,5"/>
+<path d="M106.0,172.0 L444.0,172.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="275.0" y="167.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">POST /estados-cuenta/{id}/vencimiento-saldo-original</text>
+<path d="M446.0,216.0 L614.0,216.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="530.0" y="211.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">registrar_vencimiento_saldo_original()</text>
+<path d="M616.0,260.0 L954.0,260.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="785.0" y="255.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">SaldoContratoOriginalVencido</text>
+<path d="M106.0,304.0 L444.0,304.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="275.0" y="299.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">POST .../protocolo-cobro</text>
+<path d="M446.0,361.0 L614.0,361.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="530.0" y="343.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">activar_protocolo_cobro()</text>
+<text x="530.0" y="356.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">(cargos moratorios, 24 h)</text>
+<path d="M106.0,405.0 L444.0,405.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="275.0" y="400.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">POST .../regularizacion</text>
+<path d="M446.0,449.0 L784.0,449.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="615.0" y="444.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">resolver_regularizacion_saldo_vencido()</text>
+<path d="M786.0,519.0 L954.0,519.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="870.0" y="489.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">«Regularizado» → retomar</text>
+<text x="870.0" y="501.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">solicitudes | «No</text>
+<text x="870.0" y="514.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">regularizado»</text>
+<path d="M276.0,576.0 L444.0,576.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="360.0" y="558.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">POST</text>
+<text x="360.0" y="571.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">/eventos/{id}/cancelacion-por-falta-de-regularizacion</text>
+<path d="M446.0,633.0 L784.0,633.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="615.0" y="615.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">registrar_cancelacion_por_falta_de_regularizacion()</text>
+<text x="615.0" y="628.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">(ADR-003, S-3)</text>
+<path d="M786.0,677.0 L1124.0,677.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="955.0" y="672.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">cancelar → «Cancelado»; EventoCancelado</text>
+<path d="M276.0,772.0 L444.0,772.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="360.0" y="754.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">POST</text>
+<text x="360.0" y="767.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">/eventos/{id}/cancelacion</text>
+<path d="M446.0,816.0 L784.0,816.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="615.0" y="811.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">gestionar_cancelacion_solicitada() (antes de T)</text>
+<path d="M106.0,860.0 L444.0,860.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="275.0" y="855.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">POST /eventos/{id}/revision-administrativa</text>
+<path d="M446.0,917.0 L784.0,917.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<text x="615.0" y="899.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">registrar_revision_administrativa_cancelacion():</text>
+<text x="615.0" y="912.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">constancia de no reembolso</text>
+</svg>

@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1940" height="726" viewBox="0 0 1940 726">
+<defs><marker id="block" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker><marker id="open" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,5 L0,10" fill="none" stroke="#333" stroke-width="1.2"/></marker><marker id="tri" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L13,6 L0,12 z" fill="#fff" stroke="#333" stroke-width="1.2"/></marker><marker id="diamond" markerWidth="16" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,5 L8,1 L15,5 L8,9 z" fill="#333"/></marker><marker id="odiamond" markerWidth="16" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,5 L8,1 L15,5 L8,9 z" fill="#fff" stroke="#333"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="30.0" y="40.0" font-family="Arial" font-size="20" text-anchor="start" fill="#1F4E79" font-weight="bold">SP-09 · Asignación de proveedores y respuesta del proveedor</text>
+<text x="30.0" y="62.0" font-family="Arial" font-size="12" text-anchor="start" fill="#444">D-P1, D-P2, S-5 (ADR-009, ADR-010, ADR-011) · US-012 a US-016 · BN-004 · Evento «En organización»</text>
+<rect x="30.0" y="96.0" width="1880.0" height="200.0" rx="4" fill="#EEF5FC" stroke="#7EA6D3" stroke-width="1.5"/>
+<rect x="30.0" y="96.0" width="34" height="200.0" fill="#7EA6D3" stroke="#7EA6D3" stroke-width="1.5"/>
+<text font-family="Arial" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle" transform="translate(52.0,196.0) rotate(-90)">Coordinador</text>
+<rect x="30.0" y="296.0" width="1880.0" height="200.0" rx="4" fill="#F3EEF8" stroke="#A68BC4" stroke-width="1.5"/>
+<rect x="30.0" y="296.0" width="34" height="200.0" fill="#A68BC4" stroke="#A68BC4" stroke-width="1.5"/>
+<text font-family="Arial" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle" transform="translate(52.0,396.0) rotate(-90)">Proveedor</text>
+<rect x="30.0" y="496.0" width="1880.0" height="200.0" rx="4" fill="#EEF8F1" stroke="#7DB58D" stroke-width="1.5"/>
+<rect x="30.0" y="496.0" width="34" height="200.0" fill="#7DB58D" stroke="#7DB58D" stroke-width="1.5"/>
+<text font-family="Arial" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle" transform="translate(52.0,596.0) rotate(-90)">Administración</text>
+<ellipse cx="175.0" cy="190.0" rx="18.0" ry="18.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.5"/>
+<text x="175.0" y="220.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">Servicio «Sin</text>
+<text x="175.0" y="232.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">proveedor asignado»</text>
+<rect x="275.0" y="160.0" width="150.0" height="62.0" rx="10" fill="#D5E8D4" stroke="#82B366" stroke-width="1.5"/>
+<text x="350.0" y="175.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Consultar candidatos:</text>
+<text x="350.0" y="188.3" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">proveedores activos del</text>
+<text x="350.0" y="200.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">catálogo que ofrecen el</text>
+<text x="350.0" y="213.3" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">servicio</text>
+<path d="M525.0,166.0 L549.0,190.0 L525.0,214.0 L501.0,190.0 z" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.5"/>
+<text x="525.0" y="197.0" font-family="Arial" font-size="20" text-anchor="middle" fill="#7a5c00">×</text>
+<text x="525.0" y="160.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">¿Hay candidato?</text>
+<rect x="450.0" y="560.0" width="150.0" height="62.0" rx="10" fill="#E1D5E7" stroke="#9673A6" stroke-width="1.5"/>
+<text x="525.0" y="575.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Registrar proveedor en</text>
+<text x="525.0" y="588.4" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">el catálogo</text>
+<text x="525.0" y="600.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">(Coordinación o</text>
+<text x="525.0" y="613.4" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Administración)</text>
+<rect x="625.0" y="160.0" width="150.0" height="62.0" rx="10" fill="#D5E8D4" stroke="#82B366" stroke-width="1.5"/>
+<text x="700.0" y="188.3" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Asignar el proveedor al</text>
+<text x="700.0" y="200.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">servicio</text>
+<rect x="800.0" y="160.0" width="150.0" height="62.0" rx="0" fill="#F5F5F5" stroke="#666666" stroke-width="1.5"/>
+<text x="875.0" y="182.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Servicio «Pendiente de</text>
+<text x="875.0" y="194.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">confirmación del</text>
+<text x="875.0" y="207.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">proveedor»</text>
+<rect x="975.0" y="360.0" width="150.0" height="62.0" rx="10" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.5"/>
+<text x="1050.0" y="382.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Consultar «Mis</text>
+<text x="1050.0" y="394.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">asignaciones» y la</text>
+<text x="1050.0" y="407.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">información del evento</text>
+<path d="M1225.0,366.0 L1249.0,390.0 L1225.0,414.0 L1201.0,390.0 z" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.5"/>
+<text x="1225.0" y="397.0" font-family="Arial" font-size="20" text-anchor="middle" fill="#7a5c00">×</text>
+<text x="1225.0" y="360.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">¿Responde por la interfaz?</text>
+<rect x="1325.0" y="360.0" width="150.0" height="62.0" rx="10" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.5"/>
+<text x="1400.0" y="388.4" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Registrar respuesta</text>
+<text x="1400.0" y="400.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">(origen: Proveedor)</text>
+<rect x="1325.0" y="160.0" width="150.0" height="70.0" rx="10" fill="#D5E8D4" stroke="#82B366" stroke-width="1.5"/>
+<text x="1400.0" y="173.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Registrar respuesta en</text>
+<text x="1400.0" y="186.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">su nombre con</text>
+<text x="1400.0" y="198.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">procedencia: medio,</text>
+<text x="1400.0" y="211.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">quién y fecha (origen:</text>
+<text x="1400.0" y="223.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Coordinación)</text>
+<path d="M1575.0,166.0 L1599.0,190.0 L1575.0,214.0 L1551.0,190.0 z" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.5"/>
+<text x="1575.0" y="197.0" font-family="Arial" font-size="20" text-anchor="middle" fill="#7a5c00">×</text>
+<text x="1575.0" y="160.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">¿Disponible?</text>
+<ellipse cx="1750.0" cy="140.0" rx="18.0" ry="18.0" fill="#F8CECC" stroke="#B85450" stroke-width="3.5"/>
+<text x="1750.0" y="170.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">Confirmado por el</text>
+<text x="1750.0" y="182.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">proveedor</text>
+<ellipse cx="1750.0" cy="250.0" rx="18.0" ry="18.0" fill="#F8CECC" stroke="#B85450" stroke-width="3.5"/>
+<text x="1750.0" y="280.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">Proveedor no</text>
+<text x="1750.0" y="292.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">disponible → SP-05</text>
+<text x="1750.0" y="305.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#222">Sustitución</text>
+<path d="M800.0,556.0 h328.0 l12,12 v62.0 h-340.0 z" fill="#FFFBE6" stroke="#B59F3B" stroke-width="1.2"/>
+<text x="808.0" y="584.1" font-family="Arial" font-size="10" text-anchor="start" fill="#1b1b1b">Solo se ofrecen proveedores activos; el sistema no calcula</text>
+<text x="808.0" y="596.6" font-family="Arial" font-size="10" text-anchor="start" fill="#1b1b1b">disponibilidad por fecha (D-P2). Coordinación no edita ni</text>
+<text x="808.0" y="609.1" font-family="Arial" font-size="10" text-anchor="start" fill="#1b1b1b">desactiva el catálogo (S-8).</text>
+<path d="M193.0,190.1 L275.0,190.6" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M425.0,190.6 L501.1,190.1" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M548.9,190.1 L625.0,190.6" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="578.3" y="183.1" width="17.2" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="586.9" y="193.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Sí</text>
+<path d="M525.0,214.0 L525.0,560.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="516.4" y="379.8" width="17.2" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="525.0" y="389.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">No</text>
+<path d="M450.0,591.0 L350.0,591.0 L350.0,222.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M775.0,191.0 L800.0,191.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M902.1,222.0 L1022.9,360.0" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#open)"/>
+<rect x="909.1" y="283.8" width="106.8" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="962.5" y="293.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Aviso al proveedor</text>
+<path d="M1125.0,390.6 L1201.1,390.1" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M1248.9,390.1 L1325.0,390.6" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="1278.3" y="383.1" width="17.2" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="1286.9" y="393.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Sí</text>
+<path d="M1225.0,366.0 L1225.0,195.0 L1325.0,195.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="1140.8" y="223.2" width="168.4" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="1225.0" y="233.2" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">No: llamada, mensaje o correo</text>
+<path d="M1475.0,391.0 L1470.0,391.0 L1470.0,256.0 L1575.0,256.0 L1575.0,214.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M1475.0,192.9 L1551.7,190.7" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M1593.7,184.7 L1732.7,144.9" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="1654.6" y="157.6" width="17.2" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="1663.2" y="167.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">Sí</text>
+<path d="M1592.9,196.1 L1733.0,244.2" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="1654.3" y="212.9" width="17.2" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="1662.9" y="222.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">No</text>
+</svg>
