@@ -1,0 +1,27 @@
+@startuml secuencia_09_regularizacion_y_cancelacion
+skinparam defaultFontName Arial
+autonumber
+participant "Administrador" as AD
+participant "Coordinador" as C
+participant "API FastAPI + aplicar_seguridad" as API
+participant "GestionPagosService" as GPa
+participant "GestionCierreEventoService" as GCE
+participant "EstadoCuenta" as EC
+participant "Evento" as EV
+AD -> API : POST /estados-cuenta/{id}/vencimiento-saldo-original
+API -> GPa : registrar_vencimiento_saldo_original()
+GPa -> EC : SaldoContratoOriginalVencido
+AD -> API : POST .../protocolo-cobro
+API -> GPa : activar_protocolo_cobro() (cargos moratorios, 24 h)
+AD -> API : POST .../regularizacion
+API -> GCE : resolver_regularizacion_saldo_vencido()
+GCE -> EC : «Regularizado» → retomar solicitudes | «No regularizado»
+C -> API : POST /eventos/{id}/cancelacion-por-falta-de-regularizacion
+API -> GCE : registrar_cancelacion_por_falta_de_regularizacion() (ADR-003, S-3)
+GCE -> EV : cancelar → «Cancelado»; EventoCancelado
+== Cancelación solicitada por el Cliente ==
+C -> API : POST /eventos/{id}/cancelacion
+API -> GCE : gestionar_cancelacion_solicitada() (antes de T)
+AD -> API : POST /eventos/{id}/revision-administrativa
+API -> GCE : registrar_revision_administrativa_cancelacion(): constancia de no reembolso
+@enduml

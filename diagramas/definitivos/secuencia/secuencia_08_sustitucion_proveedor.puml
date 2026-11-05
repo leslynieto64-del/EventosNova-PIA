@@ -1,0 +1,25 @@
+@startuml secuencia_08_sustitucion_proveedor
+skinparam defaultFontName Arial
+autonumber
+participant "Coordinador" as C
+participant "Administrador" as AD
+participant "API FastAPI + aplicar_seguridad" as API
+participant "GestionSustitucionProveedorService" as GSP
+participant "SustitucionProveedor" as SP
+participant "GestionPagosService" as GPa
+participant "Evento" as EV
+C -> API : POST /sustituciones
+API -> GSP : registrar_proveedor_no_disponible()
+GSP -> SP : «En búsqueda de alternativa»
+C -> API : POST .../alternativa (proveedor activo, costo, condiciones)
+API -> GSP : registrar_alternativa_sustitucion()
+C -> API : POST .../decision-cliente
+AD -> API : POST .../autorizacion
+API -> GSP : registrar_autorizacion_administracion_sustitucion()
+C -> API : POST .../anexo
+AD -> API : POST .../importe-adicional
+API -> GPa : registrar_importe_adicional_sustitucion() (una sola vez)
+C -> API : POST .../confirmacion
+API -> GSP : confirmar_sustitucion_proveedor()
+SP --> EV : SustitucionProveedorConfirmada → reasignar_proveedor()
+@enduml

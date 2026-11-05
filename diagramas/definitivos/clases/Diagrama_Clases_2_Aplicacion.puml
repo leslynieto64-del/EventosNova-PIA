@@ -1,0 +1,140 @@
+@startuml Diagrama_Clases_2_Aplicacion
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Arial
+hide empty members
+
+class GestionPropuestaService <<servicio>> {
+  registrar_evento()
+  crear_propuesta()
+  generar_nueva_version()
+  aceptar_propuesta()
+  cerrar_propuesta_no_aceptada()
+}
+class FormalizarContratacionService <<servicio>> {
+  preparar_contrato()
+  registrar_comunicacion_politica_no_reembolso()
+  registrar_firma_contrato()
+  dar_seguimiento_anticipo_pendiente()
+  confirmar_contratacion()
+}
+class GestionPagosService <<servicio>> {
+  registrar_y_verificar_pago()
+  verificar_pago_registrado()
+  registrar_vencimiento_saldo_original()
+  activar_protocolo_cobro()
+  registrar_importe_adicional_sustitucion()
+  registrar_y_ejecutar_devolucion()
+  ... (12 operaciones)
+}
+class GestionCierreEventoService <<servicio>> {
+  gestionar_cancelacion_solicitada()
+  registrar_revision_administrativa_cancelacion()
+  resolver_regularizacion_saldo_vencido()
+  registrar_cancelacion_por_falta_de_regularizacion()
+  procesar_eventos_vencidos()
+  finalizar_evento()
+}
+class GestionCambiosEventoService <<servicio>> {
+  registrar_solicitud_cambio()
+  evaluar_viabilidad_cambio()
+  registrar_decision_cliente_cambio()
+  registrar_autorizacion_administracion_cambio()
+  registrar_anexo_cambio()
+  confirmar_cambio()
+}
+class GestionServiciosAdicionalesService <<servicio>> {
+  registrar_solicitud_servicio_adicional()
+  registrar_disponibilidad_servicio_adicional()
+  registrar_aprobacion_cliente_servicio_adicional()
+  registrar_autorizacion_administracion_servicio_adicional()
+  confirmar_servicio_adicional()
+}
+class GestionSustitucionProveedorService <<servicio>> {
+  registrar_proveedor_no_disponible()
+  registrar_alternativa_sustitucion()
+  registrar_decision_cliente_sustitucion()
+  registrar_autorizacion_administracion_sustitucion()
+  confirmar_sustitucion_proveedor()
+}
+class GestionProveedoresServicioService <<servicio>> {
+  consultar_disponibilidad_servicio()
+  asignar_proveedor()
+  registrar_respuesta_proveedor()
+}
+class GestionCatalogoProveedoresService <<servicio>> {
+  registrar_proveedor()
+  editar_proveedor()
+  cambiar_actividad_proveedor()
+  consultar_proveedor()
+  listar_proveedores()
+}
+class ServicioSeguridad <<servicio>> {
+  iniciar_sesion()
+  autenticar()
+  cerrar_sesion()
+  crear_usuario()
+  cambiar_estado()
+  restablecer_contrasena()
+  csrf_valido()
+}
+class CQRS_cqrs.py <<lectura/escritura>> {
+  4 Commands, 11 Queries
+  15 Handlers, 20 ViewModels
+  ConsultarEstadoPagosHandler.handle()
+  ConfirmarCambioHandler.handle()
+}
+class Reacciones_reacciones.py <<suscriptores>> {
+  ReaccionesEvento
+  ReaccionesSolicitudes
+  ReaccionesPagos
+  ReaccionesNotificacion
+}
+interface I*Repository_8_puertos <<interfaz>> {
+  obtener_por_id()
+  listar_todos()
+  guardar()
+}
+interface IUnitOfWork <<interfaz>> {
+  iniciar()
+  registrar()
+  confirmar()
+  revertir()
+}
+interface Puertos_de_integración <<interfaz>> {
+  IVerificadorPagos.verificar()
+  IEjecutorDevoluciones.ejecutar()
+  INotificadorParticipantes.notificar()
+  IConsultaDisponibilidadProveedor.consultar()
+}
+interface IAlmacenSeguridad <<interfaz>> {
+  crear_usuario()
+  obtener_sesion()
+  guardar_intento()
+  ... (12 operaciones)
+}
+class Dominio_7_agregados <<paquete>> {
+  src/domain/
+}
+GestionPropuestaService ..> I*Repository_8_puertos
+FormalizarContratacionService ..> I*Repository_8_puertos
+GestionPagosService ..> I*Repository_8_puertos
+GestionCierreEventoService ..> I*Repository_8_puertos
+GestionCambiosEventoService ..> I*Repository_8_puertos
+GestionServiciosAdicionalesService ..> I*Repository_8_puertos
+GestionSustitucionProveedorService ..> I*Repository_8_puertos
+GestionProveedoresServicioService ..> I*Repository_8_puertos
+GestionCatalogoProveedoresService ..> I*Repository_8_puertos
+GestionPagosService ..> IUnitOfWork
+GestionCambiosEventoService ..> IUnitOfWork
+GestionCierreEventoService ..> IUnitOfWork
+GestionPagosService ..> Puertos_de_integración
+GestionProveedoresServicioService ..> Puertos_de_integración
+ServicioSeguridad ..> IAlmacenSeguridad
+CQRS_cqrs.py ..> GestionCambiosEventoService : delegación
+CQRS_cqrs.py ..> I*Repository_8_puertos
+Reacciones_reacciones.py ..> GestionPagosService
+Reacciones_reacciones.py ..> Puertos_de_integración
+GestionPropuestaService ..> Dominio_7_agregados
+GestionCambiosEventoService ..> Dominio_7_agregados
+GestionCierreEventoService ..> Dominio_7_agregados
+@enduml

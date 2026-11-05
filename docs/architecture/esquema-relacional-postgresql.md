@@ -3,11 +3,15 @@
 **Estado:** diseño implementado por etapas. TP-01 se considera **resuelta por el equipo** (`resolucion-tp01.md`); el estado de cada etapa (migración, mapeadores, repositorios, unidad de trabajo, Outbox, API) se registra en `registro-progreso-persistencia-fase2.md`. La elección de PostgreSQL es decisión del equipo, no del profesor.
 **Fuentes:** código de `src/domain`, `src/application`, `src/infrastructure`; ADR-001 a ADR-005; cierre de alcance aprobado (TP-01, TP-02, TP-06); README.
 **No se usaron** los CSV genéricos del paquete PIA como definición del esquema.
-**Implementación:** `src/infrastructure/esquema_postgresql.py` (metadatos SQLAlchemy Core) y `migraciones/versions/0001_esquema_inicial.py` (Alembic).
+**Implementación:** `src/infrastructure/esquema_postgresql.py` (metadatos SQLAlchemy Core) y las migraciones Alembic `migraciones/versions/0001` a `0009` (cabeza única 0009).
+
+> **Actualización del 05/11/2026.** Este documento nació con la migración 0001 (22 tablas) y sus secciones 1 a 14 conservan ese diseño y su justificación. El esquema vigente tiene **26 tablas de aplicación más `alembic_version` (27)**: las 22 de 0001, `proveedor` (0005) y `usuario`, `sesion` e `intento_acceso` (0006). Las columnas añadidas por 0003, 0004 y 0007 a 0009 se describen en las secciones 14 y **15**, que prevalecen sobre las cifras anteriores. Verificado contra `esquema_postgresql.py` y las nueve migraciones del commit `e3c98d9` (el commit `9c72bc7`, publicado después, solo añade una regla de `.gitattributes`): 26 tablas, 268 columnas, 27 claves foráneas (una diferida) y 14 índices creados por migración.
 
 ## 1. Alcance
 
 Incluye el almacenamiento de los siete agregados y del Outbox de ADR-004 (22 tablas). No incluye repositorios SQL, mapeadores, `UnitOfWork` persistente, despachador, codec de eventos ni conexión de la API.
+
+*Nota (05/11/2026):* este alcance describe la migración 0001. Las etapas posteriores sí implementaron repositorios SQL, mapeadores, unidad de trabajo, Outbox y API (sección 14) y añadieron el catálogo de proveedores y la seguridad (sección 15). Total vigente: 26 tablas.
 
 ## 2. Agregados y tablas
 
@@ -23,6 +27,8 @@ Las siete raíces (todas heredan de `AggregateRoot`, `domain/base.py`) son las q
 | SustitucionProveedor | `domain/solicitudes.py` | `sustitucion_proveedor` | `sustitucion_alternativa` (`AlternativaPropuesta`) |
 | EstadoCuenta | `domain/estado_cuenta.py` | `estado_cuenta` | `obligacion_pago`, `pago`, `devolucion`, `estado_cuenta_seguimiento_cobro`, `estado_cuenta_cierre_sin_realizar` |
 | (Outbox, ADR-004) | `infrastructure/unidad_trabajo.py` | `outbox_evento` | `outbox_reaccion` |
+| (Catálogo, revisión 0005) | `domain/proveedor.py` | `proveedor` | — (registro de referencia, sin versión ni Outbox) |
+| (Seguridad, revisión 0006) | `application/seguridad.py` | `usuario` | `sesion`; `intento_acceso` es independiente |
 
 No se crea tabla para: `Importe`, `DatosEvento`, `Decision`, etc. (objetos de valor), las máquinas de estado, las Specifications, los Domain Services ni `EventoDominio` como agregado.
 
@@ -436,3 +442,67 @@ Cambio aditivo aplicado a desarrollo y pruebas: `estado_cuenta.cierre_contrataci
 ### 14.2 Revisión 0004: control de concurrencia optimista
 
 Cambio aditivo aplicado a desarrollo y pruebas: `version BIGINT NOT NULL DEFAULT 0` (con `CHECK version >= 0`) en `propuesta`, `contrato`, `evento`, `solicitud_cambio`, `solicitud_servicio_adicional`, `sustitucion_proveedor` y `estado_cuenta`. Las filas existentes quedan en la versión 0. Un agregado nuevo se inserta con `ON CONFLICT DO NOTHING` y, si el id ya existe, falla en vez de sobrescribir; un agregado leído se actualiza solo si su versión sigue siendo la leída. Límite: no hay reintento automático en la API (el cliente recibe 409 y repite); el Outbox sí reintenta la reacción.
+
+## 15. Revisiones 0005 a 0009 y esquema vigente (actualización del 05/11/2026)
+
+| Revisión | Fecha (cabecera de la migración) | Cambio | Tipo |
+|---|---|---|---|
+| 0005 | 2026-10-29 | Tabla `proveedor` (catálogo) | Aditivo |
+| 0006 | 2026-10-30 | Tablas `usuario`, `sesion`, `intento_acceso` | Aditivo |
+| 0007 | 2026-10-31 | `proveedor.activo BOOLEAN NOT NULL DEFAULT true` | Aditivo |
+| 0008 | 2026-11-01 | `solicitud_cambio.condiciones_proveedor TEXT NULL` (D-P3: condiciones que comunica el proveedor) | Aditivo |
+| 0009 | 2026-11-01 | Procedencia de la respuesta del proveedor: seis columnas `respuesta_*` en `evento_servicio_contratado` | Aditivo |
+
+### 15.1 `proveedor` (0005 y 0007)
+
+| Columna | Tipo | Nulo | Observación |
+|---|---|---|---|
+| `proveedor_id` | TEXT | No | PK (`PV-…`) |
+| `nombre` | TEXT | No | `CHECK btrim(nombre) <> ''` |
+| `nombre_normalizado` | TEXT | No | `UNIQUE`: no hay dos proveedores con el mismo nombre sin acentos ni mayúsculas |
+| `servicios` | TEXT[] | No | Por omisión `{}` |
+| `contacto` | TEXT | No | Por omisión `''` |
+| `registrado_en` | TIMESTAMP | No | Sin zona (America/Mexico_City) |
+| `activo` | BOOLEAN | No | 0007; por omisión `true` |
+
+`evento_servicio_contratado.proveedor_id` y las columnas de proveedor de las solicitudes **siguen siendo referencias blandas** (sin FK), para no invalidar filas ni identificadores históricos.
+
+### 15.2 Seguridad (0006)
+
+| Tabla | Columnas | Claves y restricciones |
+|---|---|---|
+| `usuario` | `usuario_id`, `correo`, `nombre`, `rol`, `contrasena_hash`, `activo`, `proveedor_id` (anul.), `creado_en`, `ultimo_acceso` (anul.) | PK `usuario_id`; `UNIQUE (correo)`; FK `proveedor_id → proveedor`; `CHECK rol IN ('administrador','coordinador','proveedor')`; `CHECK (rol = 'proveedor') = (proveedor_id IS NOT NULL)`; `CHECK correo = lower(correo) AND correo <> ''` |
+| `sesion` | `sesion_hash`, `usuario_id`, `csrf`, `creada_en`, `ultima_actividad`, `expira_en`, `revocada_en` (anul.) | PK `sesion_hash` (SHA-256 del token, nunca el token); FK `usuario_id → usuario ON DELETE CASCADE`; índice `ix_sesion_usuario_id` |
+| `intento_acceso` | `clave`, `fallos` (BIGINT), `primer_fallo`, `bloqueado_hasta` (anul.) | PK `clave`; `CHECK fallos >= 0` |
+
+Las contraseñas solo se guardan como hash Argon2id. La revisión no inserta cuentas: el primer administrador se crea con `scripts/crear_administrador.py`. La restricción `proveedor_solo_si_rol_proveedor` es la que respalda en la base la corrección **COR-03** del Bloque A (una cuenta que no es de Proveedor nunca queda vinculada a un proveedor). **El Bloque A no cambió el esquema ni añadió migraciones.**
+
+### 15.3 `solicitud_cambio.condiciones_proveedor` (0008)
+
+`TEXT NULL`. Guarda las condiciones que el proveedor comunica en un cambio y que Coordinación registra manualmente (D-P3). No tiene `CHECK` propio.
+
+### 15.4 Procedencia de la respuesta del proveedor (0009)
+
+Columnas nuevas en `evento_servicio_contratado`, todas anulables: `respuesta_disponible BOOLEAN`, `respuesta_origen TEXT`, `respuesta_medio TEXT`, `respuesta_registrada_por_id TEXT`, `respuesta_registrada_por_nombre TEXT`, `respuesta_fecha TIMESTAMP`.
+
+| Restricción | Regla |
+|---|---|
+| `ck_evento_servicio_contratado_respuesta_completa` | O no hay respuesta (todas nulas) o están informadas disponibilidad, origen, quién la registró (id y nombre) y fecha |
+| `ck_evento_servicio_contratado_respuesta_origen_valido` | `respuesta_origen IN ('Proveedor', 'Coordinación', 'Sin identificar')` |
+| `ck_evento_servicio_contratado_respuesta_medio_segun_origen` | El medio se informa **solo** si la respuesta la capturó Coordinación |
+
+### 15.5 Conteo vigente
+
+| Concepto | Valor | Cómo se verificó |
+|---|---|---|
+| Tablas de aplicación | 26 | 22 (`0001`) + 1 (`0005`) + 3 (`0006`); coincide con `esquema_postgresql.py` |
+| Tabla de control | `alembic_version` | Creada por Alembic (total 27) |
+| Columnas | 268 | Metadatos de `esquema_postgresql.py` |
+| Claves foráneas | 27 | 26 inmediatas + `fk_propuesta_version_vigente` (compuesta, `DEFERRABLE INITIALLY DEFERRED`) |
+| Índices creados por migración | 14 | 12 en `0001`, `uq_devolucion_pago` (`0003`, único parcial) e `ix_sesion_usuario_id` (`0006`) |
+| Raíces con columna `version` | 7 | `0004` |
+| Cabeza de Alembic | `0009` | Única (medido por el equipo con `alembic heads`) |
+
+El diagrama `Modelo_Relacional_Eventos_Nova_Diagrama.drawio` del paquete documental del 03/11/2026 se comparó columna por columna con estos metadatos el 05/11/2026: contiene las 26 tablas, todas las columnas con su tipo y nulabilidad y las 27 relaciones; no requirió cambios. Ese `.drawio` no está en el repositorio: debe copiarse a `docs/architecture/` al integrar el paquete.
+
+**Entornos (medido por el equipo el 05/11/2026):** `eventosnova_manual_test` está en 0009; la base de desarrollo `eventosnova` sigue en 0004 **a propósito** (no se migró durante el Bloque A).

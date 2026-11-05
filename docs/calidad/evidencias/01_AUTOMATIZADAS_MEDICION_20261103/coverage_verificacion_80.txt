@@ -1,0 +1,3 @@
+Cobertura de sentencias: 98.19 % (6572 de 6693; sin cubrir 121)
+Cobertura de ramas:      93.20 % (1303 de 1398)
+OK: cumple el mínimo de 80 %.

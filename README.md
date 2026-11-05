@@ -1,11 +1,12 @@
-# Eventos Nova — Diseño arquitectural del sistema
+# Eventos Nova — Sistema de apoyo a la gestión de eventos (PIA)
 
 ## Datos de identificación
 
-- **Actividad:** Diseño arquitectural del sistema con IA
+- **Actividad:** Producto Integrador de Aprendizaje — Implementación de una solución de software basada en lógica de negocio (los antecedentes de la Unidad 3 se conservan en las secciones históricas)
 - **Materia:** Componentes de Lógica de Negocios
-- **Unidad:** 3
+- **Profesor:** Miguel Ángel Gómez Marroquín
 - **Equipo:** 16
+- **Entrega del PIA:** 06/11/2026 (revisión de este README: 05/11/2026)
 - **Integrantes:**
   - Lesly Adamaris Cotlame Nieto — Matrícula 2226958
   - Christopher Bethancourt Contreras — Matrícula 2226948
@@ -19,16 +20,73 @@
 
 | Elemento | Valor |
 |---|---|
-| Repositorio GitHub | **Pendiente:** el repositorio local no tiene remoto configurado. Anotar aquí la URL cuando el equipo lo publique |
-| Sistema desplegado (Swagger UI) | **Pendiente:** no se ha desplegado en ninguna plataforma. Anotar aquí la URL real, solo después de comprobarla (pasos en [`docs/architecture/ci-cd-y-despliegue.md`](docs/architecture/ci-cd-y-despliegue.md)) |
+| Repositorio GitHub | <https://github.com/leslynieto64-del/EventosNova-PIA> (37 commits en `main`: los 25 previos y los 11 del Bloque A, fusionados con la PR #2 el 05/11/2026; PR #1 fusionada el 04/11/2026) |
+| Sistema desplegado (Swagger UI) | **Pendiente:** Render no está desplegado (05/11/2026); `render.yaml` es un borrador sin aplicar. No hay URL pública. Anotar aquí la URL real, solo después de comprobarla (pasos en [`docs/architecture/ci-cd-y-despliegue.md`](docs/architecture/ci-cd-y-despliegue.md)) |
 | Swagger UI local | `http://127.0.0.1:8000/docs` (tras `docker compose up -d --build`) |
 | Swagger UI del entorno manual aislado | `http://127.0.0.1:8001/docs` (solo para pruebas manuales; ver la sección 12; **no** es el sistema de desarrollo del puerto 8000 ni un despliegue) |
 | Especificación OpenAPI | [`docs/api/openapi.json`](docs/api/openapi.json) (77 operaciones: 73 protegidas y 4 públicas; se regenera con `python scripts/exportar_openapi.py`) |
 | BRD en Markdown | [`docs/BRD.md`](docs/BRD.md) (exportación del BRD aprobado `.docx`) |
 
+## Estado al 05/11/2026
+
+| Aspecto | Situación |
+|---|---|
+| Código | `main` = `0b16cf3` (37 commits: los 25 previos de <https://github.com/leslynieto64-del/EventosNova-PIA> + los 11 del Bloque A, fusionados con la PR #2 el 05/11/2026); el código del Bloque A es el del commit `9c72bc7` |
+| API | 73 rutas, 77 operaciones (19 GET, 58 POST), 4 públicas; OpenAPI 3.1.0 |
+| Base de datos | PostgreSQL 18; 26 tablas + `alembic_version`; migraciones 0001–0009 (el Bloque A no añadió migraciones) |
+| Dominio | 7 agregados, 9 máquinas de estado, 12 especificaciones concretas, 31 eventos de dominio |
+| Roles | Administrador, Coordinador y Proveedor (el Cliente no tiene cuenta) |
+| Despliegue | Ninguno; sin URL pública |
+
+### Resultados de pruebas (cada fila es una ejecución distinta)
+
+| Ejecución | Entorno | Resultado |
+|---|---|---|
+| CI de GitHub Actions sobre `main` (`4be166b`, antes del Bloque A) | Linux | 1,654 aprobadas; cobertura de sentencias 98.21 %; omitidas: 0 en «pruebas» y 3 en «docker» |
+| CI de GitHub Actions sobre el commit `9c72bc7` (PR #2, run 42104865505) | Linux | 1,677 aprobadas; cobertura de sentencias 98.21 % (6,573/6,693); omitidas: 1 en «pruebas» y 8 en «docker» |
+| CI de GitHub Actions sobre `main` tras la fusión (`0b16cf3`, run 42109720404) | Linux | 1,677 aprobadas; cobertura de sentencias 98.21 %; omitidas: 1 en «pruebas» y 8 en «docker» |
+| Medición archivada (03/11/2026, antes del Bloque A) | Windows + PostgreSQL 18.6 | 1,654 aprobadas; líneas 98.19 % (6,572/6,693), ramas 93.20 % |
+| Suite del Bloque A (árbol de trabajo) | Windows + PostgreSQL 18 | 1,677 aprobadas, 1 omitida por diseño, 0 fallos (84 módulos) |
+| Clon nuevo de `9c72bc7` | Windows, `core.autocrlf=true` | 1,677 aprobadas, 1 omitida por diseño, 0 fallos (fallo LF/CRLF resuelto) |
+| Recorrido en Chrome del Bloque A | Windows | 30/30 comprobaciones, 3 repeticiones |
+
+Cobertura: 98.21 % de sentencias (6,573 de 6,693) en el CI sobre el commit `9c72bc7`, que ya incluye el Bloque A, y sobre `main` tras la fusión (`0b16cf3`); 98.21 % en el CI sobre `main` `4be166b` (antes del Bloque A); 98.19 % de líneas y 93.20 % de ramas en la medición archivada del 03/11/2026. El mínimo del PIA es 80 %.
+
+**Pruebas omitidas.** El CI informa solo el total; los nombres se obtuvieron ejecutando los módulos con `unittest -v` sin Node.js ni Chrome (como la imagen Docker) y con Node.js (como el job «pruebas»). Job «docker» (8): 3 de `test_interfaz_textos.HumanizarYSinVacios` y 4 de `test_interfaz_bloque_a.EtiquetasLegibles` (Node.js no está instalado o disponible) y `test_interfaz_formulario_cuentas…test_visibilidad_obligatoriedad_valor_y_carga_util_segun_el_rol` (opt-in: requiere `EVENTOSNOVA_PRUEBAS_NAVEGADOR=1`, Node.js y Chrome). Job «pruebas» (1): solo esa prueba opt-in. En `4be166b` eran 0 y 3 (solo existía `test_interfaz_textos`): 3 + 4 + 1 = 8 en «docker»; 0 + 1 = 1 en «pruebas».
+
+**Fallo LF/CRLF (resuelto en `9c72bc7`).** `tests/test_oraculo_diferencias_e1_e4.py::test_el_oraculo_no_se_modifico` compara el SHA-256 byte a byte de `tests/referencias/comportamiento_estado_cuenta_v8_e3c.json`. Antes de `9c72bc7`, en Windows con `core.autocrlf=true` un checkout nuevo lo convertía a CRLF y la prueba fallaba; con LF pasaba. Se añadió a `.gitattributes` la regla `tests/referencias/*.json -text`; verificada en un clon nuevo de Windows (1,677 aprobadas, 1 omitida) y en el CI de Linux.
+
+### Bloque A (correcciones de presentación, 05/11/2026)
+
+| ID | Cambio | ¿Cambia regla? |
+|---|---|---|
+| COR-02 | Búsqueda por nombre en listas desplegables con más de 6 opciones (p. ej., proveedores); el valor enviado sigue siendo el identificador | No |
+| COR-03 | Formulario «Crear cuenta» por rol: el campo Proveedor solo aparece con el rol Proveedor; frontend y backend normalizan para que otro rol nunca quede vinculado a un proveedor | No |
+| COR-05 | Las vistas del proveedor (GET /mis-asignaciones y GET /proveedores/{id}/eventos/{evento}) ya no devuelven las condiciones comerciales del contrato del Cliente; claves: servicioContratadoId, servicio, estado, respuesta | No |
+| COR-06 | Etiquetas legibles de conceptos de pago, tipos de solicitud y tipo de devolución; valores internos sin cambio | No |
+| COR-07 | Advertencia destacada cuando el importe de un pago supera el saldo; no bloquea (el excedente se acepta y no se devuelve automáticamente) | No |
+| COR-11 | Aviso preventivo al comunicar la política de no reembolso; no se bloquea la repetición (una segunda comunicación reemplaza la fecha) | No |
+| COR-12 | Mostrar/ocultar contraseña en inicio de sesión, crear cuenta y restablecer contraseña | No |
+| COR-13 | Búsqueda (nombre, correo, proveedor) y filtros por rol y estado en la lista de cuentas | No |
+| COR-16 | Precarga de los datos actuales del evento en el formulario de cambio al marcar que modifica los datos; abrir y cancelar no cambia el evento | No |
+| COR-17 | Cada pago muestra su estado oficial con explicación: «Registrado» (aún no se suma a lo pagado) frente a «Verificado» | No |
+
+Pendientes de decisión del equipo (no implementados porque cambian reglas): COR-07 como restricción, COR-08, COR-09 y COR-11/COR-19 como bloqueo.
+
+### Pendiente
+- Despliegue en Render (u otra plataforma) con render.yaml revisado y aprobación de costos.
+- Registrar la URL pública del sistema y de Swagger UI (/docs con EVENTOSNOVA_DOCS=1) en README, reporte final y presentación.
+- Evidencias de la aplicación desplegada: /health, /ready, /docs, inicio de sesión, registros del preDeploy y del worker.
+- Pruebas finales sobre el entorno publicado (recorrido de los tres roles y reglas principales).
+- Ejecución humana de los casos manuales de la interfaz web y archivo de sus capturas.
+- Decisiones pendientes del Bloque A: COR-08, COR-07 como restricción, COR-11/COR-19 como bloqueo, COR-09.
+- Archivar el `coverage.json` y la captura de las ejecuciones de CI sobre `9c72bc7` y sobre `main` (`0b16cf3`); la cobertura de 98.21 % consta en la salida del CI.
+- Retirar o sustituir en el repositorio los documentos de entrega antiguos de docs/entrega/ (PDF y presentación generados el 29/10/2026); no forman parte de esta entrega.
+- ZIP definitivo del proyecto y manifiesto SHA-256, después de los bloques C y D.
+
 ## Alcance
 
-El proyecto contiene una propuesta arquitectural organizada en las capas de dominio, aplicación e infraestructura, junto con diagramas, decisiones arquitecturales, matriz de trazabilidad, documentación de requisitos y pruebas automatizadas. La infraestructura ofrece dos modos: almacenamiento en memoria (desarrollo y pruebas unitarias) y persistencia en PostgreSQL 18 con SQLAlchemy Core, Alembic y Docker Compose (sección *Persistencia con PostgreSQL y Docker*). Los colaboradores externos (notificaciones, verificación de pagos, ejecución de devoluciones) siguen siendo adaptadores simulados: no hay integraciones externas reales. Desde la decisión D-P3, la disponibilidad, el costo y las condiciones de los proveedores no vienen de ninguna fuente externa ni simulada: los proveedores los comunican y se registran manualmente (los candidatos salen del catálogo de proveedores en PostgreSQL). El proyecto no se ha desplegado en ninguna plataforma.
+El proyecto contiene una propuesta arquitectural organizada en las capas de dominio, aplicación e infraestructura, junto con diagramas, decisiones arquitecturales, matriz de trazabilidad, documentación de requisitos y pruebas automatizadas. La infraestructura ofrece dos modos: almacenamiento en memoria (desarrollo y pruebas unitarias) y persistencia en PostgreSQL 18 con SQLAlchemy Core, Alembic y Docker Compose (sección *Persistencia con PostgreSQL y Docker*). Los colaboradores externos (notificaciones, verificación de pagos, ejecución de devoluciones) siguen siendo adaptadores simulados: no hay integraciones externas reales. Desde la decisión D-P3, la disponibilidad, el costo y las condiciones de los proveedores no vienen de ninguna fuente externa ni simulada: los proveedores los comunican y se registran manualmente (los candidatos salen del catálogo de proveedores en PostgreSQL). El proyecto no se ha desplegado en ninguna plataforma (05/11/2026).
 
 ## Estructura del proyecto
 
@@ -329,7 +387,8 @@ docker compose run --rm tests          # la suite completa dentro de Docker
 ### 9. CI/CD y despliegue
 
 - **CI** (`.github/workflows/ci.yml`): instala dependencias, valida que Alembic tenga una sola cabeza, migra una base PostgreSQL efímera, ejecuta toda la suite con cobertura (mínimo del PIA: 80 % de sentencias) y valida y ejecuta Docker Compose (DB + App + Tests). **Publicación** (`.github/workflows/publicar-imagen.yml`): solo con etiquetas `v*` o a mano; publica la imagen `app` en GitHub Container Registry y, si existe el secreto `DEPLOY_HOOK_URL`, avisa a la plataforma.
-- **Pasos manuales del equipo** (nada se ha desplegado ni subido a GitHub): `git add` y commit de los archivos nuevos; subir a GitHub; en la plataforma elegida (Render, Railway, Fly.io o equivalente con Docker) crear un servicio con la imagen `app` y un PostgreSQL gestionado; definir `DATABASE_URL` (la de la plataforma), `EVENTOSNOVA_PERSISTENCIA=postgresql` y `EVENTOSNOVA_ENTORNO=produccion` (en producción `/docs` queda oculto: para mostrar Swagger en la demostración hay que definir `EVENTOSNOVA_DOCS=1` en el servicio web); ejecutar `python -m alembic upgrade head` antes del primer arranque; crear un segundo proceso con el comando del trabajador; opcionalmente guardar `DEPLOY_HOOK_URL` como secreto del repositorio. Los valores sensibles solo se definen en la plataforma o en los secretos de GitHub, nunca en el repositorio.
+- **Estado (05/11/2026):** el CI se ejecutó en verde sobre el commit `9c72bc7` (PR #2) y sobre `main` tras la fusión (`0b16cf3`); el Bloque A está fusionado en `main` y Render no se ha desplegado. El `Dockerfile` termina en la etapa `runtime` (predeterminada) y el CI comprueba que esa imagen ejecuta uvicorn.
+- **Pasos manuales del equipo** (texto original, anterior a la publicación en GitHub): `git add` y commit de los archivos nuevos; subir a GitHub; en la plataforma elegida (Render, Railway, Fly.io o equivalente con Docker) crear un servicio con la imagen `app` y un PostgreSQL gestionado; definir `DATABASE_URL` (la de la plataforma), `EVENTOSNOVA_PERSISTENCIA=postgresql` y `EVENTOSNOVA_ENTORNO=produccion` (en producción `/docs` queda oculto: para mostrar Swagger en la demostración hay que definir `EVENTOSNOVA_DOCS=1` en el servicio web); ejecutar `python -m alembic upgrade head` antes del primer arranque; crear un segundo proceso con el comando del trabajador; opcionalmente guardar `DEPLOY_HOOK_URL` como secreto del repositorio. Los valores sensibles solo se definen en la plataforma o en los secretos de GitHub, nunca en el repositorio.
 
 ### 10. Reglas de anticipo, identificadores y concurrencia (fase final)
 
@@ -346,7 +405,7 @@ docker compose run --rm tests          # la suite completa dentro de Docker
 - **Coherencia solicitud–contrato–evento (E-2):** implementada como decisión del equipo (HTTP 422 si el evento no es el del contrato; ver el punto anterior). Sigue sin existir una regla en las fuentes originales que la exija; la aprobación del responsable está pendiente (detalle en [`docs/trazabilidad/complemento-trazabilidad-fase-final.md`](docs/trazabilidad/complemento-trazabilidad-fase-final.md)).
 - **Defectos de implementación D-1, D-2 y D-3 (28/10/2026), corregidos con pruebas de regresión:** D-1 (C-14 / GL-015 / CA-101: un servicio adicional solo se registra con la contratación confirmada), D-2 (C-06 / CA-113 / GL-049 / SE-006: un pago del saldo posterior a su límite no lo liquida y una solicitud nueva se detiene si el saldo está vencido **de hecho**) y D-3 (C-01 / CA-109 a CA-111, D-3b: el trabajador aplica la llegada de T y no se confirma la contratación en T ni después). Además, API, trabajador y Outbox usan el reloj de negocio de America/Mexico_City (TP-06). Si se recrean contenedores a partir de una imagen anterior al 28/10, hay que reconstruirla para que incluya el vencimiento de hecho y el reloj de negocio (guía de pruebas manuales, 12.0 bis). Validación manual con el código corregido: T-21, T-23 y T-24 satisfactorias según los resultados informados por el equipo (`docs/architecture/CIERRE_AUDITORIA_FINAL.md`, sección Q). Decisiones internas sin aprobación externa: contrato Firmado cerrado por T y avisos a Cliente, Coordinador y Administración. Ver [`docs/ADR/ADR-008-llegada-de-t-y-pago-tardio-del-saldo.md`](docs/ADR/ADR-008-llegada-de-t-y-pago-tardio-del-saldo.md) y `docs/architecture/CIERRE_AUDITORIA_FINAL.md`, secciones J, M, N, O y P.
 - Reglas de texto sin respaldo aprobado (texto de solo espacios, contenido de varios textos libres) y máximos de negocio (invitados, importes): no se inventaron.
-- Repositorio remoto, ejecución real de la CI y despliegue: acciones manuales del equipo.
+- Despliegue en Render: acción manual del equipo (ver «Estado al 05/11/2026»); la publicación del Bloque A, el CI sobre el código actualizado y la corrección LF/CRLF ya están hechos.
 
 ### 12. Entorno aislado para pruebas manuales (puerto 8001)
 
@@ -378,7 +437,7 @@ El archivo toma `POSTGRES_USER` y `POSTGRES_PASSWORD` de `.env`; no contiene sec
 
 **Resultados medidos (2026-10-28, después de las correcciones D-1, D-2 y D-3):** **1387 pruebas** aprobadas, 0 fallos, 0 errores y 0 omitidas en el equipo con PostgreSQL obligatorio (`tests/evidencias/ejecucion-pruebas-d1-d3-host-20261028.txt`, con cobertura) y 1387 dentro de Docker (`…-docker-20261028.txt`); cobertura de **98,82 % de sentencias (5448 de 5513) y 95,77 % de ramas (1042 de 1088)** (`tests/evidencias/cobertura-d1-d3-20261028.txt`). Las 81 pruebas nuevas son `test_d1_…` (26), `test_d2_…` (22) y `test_d3_…` (33). El oráculo histórico no se editó (SHA-256 `d98b4cff…`): sus 1203 claves se validan con las reglas E-1, H-10, E-3/E-4 y D-2 (48 claves, el grupo R12 del cierre de alcance §8; `tests/evidencias/diferencias-oraculo-d2-20261028.txt`).
 
-**Medición más reciente (2026-11-03, con la versión vigente, migración 0009):** 1654 pruebas en 82 módulos, sin fallos, errores ni omitidas, ejecutadas en 8 grupos secuenciales contra una base de regresión aislada; cobertura de **98,19 % de sentencias (6572 de 6693; 121 sin cubrir) y 93,20 % de ramas (1303 de 1398)** sobre 76 módulos de `src/`, que cumple el mínimo de 80 % del PIA. El informe HTML y los registros de esa medición se conservaron en el paquete de evidencias del equipo, fuera de este repositorio. Los resultados anteriores de esta sección son históricos.
+**Medición archivada (2026-11-03, migración 0009; las ejecuciones posteriores están en «Estado al 05/11/2026»):** 1654 pruebas en 82 módulos, sin fallos, errores ni omitidas, ejecutadas en 8 grupos secuenciales contra una base de regresión aislada; cobertura de **98,19 % de sentencias (6572 de 6693; 121 sin cubrir) y 93,20 % de ramas (1303 de 1398)** sobre 76 módulos de `src/`, que cumple el mínimo de 80 % del PIA. El informe HTML y los registros de esa medición se conservaron en el paquete de evidencias del equipo, fuera de este repositorio. Los resultados anteriores de esta sección son históricos.
 
 **Resultados medidos (2026-10-28, última ejecución registrada en este repositorio, después del vencimiento de hecho y del reloj de negocio):** **1415 pruebas** aprobadas, 0 fallos, 0 errores y 0 omitidas en el equipo con PostgreSQL obligatorio (`tests/evidencias/ejecucion-pruebas-d2b-reloj-host-20261028.txt`, sin cobertura) y **1415 dentro de Docker con cobertura** (`tests/evidencias/ejecucion-docker-final-20261028-202102.txt`, `Ran 1415 tests … OK`, registro en UTF-16): **98,82 % de sentencias (5462 de 5527; 65 sin cubrir) y 95,77 % de ramas (1042 de 1088)**; `scripts/verificar_cobertura.py` informa «cumple el mínimo de 80 %». El código de salida 0 lo informó el equipo; el registro no lo incluye. Las 28 pruebas nuevas respecto de las 1387 son 20 de `test_d2_…` y 8 de `test_reloj_negocio`. El oráculo histórico sigue sin editar (SHA-256 `d98b4cff…`, comprobado el 29/10/2026).
 

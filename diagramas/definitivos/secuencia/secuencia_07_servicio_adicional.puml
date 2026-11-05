@@ -1,0 +1,22 @@
+@startuml secuencia_07_servicio_adicional
+skinparam defaultFontName Arial
+autonumber
+participant "Coordinador" as C
+participant "Administrador" as AD
+participant "API FastAPI + aplicar_seguridad" as API
+participant "GestionServiciosAdicionalesService" as GSA
+participant "SolicitudServicioAdicional" as SA
+participant "Evento" as EV
+C -> API : POST /solicitudes-servicio-adicional
+API -> GSA : registrar_solicitud_servicio_adicional()
+GSA -> SA : AnticipacionMinima(5) ∧ EventoNoIniciado ∧ EventoNoCancelado
+C -> API : POST .../disponibilidad (proveedor del catálogo, costo, condiciones)
+API -> GSA : registrar_disponibilidad_servicio_adicional()
+C -> API : POST .../aprobacion-cliente
+API -> GSA : registrar_aprobacion_cliente_servicio_adicional()
+AD -> API : POST .../autorizacion
+API -> GSA : registrar_autorizacion_administracion_servicio_adicional()
+C -> API : POST .../anexo · .../solicitud-pago · .../confirmacion
+API -> GSA : confirmar_servicio_adicional()
+SA --> EV : ServicioAdicionalConfirmado → incorporar_servicio_adicional()
+@enduml

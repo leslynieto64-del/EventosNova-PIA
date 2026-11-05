@@ -1,0 +1,28 @@
+@startuml secuencia_02_evento_y_propuesta
+skinparam defaultFontName Arial
+autonumber
+participant "Coordinador" as C
+participant "Interfaz web" as UI
+participant "API FastAPI + aplicar_seguridad" as API
+participant "GestionPropuestaService" as GP
+participant "Evento / Propuesta" as AG
+participant "Repositorios SQL + UoW" as R
+participant "PostgreSQL" as PG
+C -> UI : datos del Cliente y del evento
+UI -> API : POST /eventos
+API -> GP : registrar_evento()
+GP -> AG : Evento(...) → «En gestión»
+GP -> R : guardar() en transaccion()
+R -> PG : INSERT evento
+API --> UI : 201 evento_id
+UI -> API : POST /eventos/{id}/propuestas
+API -> GP : crear_propuesta()
+GP -> AG : Propuesta(versión 1 vigente)
+UI -> API : POST /propuestas/{id}/versiones
+API -> GP : generar_nueva_version()
+GP -> AG : número consecutivo y fecha; VersionPropuestaGenerada
+UI -> API : POST /propuestas/{id}/aceptacion | /cierre-por-no-aceptacion
+API -> GP : aceptar_propuesta() | cerrar_propuesta_no_aceptada()
+GP -> R : guardar() + PropuestaAceptada al Outbox
+API --> UI : 200 Propuesta «Aceptada» o «Cerrada por no aceptación»
+@enduml

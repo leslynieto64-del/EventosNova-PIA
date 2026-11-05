@@ -1,0 +1,26 @@
+@startuml secuencia_04_asignacion_respuesta_proveedor
+skinparam defaultFontName Arial
+autonumber
+participant "Coordinador" as C
+participant "Proveedor" as PR
+participant "API FastAPI + aplicar_seguridad" as API
+participant "GestionProveedoresServicioService" as GPS
+participant "ConsultaDisponibilidadDesdeCatalogo" as CAT
+participant "Evento.ServicioContratado" as EV
+participant "PostgreSQL" as PG
+C -> API : GET /eventos/{id}/servicios/{svc}/disponibilidad
+API -> GPS : consultar_disponibilidad_servicio()
+GPS -> CAT : consultar(servicio)
+CAT --> GPS : proveedores activos que ofrecen el servicio
+C -> API : POST .../proveedor
+API -> GPS : asignar_proveedor()
+GPS -> EV : asignar_proveedor() → «Pendiente de confirmación del proveedor»
+EV -> PG : UPDATE evento_servicio_contratado
+PR -> API : GET /mis-asignaciones (solo su proveedor)
+PR -> API : POST .../respuesta-proveedor
+API -> GPS : registrar_respuesta_proveedor(origen = Proveedor)
+C -> API : alterno: POST .../respuesta-proveedor con medio
+API -> GPS : registrar_respuesta_proveedor(origen = Coordinación, medio, quién, fecha)
+GPS -> EV : RespuestaProveedor → «Confirmado» | «Proveedor no disponible»
+EV -> PG : procedencia (migración 0009, 3 CHECK)
+@enduml

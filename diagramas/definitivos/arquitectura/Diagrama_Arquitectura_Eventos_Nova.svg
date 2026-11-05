@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="866" viewBox="0 0 1560 866">
+<defs><marker id="block" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker><marker id="open" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,5 L0,10" fill="none" stroke="#333" stroke-width="1.2"/></marker><marker id="tri" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L13,6 L0,12 z" fill="#fff" stroke="#333" stroke-width="1.2"/></marker><marker id="diamond" markerWidth="16" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,5 L8,1 L15,5 L8,9 z" fill="#333"/></marker><marker id="odiamond" markerWidth="16" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,5 L8,1 L15,5 L8,9 z" fill="#fff" stroke="#333"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="30.0" y="40.0" font-family="Arial" font-size="20" text-anchor="start" fill="#1F4E79" font-weight="bold">Diagrama general de arquitectura · Eventos Nova</text>
+<text x="30.0" y="62.0" font-family="Arial" font-size="12" text-anchor="start" fill="#444">Componentes implementados (Docker Compose, proyecto «eventosnova»). Línea punteada: configurado sin evidencia de ejecución o no implementado.</text>
+<rect x="380.0" y="96.0" width="1150.0" height="640.0" rx="4" fill="#EEF5FC" stroke="#7EA6D3" stroke-width="1.5"/>
+<text x="390.0" y="114.0" font-family="Arial" font-size="12" text-anchor="start" fill="#1F4E79" font-weight="bold">Docker Compose · red eventosnova_default</text>
+<rect x="410.0" y="136.0" width="560.0" height="560.0" rx="4" fill="#FFFFFF" stroke="#333333" stroke-width="1.5"/>
+<text x="420.0" y="154.0" font-family="Arial" font-size="12" text-anchor="start" fill="#1F4E79" font-weight="bold">Contenedor api · python:3.13-slim · usuario no root · 127.0.0.1:8000</text>
+<circle cx="50.0" cy="156.0" r="9" fill="#fff" stroke="#333" stroke-width="1.4"/>
+<path d="M50.0,165.0 v22 M36.0,173.0 h28 M50.0,187.0 l-12,16 M50.0,187.0 l12,16" stroke="#333" stroke-width="1.4" fill="none"/>
+<text x="50.0" y="219.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">Administrador</text>
+<circle cx="50.0" cy="306.0" r="9" fill="#fff" stroke="#333" stroke-width="1.4"/>
+<path d="M50.0,315.0 v22 M36.0,323.0 h28 M50.0,337.0 l-12,16 M50.0,337.0 l12,16" stroke="#333" stroke-width="1.4" fill="none"/>
+<text x="50.0" y="369.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">Coordinador</text>
+<circle cx="50.0" cy="456.0" r="9" fill="#fff" stroke="#333" stroke-width="1.4"/>
+<path d="M50.0,465.0 v22 M36.0,473.0 h28 M50.0,487.0 l-12,16 M50.0,487.0 l12,16" stroke="#333" stroke-width="1.4" fill="none"/>
+<text x="50.0" y="519.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">Proveedor</text>
+<rect x="140.0" y="286.0" width="190.0" height="90.0" rx="10" fill="#E1D5E7" stroke="#9673A6" stroke-width="1.5"/>
+<text x="235.0" y="321.2" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">Navegador · Interfaz web</text>
+<text x="235.0" y="335.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">/app/ (HTML, CSS y</text>
+<text x="235.0" y="348.7" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">JavaScript sin frameworks)</text>
+<rect x="435.0" y="176.0" width="510.0" height="88.0" rx="0" fill="#E1D5E7" stroke="#9673A6" stroke-width="1.5"/>
+<text x="690.0" y="217.1" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">API FastAPI: 9 routers, LimiteDeCuerpo (256 KiB), aplicar_seguridad (cookie,</text>
+<text x="690.0" y="230.8" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">CSRF, Origin, autoriza), manejadores de error, /health, /ready, /docs</text>
+<rect x="435.0" y="301.0" width="510.0" height="88.0" rx="0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.5"/>
+<text x="690.0" y="342.1" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">Aplicación: 9 servicios de aplicación, ServicioSeguridad, CQRS (Commands,</text>
+<text x="690.0" y="355.8" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">Queries, Handlers), reacciones, puertos</text>
+<rect x="435.0" y="426.0" width="510.0" height="88.0" rx="0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.5"/>
+<text x="690.0" y="467.1" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">Dominio: 7 agregados, máquinas de estado, Specifications, 31 eventos de dominio,</text>
+<text x="690.0" y="480.8" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">servicios de dominio</text>
+<rect x="435.0" y="551.0" width="510.0" height="88.0" rx="0" fill="#D0F0EC" stroke="#2F8F83" stroke-width="1.5"/>
+<text x="690.0" y="592.1" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">Infraestructura: repositorios SQL (SQLAlchemy Core 2.0 + psycopg 3),</text>
+<text x="690.0" y="605.8" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">UnitOfWorkSQL, OutboxSQL, mapeadores, adaptadores simulados</text>
+<rect x="1010.0" y="146.0" width="230.0" height="110.0" rx="10" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.5"/>
+<text x="1125.0" y="184.3" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">Contenedor worker ·</text>
+<text x="1125.0" y="198.1" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">trabajador_outbox --intervalo 2:</text>
+<text x="1125.0" y="211.8" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">llegada de T y despacho del Outbox</text>
+<text x="1125.0" y="225.6" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">(SKIP LOCKED)</text>
+<rect x="1010.0" y="296.0" width="230.0" height="90.0" rx="10" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.5"/>
+<text x="1125.0" y="331.2" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">Contenedor migrate · alembic</text>
+<text x="1125.0" y="345.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">upgrade head (0001-0009), se</text>
+<text x="1125.0" y="358.7" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">ejecuta una vez</text>
+<rect x="1010.0" y="426.0" width="230.0" height="80.0" rx="10" fill="#F5F5F5" stroke="#666666" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="1125.0" y="463.1" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">Contenedor tests (perfil «tests») ·</text>
+<text x="1125.0" y="476.8" font-family="Arial" font-size="11" text-anchor="middle" fill="#1b1b1b">unittest contra eventosnova_test</text>
+<path d="M1290.0,305.0 a105.0,9 0 0,0 210.0,0 v132.0 a105.0,9 0 0,1 -210.0,0 z" fill="#D5E8D4" stroke="#82B366" stroke-width="1.5"/>
+<ellipse cx="1395.0" cy="305.0" rx="105.0" ry="9" fill="#D5E8D4" stroke="#82B366" stroke-width="1.5"/>
+<text x="1395.0" y="356.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222">Contenedor db · PostgreSQL 18 ·</text>
+<text x="1395.0" y="370.3" font-family="Arial" font-size="11" text-anchor="middle" fill="#222">26 tablas + alembic_version ·</text>
+<text x="1395.0" y="384.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222">volumen eventosnova_pgdata ·</text>
+<text x="1395.0" y="397.8" font-family="Arial" font-size="11" text-anchor="middle" fill="#222">127.0.0.1:5432</text>
+<rect x="1010.0" y="556.0" width="230.0" height="90.0" rx="10" fill="#F5F5F5" stroke="#666666" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="1125.0" y="592.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">GitHub Actions: ci.yml y</text>
+<text x="1125.0" y="604.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">publicar-imagen.yml (CI en verde sobre</text>
+<text x="1125.0" y="617.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">main 4be166b; Bloque A sin push)</text>
+<rect x="1270.0" y="556.0" width="240.0" height="90.0" rx="10" fill="#F5F5F5" stroke="#666666" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="1390.0" y="592.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">Plataforma de despliegue: render.yaml</text>
+<text x="1390.0" y="604.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">(definido, sin aplicar; sin desplegar)</text>
+<text x="1390.0" y="617.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b"></text>
+<rect x="410.0" y="766.0" width="560.0" height="70.0" rx="10" fill="#FFFFFF" stroke="#333333" stroke-width="1.5" stroke-dasharray="6,4"/>
+<text x="690.0" y="798.4" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">No implementado: pasarela de pagos, envío real de mensajes, ejecutor real de devoluciones y proxy</text>
+<text x="690.0" y="810.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#1b1b1b">HTTPS (se usan adaptadores simulados)</text>
+<path d="M70.0,187.4 L183.3,286.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M70.0,321.2 L140.0,325.4" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M70.0,455.0 L175.1,376.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M330.0,307.8 L509.6,264.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="335.6" y="272.4" width="168.4" height="27.0" fill="#FFFFFF" opacity="0.92"/>
+<text x="419.8" y="282.4" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">fetch JSON + cookie de sesión</text>
+<text x="419.8" y="294.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">+ X-CSRF-Token</text>
+<path d="M690.0,264.0 L690.0,301.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M690.0,389.0 L690.0,426.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<path d="M945.0,345.0 L965.0,345.0 L965.0,595.0 L945.0,595.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="942.4" y="462.8" width="45.2" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="965.0" y="472.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">puertos</text>
+<path d="M945.0,595.0 L985.0,595.0 L985.0,716.0 L1395.0,716.0 L1395.0,446.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="1163.1" y="702.5" width="162.8" height="27.0" fill="#FFFFFF" opacity="0.92"/>
+<text x="1244.5" y="712.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">SQL (transacción por caso de</text>
+<text x="1244.5" y="725.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">uso; version optimista)</text>
+<path d="M1240.0,201.0 L1395.0,201.0 L1395.0,296.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="1286.4" y="187.5" width="157.2" height="27.0" fill="#FFFFFF" opacity="0.92"/>
+<text x="1365.0" y="197.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">procesar_eventos_vencidos ·</text>
+<text x="1365.0" y="210.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">outbox</text>
+<path d="M1240.0,353.8 L1290.0,359.3" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#block)"/>
+<rect x="1253.6" y="349.3" width="22.8" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="1265.0" y="359.3" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">DDL</text>
+<path d="M1238.7,426.0 L1290.0,407.9" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#block)"/>
+<rect x="1216.5" y="409.7" width="95.6" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="1264.3" y="419.7" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">eventosnova_test</text>
+<path d="M511.5,639.0 L494.0,766.0" fill="none" stroke="#333333" stroke-width="1.3" stroke-dasharray="6,4" marker-end="url(#open)"/>
+<rect x="440.9" y="695.2" width="123.6" height="14.5" fill="#FFFFFF" opacity="0.92"/>
+<text x="502.8" y="705.2" font-family="Arial" font-size="10" text-anchor="middle" fill="#333">adaptadores simulados</text>
+</svg>

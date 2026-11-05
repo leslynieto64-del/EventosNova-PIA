@@ -1,0 +1,16 @@
+grupo 1/8: 11 módulos, Ran 212, código 0, 73 s
+grupo 2/8: 11 módulos, Ran 239, código 0, 327 s
+grupo 3/8: 10 módulos, Ran 180, código 0, 118 s
+grupo 4/8: 10 módulos, Ran 213, código 0, 227 s
+grupo 5/8: 10 módulos, Ran 242, código 0, 349 s
+grupo 6/8: 10 módulos, Ran 235, código 0, 250 s
+grupo 7/8: 10 módulos, Ran 179, código 0, 234 s
+grupo 8/8: 10 módulos, Ran 154, código 0, 55 s
+Combined 8 files
+Wrote HTML report to MEDICION_COBERTURA_20261103\html\index.html
+Wrote JSON report to MEDICION_COBERTURA_20261103\coverage.json
+Pruebas ejecutadas: 1654
+Cobertura de líneas (sentencias): 98.19 %
+Cobertura de ramas: 93.20 %
+Comando base: <RAIZ_DEL_PROYECTO>\.venv\Scripts\python.exe -m coverage run --rcfile <RAIZ_DEL_PROYECTO>\.coveragerc --data-file MEDICION_COBERTURA_20261103\.coverage.g8 ...
+Resultados en: MEDICION_COBERTURA_20261103

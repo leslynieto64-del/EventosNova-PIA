@@ -1,0 +1,200 @@
+@startuml Diagrama_Clases_1_Dominio
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Arial
+hide empty members
+
+abstract class AggregateRoot <<abstracta>> {
+  - id: str
+  - _version: int
+  - _eventos: List[EventoDominio]
+  + extraer_eventos()
+}
+class Evento <<raíz>> {
+  + cliente_id: str
+  + datos: DatosEvento
+  + estado: EstadoEvento
+  + servicios: Dict[str, ServicioContratado]
+  + fecha_inicio / fecha_finalizacion
+  + confirmar_contratacion()
+  + cerrar_sin_contratacion()
+  + asignar_proveedor()
+  + registrar_respuesta_proveedor()
+  + aplicar_cambio_confirmado()
+  + incorporar_servicio_adicional()
+  + reasignar_proveedor()
+  + solicitar_cancelacion()
+  + cancelar_por_falta_de_regularizacion()
+  + registrar_revision_administrativa()
+  + iniciar()
+  + finalizar()
+}
+class Propuesta <<raíz>> {
+  + evento_id: str
+  + versiones: List[VersionPropuesta]
+  + version_vigente_id: str
+  + estado: EstadoPropuesta
+  + generar_nueva_version()
+  + aceptar()
+  + cerrar_por_no_aceptacion()
+  + version_aceptada()
+}
+class Contrato <<raíz>> {
+  + evento_id, propuesta_id: str
+  + condiciones: CondicionesContractuales
+  + politica: PoliticaNoReembolso
+  + estado: EstadoContrato
+  + anexos: List[AnexoContrato]
+  + registrar_comunicacion_politica()
+  + firmar()
+  + confirmar_contratacion()
+  + registrar_seguimiento_anticipo()
+  + cerrar_sin_confirmar()
+  + cerrar_por_inicio()
+  + registrar_anexo()
+}
+class EstadoCuenta <<raíz>> {
+  + contrato_id, evento_id: str
+  + obligaciones: Dict[str, ObligacionPago]
+  + pagos: List[Pago]
+  + devoluciones: List[Devolucion]
+  + registrar_obligacion_anticipo()
+  + registrar_obligacion_saldo_original()
+  + registrar_y_verificar_pago()
+  + verificar_pago_registrado()
+  + registrar_vencimiento_saldo()
+  + activar_protocolo_cobro()
+  + resolver_regularizacion()
+  + registrar_importe_adicional_sustitucion()
+  + aplicar_cierre_sin_realizar()
+  + registrar_devolucion_efectuada()
+}
+abstract class _SolicitudBase <<abstracta>> {
+  + evento_id, contrato_id, estado_cuenta_id
+  + anexo_id, obligacion_pago_id
+  + motivo_cierre: MotivoCierreSolicitud
+  + cerrar_por_cancelacion_evento()
+  + asociar_anexo()
+  + aplicar_decision_regularizacion()
+}
+class SolicitudCambio <<raíz>> {
+  + estado: EstadoSolicitudCambio
+  + costo_proveedor: Importe
+  + condiciones_proveedor: str
+  + tarifa: TarifaCargoTardio
+  + registrar_viabilidad()
+  + registrar_decision_cliente()
+  + registrar_autorizacion()
+  + registrar_solicitud_pago()
+  + confirmar()
+  + cerrar_por_falta_de_pago()
+  + cerrar_por_inicio_evento()
+}
+class SolicitudServicioAdicional <<raíz>> {
+  + servicio: str
+  + estado: EstadoSolicitudServicioAdicional
+  + disponibilidad: DisponibilidadProveedor
+  + registrar_disponibilidad()
+  + registrar_respuesta_espera()
+  + registrar_decision_cliente()
+  + registrar_autorizacion()
+  + registrar_solicitud_pago()
+  + confirmar()
+}
+class SustitucionProveedor <<raíz>> {
+  + servicio_contratado_id: str
+  + proveedor_original_id: str
+  + alternativas: List[AlternativaPropuesta]
+  + costo_adicional: Importe
+  + proponer_alternativa()
+  + registrar_decision_cliente()
+  + registrar_autorizacion()
+  + confirmar()
+  + cerrar_por_inicio_evento()
+}
+class ServicioContratado <<entidad>> {
+  + servicio_contratado_id: str
+  + servicio: str
+  + proveedor_id: str
+  + condiciones: CondicionesServicio
+  + estado: EstadoServicioContratado
+}
+class RespuestaProveedor <<valor>> {
+  + disponible: bool
+  + origen: str
+  + medio: str
+  + registrado_por_id / _nombre
+  + fecha: datetime
+}
+class SolicitudCancelacion <<entidad>> {
+  + fecha: datetime
+  + motivo: str
+  + estado: EstadoSolicitudCancelacion
+}
+class VersionPropuesta <<entidad>> {
+  + version_id: str
+  + numero: int
+  + fecha_actualizacion: datetime
+  + contenido: ContenidoPropuesta
+}
+class AnexoContrato <<entidad>> {
+  + anexo_id: str
+  + tipo_origen: TipoSolicitud
+  + origen_id: str
+  + fecha: datetime
+}
+class ObligacionPago <<entidad>> {
+  + obligacion_id: str
+  + concepto: ConceptoPago
+  + importe: Importe
+  + plazo: PlazoPago
+  + estado: EstadoObligacionPago
+}
+class Pago <<entidad>> {
+  + pago_id, obligacion_id: str
+  + importe: Importe
+  + comprobante: str
+  + estado: EstadoPago
+}
+class Devolucion <<entidad>> {
+  + devolucion_id: str
+  + tipo: TipoDevolucion
+  + importe: Importe
+  + estado: EstadoDevolucion
+  + vencida()
+}
+class Proveedor <<valor>> {
+  + proveedor_id, nombre: str
+  + servicios: Tuple[str]
+  + contacto: str
+  + activo: bool
+  + registrar()
+  + ofrece()
+  + con_actividad()
+}
+class Importe <<valor>> {
+  + cantidad: Decimal
+  + porcentaje()
+}
+AggregateRoot <|-- Evento
+AggregateRoot <|-- Propuesta
+AggregateRoot <|-- Contrato
+AggregateRoot <|-- EstadoCuenta
+AggregateRoot <|-- _SolicitudBase
+_SolicitudBase <|-- SolicitudCambio
+_SolicitudBase <|-- SolicitudServicioAdicional
+_SolicitudBase <|-- SustitucionProveedor
+Evento *-- "0..*" ServicioContratado
+ServicioContratado *-- "0..1" RespuestaProveedor
+Evento *-- "0..*" SolicitudCancelacion
+Propuesta *-- "1..*" VersionPropuesta
+Contrato *-- "0..*" AnexoContrato
+EstadoCuenta *-- "0..*" ObligacionPago
+EstadoCuenta *-- "0..*" Pago
+EstadoCuenta *-- "0..*" Devolucion
+ObligacionPago --> Importe
+ServicioContratado ..> Proveedor : proveedor_id
+Propuesta ..> Evento : evento_id
+Contrato ..> Evento : evento_id
+EstadoCuenta ..> Contrato : contrato_id
+_SolicitudBase ..> EstadoCuenta : estado_cuenta_id
+@enduml

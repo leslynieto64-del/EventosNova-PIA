@@ -1,0 +1,108 @@
+@startuml Diagrama_Clases_3_Infraestructura_API
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Arial
+hide empty members
+
+interface I*Repository <<interfaz>> {
+  obtener_por_id()
+  guardar()
+}
+interface IUnitOfWork <<interfaz>> {
+  iniciar()
+  confirmar()
+  revertir()
+}
+interface Puertos_de_integración <<interfaz>> {
+  verificar() / ejecutar()
+  notificar() / consultar()
+}
+interface IAlmacenSeguridad <<interfaz>> {
+  crear_sesion()
+  obtener_sesion()
+}
+class *RepositorySQL_8 <<SQLAlchemy Core>> {
+  EventoRepositorySQL, PropuestaRepositorySQL,
+  ContratoRepositorySQL, EstadoCuentaRepositorySQL,
+  SolicitudCambio/ServicioAdicional/SustitucionSQL,
+  ProveedorRepositorySQL
+  guardar(): UPDATE ... WHERE version = n
+}
+class *RepositoryMemoria_8 <<pruebas>> {
+  repositorios_memoria.py
+}
+class Mapeador <<Data Mapper>> {
+  + tabla_raiz, columna_id, hijas
+  a_filas()
+  desde_filas()
+}
+class Mapeador*_7 {
+  MapeadorEvento, MapeadorPropuesta,
+  MapeadorContrato, MapeadorEstadoCuenta, ...
+}
+class UnitOfWorkSQL {
+  iniciar()
+  registrar()
+  confirmar()
+  revertir()
+}
+class OutboxSQL <<outbox_evento>> {
+  registrar()
+  registros()
+  reabrir()
+}
+class DespachadorOutboxSQL <<outbox_reaccion>> {
+  despachar()  (FOR UPDATE SKIP LOCKED)
+}
+class trabajador_outbox <<módulo>> {
+  ejecutar(contenedor, intervalo)
+  main(--intervalo, --una-vez)
+}
+class Adaptadores_simulados {
+  VerificadorPagosSimulado
+  EjecutorDevolucionesSimulado
+  NotificadorEnMemoria
+  ConsultaDisponibilidadDesdeCatalogo
+}
+class AlmacenSeguridadSQL <<usuario, sesion, intento_acceso>> {
+  crear_sesion()
+  obtener_sesion()
+}
+class composicion_persistente <<Composition Root>> {
+  construir_persistente()
+}
+class api.main <<FastAPI>> {
+  crear_app(fabrica_contenedor, seguridad)
+  GET /health, GET /ready
+  StaticFiles /app/
+}
+class api.seguridad <<dependencia global>> {
+  aplicar_seguridad()
+  comprobar_origen()
+  registrar_cabeceras()
+}
+class LimiteDeCuerpo <<middleware>> {
+  256 KiB → 413
+}
+class rutas_*_9_routers <<APIRouter>> {
+  propuestas, contratacion, pagos, eventos,
+  solicitudes, consultas, proveedores,
+  seguridad, comunes
+}
+I*Repository <|.. *RepositorySQL_8
+I*Repository <|.. *RepositoryMemoria_8
+IUnitOfWork <|.. UnitOfWorkSQL
+Puertos_de_integración <|.. Adaptadores_simulados
+IAlmacenSeguridad <|.. AlmacenSeguridadSQL
+Mapeador <|-- Mapeador*_7
+*RepositorySQL_8 ..> Mapeador*_7 : usa
+UnitOfWorkSQL ..> OutboxSQL : escribe eventos
+trabajador_outbox ..> DespachadorOutboxSQL
+composicion_persistente ..> *RepositorySQL_8 : crea
+composicion_persistente ..> UnitOfWorkSQL
+composicion_persistente ..> Adaptadores_simulados
+trabajador_outbox ..> composicion_persistente
+api.main ..> composicion_persistente : fabrica_contenedor
+api.main ..> rutas_*_9_routers
+api.main ..> LimiteDeCuerpo
+rutas_*_9_routers ..> api.seguridad : Depends
+@enduml

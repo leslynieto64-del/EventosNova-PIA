@@ -1,5 +1,7 @@
 # CI/CD y despliegue (fase final, Etapas 10 y 11)
 
+> **Nota (05/11/2026):** la tabla inicial describe el estado anterior a la publicación en GitHub. El estado vigente está en la sección final «Estado al 05/11/2026».
+
 ## Estado real
 
 | Elemento | Estado | Evidencia |
@@ -71,3 +73,14 @@ El PIA pide un despliegue con Swagger/OpenAPI accesible. La aplicación está li
 ### Verificación local equivalente (realizada)
 
 `docker compose up -d` levanta `db`, `migrate`, `api` y `worker`; la API quedó sana (`/ready` → `{"estado":"ok","persistencia":"postgresql","base_de_datos":"ok"}`), `/docs` responde 200, `/openapi.json` listó entonces 60 operaciones (la OpenAPI vigente tiene 77; esta verificación no se repitió), un evento creado por HTTP sobrevive al reinicio del contenedor `api`, la imagen respeta `PORT` (probado con `PORT=9123`) y la migración funciona con una URL `postgres://`. Falta lo que requiere recursos externos: ejecución en GitHub, plataforma, credenciales y URL pública.
+
+## Estado al 05/11/2026 (actualización documental)
+
+| Elemento | Situación |
+|---|---|
+| Repositorio | <https://github.com/leslynieto64-del/EventosNova-PIA>: 37 commits en `main`; PR #1 (`fix/auditoria-integral` → `main`) fusionada el 04/11/2026 (`4be166b`) y PR #2 (`fix/cierre-bloque-a` → `main`) fusionada el 05/11/2026 (`0b16cf3`) |
+| CI | Ejecutado en verde sobre `main` (`4be166b`, antes del Bloque A: 1,654 pruebas; 0 omitidas en «pruebas» y 3 en «docker»), sobre el commit `9c72bc7` de la PR #2 y sobre `main` tras la fusión (`0b16cf3`): 1,677 pruebas aprobadas, cobertura de sentencias 98.21 % (6,573 de 6,693), 1 omitida en «pruebas» y 8 en «docker» (sin Node.js ni Chrome) |
+| Bloque A | 11 commits (hasta `9c72bc7`) fusionados en `main` mediante la PR #2 el 05/11/2026; el CI los evaluó en verde |
+| Imagen | El `Dockerfile` termina en la etapa `runtime` (predeterminada, commit `7aee2cb`); el CI verifica que ejecute uvicorn, use el usuario `eventosnova` y no contenga `/app/tests` |
+| Render | `render.yaml` sigue siendo un borrador sin aplicar (`postgresMajorVersion: "18"`, `autoDeployTrigger: checksPass`, `preDeployCommand: python -m alembic upgrade head`). **No hay despliegue ni URL pública** |
+| Pendiente | Aprobación de costos, despliegue, `EVENTOSNOVA_DOCS=1`, primer administrador y evidencias (el CI sobre el código actualizado y la corrección LF/CRLF ya están hechos) |

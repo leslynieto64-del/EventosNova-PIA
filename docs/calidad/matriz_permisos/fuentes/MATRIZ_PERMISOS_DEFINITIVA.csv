@@ -1,0 +1,78 @@
+﻿grupo;metodo;ruta;acceso;permiso;administrador;coordinador;proveedor
+General;GET;/;publica;(ninguno: publica);no;no;no
+Seguridad;POST;/auth/cambio-contrasena;protegida;sesion;si;si;si
+Seguridad;POST;/auth/cierre-sesion;protegida;sesion;si;si;si
+Seguridad;POST;/auth/inicio-sesion;publica;(ninguno: publica);no;no;no
+Seguridad;GET;/auth/yo;protegida;sesion;si;si;si
+Propuestas y contratación (CU-01, CU-02);POST;/contratos/{contrato_id}/comunicacion-politica-no-reembolso;protegida;contratos.gestionar;no;si;no
+Propuestas y contratación (CU-01, CU-02);POST;/contratos/{contrato_id}/confirmacion;protegida;contratos.gestionar;no;si;no
+Propuestas y contratación (CU-01, CU-02);POST;/contratos/{contrato_id}/firma;protegida;contratos.gestionar;no;si;no
+Propuestas y contratación (CU-01, CU-02);POST;/contratos/{contrato_id}/seguimiento-anticipo;protegida;contratos.gestionar;no;si;no
+Consultas (solo lectura);GET;/devoluciones-pendientes;protegida;pagos.consultar;si;si;no
+Pagos y gestión financiera;POST;/estados-cuenta/{estado_cuenta_id}/devoluciones/{devolucion_id}/ejecucion;protegida;devoluciones.ejecutar;si;no;no
+Pagos y gestión financiera;POST;/estados-cuenta/{estado_cuenta_id}/pagos;protegida;pagos.registrar;si;no;no
+Pagos y gestión financiera;POST;/estados-cuenta/{estado_cuenta_id}/pagos/{pago_id}/verificacion;protegida;pagos.registrar;si;no;no
+Pagos y gestión financiera;POST;/estados-cuenta/{estado_cuenta_id}/protocolo-cobro;protegida;pagos.cobranza;si;no;no
+Pagos y gestión financiera;POST;/estados-cuenta/{estado_cuenta_id}/regularizacion;protegida;pagos.cobranza;si;no;no
+Pagos y gestión financiera;POST;/estados-cuenta/{estado_cuenta_id}/vencimiento-saldo-original;protegida;pagos.cobranza;si;no;no
+Consultas (solo lectura);GET;/eventos;protegida;eventos.consultar;si;si;no
+Propuestas (CU-01);POST;/eventos;protegida;eventos.registrar;no;si;no
+Consultas (solo lectura);GET;/eventos/{evento_id}/administracion;protegida;eventos.consultar;si;si;no
+Ciclo de vida del Evento y proveedores;POST;/eventos/{evento_id}/cancelacion;protegida;eventos.cancelar;no;si;no
+Ciclo de vida del Evento y proveedores;POST;/eventos/{evento_id}/cancelacion-por-falta-de-regularizacion;protegida;eventos.cancelar;no;si;no
+Ciclo de vida del Evento y proveedores;POST;/eventos/{evento_id}/finalizacion;protegida;eventos.ciclo;no;si;no
+Ciclo de vida del Evento y proveedores;POST;/eventos/{evento_id}/inicio;protegida;eventos.ciclo;no;si;no
+Consultas (solo lectura);GET;/eventos/{evento_id}/pagos;protegida;pagos.consultar;si;si;no
+Consultas (solo lectura);GET;/eventos/{evento_id}/propuestas;protegida;eventos.consultar;si;si;no
+Propuestas (CU-01);POST;/eventos/{evento_id}/propuestas;protegida;propuestas.gestionar;no;si;no
+Ciclo de vida del Evento y proveedores;POST;/eventos/{evento_id}/revision-administrativa;protegida;eventos.revision_administrativa;si;no;no
+Ciclo de vida del Evento y proveedores;GET;/eventos/{evento_id}/servicios/{servicio_contratado_id}/disponibilidad;protegida;proveedores.asignar;no;si;no
+Ciclo de vida del Evento y proveedores;POST;/eventos/{evento_id}/servicios/{servicio_contratado_id}/proveedor;protegida;proveedores.asignar;no;si;no
+Ciclo de vida del Evento y proveedores;POST;/eventos/{evento_id}/servicios/{servicio_contratado_id}/respuesta-proveedor;protegida;proveedores.responder;no;si;propio
+Consultas (solo lectura);GET;/eventos/{evento_id}/solicitudes-pendientes;protegida;eventos.consultar;si;si;no
+General;GET;/health;publica;(ninguno: publica);no;no;no
+Consultas (solo lectura);GET;/mis-asignaciones;protegida;proveedores.propio;no;no;propio
+Consultas (solo lectura);GET;/pagos-pendientes;protegida;pagos.consultar;si;si;no
+Propuestas y contratación (CU-01, CU-02);POST;/propuestas/{propuesta_id}/aceptacion;protegida;propuestas.gestionar;no;si;no
+Propuestas y contratación (CU-01, CU-02);POST;/propuestas/{propuesta_id}/cierre-por-no-aceptacion;protegida;propuestas.gestionar;no;si;no
+Propuestas y contratación (CU-01, CU-02);POST;/propuestas/{propuesta_id}/contrato;protegida;contratos.gestionar;no;si;no
+Propuestas y contratación (CU-01, CU-02);POST;/propuestas/{propuesta_id}/versiones;protegida;propuestas.gestionar;no;si;no
+Proveedores (catálogo);GET;/proveedores;protegida;proveedores.consultar;si;si;no
+Proveedores (catálogo);POST;/proveedores;protegida;proveedores.registrar;si;si;no
+Proveedores (catálogo);GET;/proveedores/{proveedor_id};protegida;proveedores.consultar, proveedores.propio;si;si;propio
+Proveedores (catálogo);POST;/proveedores/{proveedor_id}/activacion;protegida;proveedores.editar;si;no;no
+Proveedores (catálogo);POST;/proveedores/{proveedor_id}/desactivacion;protegida;proveedores.editar;si;no;no
+Proveedores (catálogo);POST;/proveedores/{proveedor_id}/edicion;protegida;proveedores.editar;si;no;no
+Consultas (solo lectura);GET;/proveedores/{proveedor_id}/eventos/{evento_id};protegida;proveedores.consultar, proveedores.propio;si;si;propio
+General;GET;/ready;publica;(ninguno: publica);no;no;no
+Consultas (solo lectura);GET;/servicios-pendientes-confirmacion;protegida;eventos.consultar;si;si;no
+Consultas (solo lectura);GET;/solicitudes;protegida;eventos.consultar;si;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-cambio;protegida;solicitudes.registrar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-cambio/{solicitud_id}/anexo;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-cambio/{solicitud_id}/autorizacion;protegida;solicitudes.autorizar;si;no;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-cambio/{solicitud_id}/cierre-por-falta-de-pago;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-cambio/{solicitud_id}/confirmacion;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-cambio/{solicitud_id}/decision-cliente;protegida;solicitudes.gestionar;no;si;no
+Pagos y gestión financiera;POST;/solicitudes-cambio/{solicitud_id}/solicitud-pago;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-cambio/{solicitud_id}/viabilidad;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-servicio-adicional;protegida;solicitudes.registrar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-servicio-adicional/{solicitud_id}/anexo;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-servicio-adicional/{solicitud_id}/aprobacion-cliente;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-servicio-adicional/{solicitud_id}/autorizacion;protegida;solicitudes.autorizar;si;no;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-servicio-adicional/{solicitud_id}/cierre-por-falta-de-pago;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-servicio-adicional/{solicitud_id}/confirmacion;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-servicio-adicional/{solicitud_id}/decision-espera;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/solicitudes-servicio-adicional/{solicitud_id}/disponibilidad;protegida;solicitudes.gestionar;no;si;no
+Pagos y gestión financiera;POST;/solicitudes-servicio-adicional/{solicitud_id}/solicitud-pago;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/sustituciones;protegida;solicitudes.registrar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/sustituciones/{sustitucion_id}/alternativa;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/sustituciones/{sustitucion_id}/anexo;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/sustituciones/{sustitucion_id}/autorizacion;protegida;solicitudes.autorizar;si;no;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/sustituciones/{sustitucion_id}/confirmacion;protegida;solicitudes.gestionar;no;si;no
+Solicitudes: cambios, servicios adicionales y sustituciones;POST;/sustituciones/{sustitucion_id}/decision-cliente;protegida;solicitudes.gestionar;no;si;no
+Pagos y gestión financiera;POST;/sustituciones/{sustitucion_id}/importe-adicional;protegida;solicitudes.importe_adicional;si;no;no
+Seguridad;GET;/usuarios;protegida;usuarios.administrar;si;no;no
+Seguridad;POST;/usuarios;protegida;usuarios.administrar;si;no;no
+Seguridad;POST;/usuarios/{usuario_id}/actualizacion;protegida;usuarios.administrar;si;no;no
+Seguridad;POST;/usuarios/{usuario_id}/contrasena;protegida;usuarios.administrar;si;no;no
+Seguridad;POST;/usuarios/{usuario_id}/estado;protegida;usuarios.administrar;si;no;no

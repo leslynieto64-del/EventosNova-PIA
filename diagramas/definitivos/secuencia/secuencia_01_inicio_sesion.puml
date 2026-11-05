@@ -1,0 +1,24 @@
+@startuml secuencia_01_inicio_sesion
+skinparam defaultFontName Arial
+autonumber
+participant "Usuario (rol)" as U
+participant "Interfaz web" as UI
+participant "API FastAPI + aplicar_seguridad" as API
+participant "ServicioSeguridad" as S
+participant "AlmacenSeguridadSQL" as A
+participant "PostgreSQL" as PG
+U -> UI : correo y contraseña
+UI -> API : POST /auth/inicio-sesion
+API -> S : iniciar_sesion(correo, contraseña, ip)
+S -> A : obtener_intento() / obtener_usuario_por_correo()
+A -> PG : SELECT intento_acceso, usuario
+S -> S : verificar Argon2id; límite 5 fallos (correo, IP)
+S -> A : crear_sesion(hash SHA-256 del token)
+A -> PG : INSERT sesion
+API --> UI : Set-Cookie (HttpOnly) + token CSRF
+== Operación protegida posterior ==
+UI -> API : POST /ruta (cookie, X-CSRF-Token, Origin)
+API -> S : autenticar(token); csrf_valido()
+API -> API : autoriza(rol, método, ruta) · deny-by-default
+API --> UI : 2xx · 401 sin sesión · 403 sin permiso
+@enduml

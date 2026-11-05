@@ -1,0 +1,459 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2205" height="2389" viewBox="0 0 2205 2389">
+<defs><marker id="block" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker><marker id="open" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,5 L0,10" fill="none" stroke="#333" stroke-width="1.2"/></marker><marker id="tri" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L13,6 L0,12 z" fill="#fff" stroke="#333" stroke-width="1.2"/></marker><marker id="diamond" markerWidth="16" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,5 L8,1 L15,5 L8,9 z" fill="#333"/></marker><marker id="odiamond" markerWidth="16" markerHeight="10" refX="1" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M1,5 L8,1 L15,5 L8,9 z" fill="#fff" stroke="#333"/></marker></defs>
+<rect width="100%" height="100%" fill="#FFFFFF"/>
+<text x="30.0" y="40.0" font-family="Arial" font-size="20" text-anchor="start" fill="#1F4E79" font-weight="bold">Modelo relacional PostgreSQL 18 · Eventos Nova (migraciones 0001 a 0009, 26 tablas)</text>
+<text x="30.0" y="62.0" font-family="Arial" font-size="12" text-anchor="start" fill="#444">PK = clave primaria · FK = clave foránea · tipos según esquema_postgresql.py; estados como VARCHAR + CHECK; importes NUMERIC; TIMESTAMP sin zona horaria</text>
+<rect x="1005.1" y="1003.5" width="221.6" height="190.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="1005.1" y="1003.5" width="221.6" height="26.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="1115.9" y="1019.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">contrato</text>
+<line x1="1005.1" y1="1029.5" x2="1226.7" y2="1029.5" stroke="#D6B656"/>
+<text x="1011.1" y="1043.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK contrato_id : TEXT</text>
+<text x="1011.1" y="1056.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK evento_id : TEXT</text>
+<text x="1011.1" y="1069.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK propuesta_id : TEXT</text>
+<text x="1011.1" y="1082.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK version_aceptada_id : TEXT</text>
+<text x="1011.1" y="1095.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   servicios : TEXT[]</text>
+<text x="1011.1" y="1108.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   costo_total : NUMERIC</text>
+<text x="1011.1" y="1121.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   condiciones : TEXT</text>
+<text x="1011.1" y="1134.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   politica_incluida : BOOLEAN</text>
+<text x="1011.1" y="1147.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   politica_comunicada_en : TIMESTAMP ?</text>
+<text x="1011.1" y="1160.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<text x="1011.1" y="1173.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha_firma : TIMESTAMP ?</text>
+<text x="1011.1" y="1186.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   version : BIGINT</text>
+<rect x="694.4" y="836.0" width="200.0" height="125.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="694.4" y="836.0" width="200.0" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="794.4" y="852.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">contrato_anexo</text>
+<line x1="694.4" y1="862.0" x2="894.4" y2="862.0" stroke="#82B366"/>
+<text x="700.4" y="876.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK anexo_id : TEXT</text>
+<text x="700.4" y="889.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK contrato_id : TEXT</text>
+<text x="700.4" y="902.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   posicion : INTEGER</text>
+<text x="700.4" y="915.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   tipo_origen : VARCHAR(40)</text>
+<text x="700.4" y="928.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   origen_id : TEXT</text>
+<text x="700.4" y="941.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   descripcion : TEXT</text>
+<text x="700.4" y="954.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha : TIMESTAMP</text>
+<rect x="686.5" y="986.5" width="215.8" height="86.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="686.5" y="986.5" width="215.8" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="794.4" y="1002.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">contrato_seguimiento_anticipo</text>
+<line x1="686.5" y1="1012.5" x2="902.3" y2="1012.5" stroke="#82B366"/>
+<text x="692.5" y="1026.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK contrato_id : TEXT</text>
+<text x="692.5" y="1039.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK posicion : INTEGER</text>
+<text x="692.5" y="1052.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha : TIMESTAMP</text>
+<text x="692.5" y="1065.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   resultado : TEXT</text>
+<rect x="359.9" y="703.5" width="200.0" height="216.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="359.9" y="703.5" width="200.0" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="459.9" y="719.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">devolucion</text>
+<line x1="359.9" y1="729.5" x2="559.9" y2="729.5" stroke="#82B366"/>
+<text x="365.9" y="743.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK estado_cuenta_id : TEXT</text>
+<text x="365.9" y="756.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK devolucion_id : TEXT</text>
+<text x="365.9" y="769.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   posicion : INTEGER</text>
+<text x="365.9" y="782.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   solicitud_id : TEXT ?</text>
+<text x="365.9" y="795.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   concepto : VARCHAR(40)</text>
+<text x="365.9" y="808.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   importe : NUMERIC</text>
+<text x="365.9" y="821.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_devolucion : TEXT</text>
+<text x="365.9" y="834.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha_cierre : TIMESTAMP</text>
+<text x="365.9" y="847.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<text x="365.9" y="860.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha_devolucion : TIMESTAMP ?</text>
+<text x="365.9" y="873.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   comprobante : TEXT ?</text>
+<text x="365.9" y="886.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   tipo : VARCHAR(40)</text>
+<text x="365.9" y="899.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   pago_id : TEXT ?</text>
+<text x="365.9" y="912.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha_referencia : TIMESTAMP ?</text>
+<rect x="662.7" y="1097.5" width="263.3" height="138.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="662.7" y="1097.5" width="263.3" height="26.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="794.4" y="1113.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">estado_cuenta</text>
+<line x1="662.7" y1="1123.5" x2="926.1" y2="1123.5" stroke="#D6B656"/>
+<text x="668.7" y="1137.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK estado_cuenta_id : TEXT</text>
+<text x="668.7" y="1150.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK contrato_id : TEXT</text>
+<text x="668.7" y="1163.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK evento_id : TEXT</text>
+<text x="668.7" y="1176.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   resultado_regularizacion : TEXT ?</text>
+<text x="668.7" y="1189.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha_resultado_regularizacion : TIMESTAMP ?</text>
+<text x="668.7" y="1202.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   ventana_resuelta_obligacion_id : TEXT ?</text>
+<text x="668.7" y="1215.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   cierre_contratacion : TIMESTAMP ?</text>
+<text x="668.7" y="1228.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   version : BIGINT</text>
+<rect x="338.4" y="944.5" width="243.1" height="86.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="338.4" y="944.5" width="243.1" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="459.9" y="960.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">estado_cuenta_cierre_sin_realizar</text>
+<line x1="338.4" y1="970.5" x2="581.4" y2="970.5" stroke="#82B366"/>
+<text x="344.4" y="984.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK estado_cuenta_id : TEXT</text>
+<text x="344.4" y="997.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK origen_id : TEXT</text>
+<text x="344.4" y="1010.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha_cierre : TIMESTAMP</text>
+<text x="344.4" y="1023.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   evento_cancelado : BOOLEAN</text>
+<rect x="345.2" y="1056.0" width="229.4" height="73.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="345.2" y="1056.0" width="229.4" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="459.9" y="1072.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">estado_cuenta_seguimiento_cobro</text>
+<line x1="345.2" y1="1082.0" x2="574.6" y2="1082.0" stroke="#82B366"/>
+<text x="351.2" y="1096.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK estado_cuenta_id : TEXT</text>
+<text x="351.2" y="1109.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK posicion : INTEGER</text>
+<text x="351.2" y="1122.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   seguimiento : TEXT</text>
+<rect x="1911.7" y="1439.0" width="263.3" height="307.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="1911.7" y="1439.0" width="263.3" height="26.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="2043.4" y="1455.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">evento</text>
+<line x1="1911.7" y1="1465.0" x2="2175.1" y2="1465.0" stroke="#D6B656"/>
+<text x="1917.7" y="1479.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK evento_id : TEXT</text>
+<text x="1917.7" y="1492.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   cliente_id : TEXT</text>
+<text x="1917.7" y="1505.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   tipo : TEXT</text>
+<text x="1917.7" y="1518.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha_hora : TIMESTAMP</text>
+<text x="1917.7" y="1531.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   lugar : TEXT</text>
+<text x="1917.7" y="1544.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   invitados_aproximados : BIGINT</text>
+<text x="1917.7" y="1557.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   servicios_solicitados : TEXT[]</text>
+<text x="1917.7" y="1570.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<text x="1917.7" y="1583.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha_inicio : TIMESTAMP ?</text>
+<text x="1917.7" y="1596.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha_finalizacion : TIMESTAMP ?</text>
+<text x="1917.7" y="1609.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cancelacion_origen : VARCHAR(40) ?</text>
+<text x="1917.7" y="1622.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cancelacion_descripcion : TEXT ?</text>
+<text x="1917.7" y="1635.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cancelacion_fecha : TIMESTAMP ?</text>
+<text x="1917.7" y="1648.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cancelacion_registrado_por : TEXT ?</text>
+<text x="1917.7" y="1661.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   revision_resultado : TEXT ?</text>
+<text x="1917.7" y="1674.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   revision_pagos_realizados : NUMERIC ?</text>
+<text x="1917.7" y="1687.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   revision_saldo_pendiente : NUMERIC ?</text>
+<text x="1917.7" y="1700.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   revision_politica_incluida : BOOLEAN ?</text>
+<text x="1917.7" y="1713.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   revision_constancia_no_reembolso : BOOLEAN ?</text>
+<text x="1917.7" y="1726.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   revision_fecha : TIMESTAMP ?</text>
+<text x="1917.7" y="1739.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   version : BIGINT</text>
+<rect x="1611.9" y="1186.5" width="200.0" height="60.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="1611.9" y="1186.5" width="200.0" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="1711.9" y="1202.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">evento_operacion_aplicada</text>
+<line x1="1611.9" y1="1212.5" x2="1811.9" y2="1212.5" stroke="#82B366"/>
+<text x="1617.9" y="1226.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK evento_id : TEXT</text>
+<text x="1617.9" y="1239.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK operacion_id : TEXT</text>
+<rect x="1590.7" y="1271.0" width="242.5" height="203.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="1590.7" y="1271.0" width="242.5" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="1711.9" y="1287.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">evento_servicio_contratado</text>
+<line x1="1590.7" y1="1297.0" x2="1833.1" y2="1297.0" stroke="#82B366"/>
+<text x="1596.7" y="1311.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK evento_id : TEXT</text>
+<text x="1596.7" y="1324.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK servicio_contratado_id : TEXT</text>
+<text x="1596.7" y="1337.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   posicion : INTEGER</text>
+<text x="1596.7" y="1350.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   servicio : TEXT</text>
+<text x="1596.7" y="1363.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   proveedor_id : TEXT ?</text>
+<text x="1596.7" y="1376.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   condiciones : TEXT</text>
+<text x="1596.7" y="1389.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<text x="1596.7" y="1402.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   respuesta_disponible : BOOLEAN ?</text>
+<text x="1596.7" y="1415.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   respuesta_origen : TEXT ?</text>
+<text x="1596.7" y="1428.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   respuesta_medio : TEXT ?</text>
+<text x="1596.7" y="1441.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   respuesta_registrada_por_id : TEXT ?</text>
+<text x="1596.7" y="1454.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   respuesta_registrada_por_nombre : TEXT ?</text>
+<text x="1596.7" y="1467.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   respuesta_fecha : TIMESTAMP ?</text>
+<rect x="1607.4" y="1499.0" width="209.0" height="99.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="1607.4" y="1499.0" width="209.0" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="1711.9" y="1515.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">evento_solicitud_cancelacion</text>
+<line x1="1607.4" y1="1525.0" x2="1816.4" y2="1525.0" stroke="#82B366"/>
+<text x="1613.4" y="1539.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK evento_id : TEXT</text>
+<text x="1613.4" y="1552.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK posicion : INTEGER</text>
+<text x="1613.4" y="1565.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha : TIMESTAMP</text>
+<text x="1613.4" y="1578.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo : TEXT</text>
+<text x="1613.4" y="1591.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<rect x="43.4" y="409.5" width="200.0" height="86.0" fill="#FFFFFF" stroke="#666666" stroke-width="1.3"/>
+<rect x="43.4" y="409.5" width="200.0" height="26.0" fill="#F5F5F5" stroke="#666666" stroke-width="1.3"/>
+<text x="143.4" y="425.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">intento_acceso</text>
+<line x1="43.4" y1="435.5" x2="243.4" y2="435.5" stroke="#666666"/>
+<text x="49.4" y="449.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK clave : TEXT</text>
+<text x="49.4" y="462.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fallos : BIGINT</text>
+<text x="49.4" y="475.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   primer_fallo : TIMESTAMP</text>
+<text x="49.4" y="488.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   bloqueado_hasta : TIMESTAMP ?</text>
+<rect x="359.9" y="527.0" width="200.0" height="151.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="359.9" y="527.0" width="200.0" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="459.9" y="543.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">obligacion_pago</text>
+<line x1="359.9" y1="553.0" x2="559.9" y2="553.0" stroke="#82B366"/>
+<text x="365.9" y="567.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK estado_cuenta_id : TEXT</text>
+<text x="365.9" y="580.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK obligacion_id : TEXT</text>
+<text x="365.9" y="593.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   posicion : INTEGER</text>
+<text x="365.9" y="606.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   concepto : VARCHAR(40)</text>
+<text x="365.9" y="619.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   importe : NUMERIC</text>
+<text x="365.9" y="632.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   plazo_inicio : TIMESTAMP ?</text>
+<text x="365.9" y="645.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   plazo_vence : TIMESTAMP ?</text>
+<text x="365.9" y="658.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   origen_id : TEXT</text>
+<text x="365.9" y="671.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<rect x="359.9" y="272.0" width="200.0" height="151.0" fill="#FFFFFF" stroke="#9673A6" stroke-width="1.3"/>
+<rect x="359.9" y="272.0" width="200.0" height="26.0" fill="#E1D5E7" stroke="#9673A6" stroke-width="1.3"/>
+<text x="459.9" y="288.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">outbox_evento</text>
+<line x1="359.9" y1="298.0" x2="559.9" y2="298.0" stroke="#9673A6"/>
+<text x="365.9" y="312.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK secuencia : BIGINT</text>
+<text x="365.9" y="325.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   evento_id : TEXT</text>
+<text x="365.9" y="338.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   tipo_evento : TEXT</text>
+<text x="365.9" y="351.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   agregado_id : TEXT</text>
+<text x="365.9" y="364.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   ocurrido_en : TIMESTAMP</text>
+<text x="365.9" y="377.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   datos : JSONB</text>
+<text x="365.9" y="390.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(20)</text>
+<text x="365.9" y="403.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   intentos : INTEGER</text>
+<text x="365.9" y="416.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   error : TEXT</text>
+<rect x="43.4" y="311.0" width="200.0" height="73.0" fill="#FFFFFF" stroke="#9673A6" stroke-width="1.3"/>
+<rect x="43.4" y="311.0" width="200.0" height="26.0" fill="#E1D5E7" stroke="#9673A6" stroke-width="1.3"/>
+<text x="143.4" y="327.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">outbox_reaccion</text>
+<line x1="43.4" y1="337.0" x2="243.4" y2="337.0" stroke="#9673A6"/>
+<text x="49.4" y="351.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK evento_id : TEXT</text>
+<text x="49.4" y="364.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK clave_reaccion : TEXT</text>
+<text x="49.4" y="377.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   procesada_en : TIMESTAMP</text>
+<rect x="43.4" y="520.5" width="200.0" height="164.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="43.4" y="520.5" width="200.0" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="143.4" y="536.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">pago</text>
+<line x1="43.4" y1="546.5" x2="243.4" y2="546.5" stroke="#82B366"/>
+<text x="49.4" y="560.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK estado_cuenta_id : TEXT</text>
+<text x="49.4" y="573.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK pago_id : TEXT</text>
+<text x="49.4" y="586.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   posicion : INTEGER</text>
+<text x="49.4" y="599.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK obligacion_id : TEXT</text>
+<text x="49.4" y="612.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   importe : NUMERIC</text>
+<text x="49.4" y="625.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha : TIMESTAMP</text>
+<text x="49.4" y="638.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   comprobante : TEXT</text>
+<text x="49.4" y="651.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<text x="49.4" y="664.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   registrado_en : TIMESTAMP ?</text>
+<text x="49.4" y="677.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   verificado_en : TIMESTAMP ?</text>
+<rect x="1611.9" y="1036.0" width="200.0" height="125.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="1611.9" y="1036.0" width="200.0" height="26.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="1711.9" y="1052.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">propuesta</text>
+<line x1="1611.9" y1="1062.0" x2="1811.9" y2="1062.0" stroke="#D6B656"/>
+<text x="1617.9" y="1076.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK propuesta_id : TEXT</text>
+<text x="1617.9" y="1089.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK evento_id : TEXT</text>
+<text x="1617.9" y="1102.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   cliente_id : TEXT</text>
+<text x="1617.9" y="1115.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<text x="1617.9" y="1128.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK version_vigente_id : TEXT</text>
+<text x="1617.9" y="1141.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cierre : TEXT ?</text>
+<text x="1617.9" y="1154.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   version : BIGINT</text>
+<rect x="694.4" y="109.0" width="200.0" height="125.0" fill="#FFFFFF" stroke="#D79B00" stroke-width="1.3"/>
+<rect x="694.4" y="109.0" width="200.0" height="26.0" fill="#FFE6CC" stroke="#D79B00" stroke-width="1.3"/>
+<text x="794.4" y="125.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">proveedor</text>
+<line x1="694.4" y1="135.0" x2="894.4" y2="135.0" stroke="#D79B00"/>
+<text x="700.4" y="149.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK proveedor_id : TEXT</text>
+<text x="700.4" y="162.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   nombre : TEXT</text>
+<text x="700.4" y="175.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   nombre_normalizado : TEXT</text>
+<text x="700.4" y="188.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   servicios : TEXT[]</text>
+<text x="700.4" y="201.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   contacto : TEXT</text>
+<text x="700.4" y="214.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   registrado_en : TIMESTAMP</text>
+<text x="700.4" y="227.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   activo : BOOLEAN</text>
+<rect x="43.4" y="109.0" width="200.0" height="125.0" fill="#FFFFFF" stroke="#666666" stroke-width="1.3"/>
+<rect x="43.4" y="109.0" width="200.0" height="26.0" fill="#F5F5F5" stroke="#666666" stroke-width="1.3"/>
+<text x="143.4" y="125.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">sesion</text>
+<line x1="43.4" y1="135.0" x2="243.4" y2="135.0" stroke="#666666"/>
+<text x="49.4" y="149.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK sesion_hash : TEXT</text>
+<text x="49.4" y="162.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK usuario_id : TEXT</text>
+<text x="49.4" y="175.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   csrf : TEXT</text>
+<text x="49.4" y="188.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   creada_en : TIMESTAMP</text>
+<text x="49.4" y="201.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   ultima_actividad : TIMESTAMP</text>
+<text x="49.4" y="214.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   expira_en : TIMESTAMP</text>
+<text x="49.4" y="227.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   revocada_en : TIMESTAMP ?</text>
+<rect x="336.1" y="1154.5" width="247.7" height="502.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="336.1" y="1154.5" width="247.7" height="26.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="459.9" y="1170.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">solicitud_cambio</text>
+<line x1="336.1" y1="1180.5" x2="583.7" y2="1180.5" stroke="#D6B656"/>
+<text x="342.1" y="1194.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK solicitud_id : TEXT</text>
+<text x="342.1" y="1207.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK evento_id : TEXT</text>
+<text x="342.1" y="1220.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK contrato_id : TEXT</text>
+<text x="342.1" y="1233.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK estado_cuenta_id : TEXT</text>
+<text x="342.1" y="1246.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   anexo_id : TEXT ?</text>
+<text x="342.1" y="1259.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   obligacion_pago_id : TEXT ?</text>
+<text x="342.1" y="1272.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cierre_causa : VARCHAR(40) ?</text>
+<text x="342.1" y="1285.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cierre_descripcion : TEXT ?</text>
+<text x="342.1" y="1298.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cierre_fecha : TIMESTAMP ?</text>
+<text x="342.1" y="1311.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<text x="342.1" y="1324.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado_antes_de_detener : VARCHAR(40) ?</text>
+<text x="342.1" y="1337.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   descripcion : TEXT</text>
+<text x="342.1" y="1350.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   anticipacion_fecha_solicitud : TIMESTAMP</text>
+<text x="342.1" y="1363.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   anticipacion_fecha_evento : TIMESTAMP</text>
+<text x="342.1" y="1376.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   tarifa_importe : NUMERIC</text>
+<text x="342.1" y="1389.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   datos_propuestos_tipo : TEXT ?</text>
+<text x="342.1" y="1402.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   datos_propuestos_fecha_hora : TIMESTAMP ?</text>
+<text x="342.1" y="1415.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   datos_propuestos_lugar : TEXT ?</text>
+<text x="342.1" y="1428.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   datos_propuestos_invitados : BIGINT ?</text>
+<text x="342.1" y="1441.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   viabilidad_viable : BOOLEAN ?</text>
+<text x="342.1" y="1454.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   viabilidad_motivo : TEXT ?</text>
+<text x="342.1" y="1467.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   impacto_afecta_servicios : BOOLEAN ?</text>
+<text x="342.1" y="1480.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   impacto_afecta_costos : BOOLEAN ?</text>
+<text x="342.1" y="1493.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   impacto_afecta_condiciones : BOOLEAN ?</text>
+<text x="342.1" y="1506.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   costo_proveedor : NUMERIC ?</text>
+<text x="342.1" y="1519.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   condiciones_proveedor : TEXT ?</text>
+<text x="342.1" y="1532.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_actor : TEXT ?</text>
+<text x="342.1" y="1545.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_aprobada : BOOLEAN ?</text>
+<text x="342.1" y="1558.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_fecha : TIMESTAMP ?</text>
+<text x="342.1" y="1571.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_motivo : TEXT ?</text>
+<text x="342.1" y="1584.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_actor : TEXT ?</text>
+<text x="342.1" y="1597.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_aprobada : BOOLEAN ?</text>
+<text x="342.1" y="1610.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_fecha : TIMESTAMP ?</text>
+<text x="342.1" y="1623.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_motivo : TEXT ?</text>
+<text x="342.1" y="1636.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   importes_por_pagar : BOOLEAN</text>
+<text x="342.1" y="1649.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   version : BIGINT</text>
+<rect x="43.4" y="1362.5" width="200.0" height="86.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="43.4" y="1362.5" width="200.0" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="143.4" y="1378.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">solicitud_cambio_condicion</text>
+<line x1="43.4" y1="1388.5" x2="243.4" y2="1388.5" stroke="#82B366"/>
+<text x="49.4" y="1402.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK solicitud_id : TEXT</text>
+<text x="49.4" y="1415.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK servicio_contratado_id : TEXT</text>
+<text x="49.4" y="1428.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   posicion : INTEGER</text>
+<text x="49.4" y="1441.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   condiciones : TEXT</text>
+<rect x="338.7" y="1681.5" width="242.5" height="398.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="338.7" y="1681.5" width="242.5" height="26.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="459.9" y="1697.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">solicitud_servicio_adicional</text>
+<line x1="338.7" y1="1707.5" x2="581.1" y2="1707.5" stroke="#D6B656"/>
+<text x="344.7" y="1721.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK solicitud_id : TEXT</text>
+<text x="344.7" y="1734.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK evento_id : TEXT</text>
+<text x="344.7" y="1747.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK contrato_id : TEXT</text>
+<text x="344.7" y="1760.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK estado_cuenta_id : TEXT</text>
+<text x="344.7" y="1773.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   anexo_id : TEXT ?</text>
+<text x="344.7" y="1786.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   obligacion_pago_id : TEXT ?</text>
+<text x="344.7" y="1799.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cierre_causa : VARCHAR(40) ?</text>
+<text x="344.7" y="1812.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cierre_descripcion : TEXT ?</text>
+<text x="344.7" y="1825.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cierre_fecha : TIMESTAMP ?</text>
+<text x="344.7" y="1838.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<text x="344.7" y="1851.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado_antes_de_detener : VARCHAR(40) ?</text>
+<text x="344.7" y="1864.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   servicio : TEXT</text>
+<text x="344.7" y="1877.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   anticipacion_fecha_solicitud : TIMESTAMP</text>
+<text x="344.7" y="1890.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   anticipacion_fecha_evento : TIMESTAMP</text>
+<text x="344.7" y="1903.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   elegibilidad_obtenida : BOOLEAN</text>
+<text x="344.7" y="1916.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   disponibilidad_proveedor_id : TEXT ?</text>
+<text x="344.7" y="1929.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   disponibilidad_disponible : BOOLEAN ?</text>
+<text x="344.7" y="1942.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   disponibilidad_costo : NUMERIC ?</text>
+<text x="344.7" y="1955.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   disponibilidad_condiciones : TEXT ?</text>
+<text x="344.7" y="1968.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_actor : TEXT ?</text>
+<text x="344.7" y="1981.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_aprobada : BOOLEAN ?</text>
+<text x="344.7" y="1994.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_fecha : TIMESTAMP ?</text>
+<text x="344.7" y="2007.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_motivo : TEXT ?</text>
+<text x="344.7" y="2020.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_actor : TEXT ?</text>
+<text x="344.7" y="2033.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_aprobada : BOOLEAN ?</text>
+<text x="344.7" y="2046.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_fecha : TIMESTAMP ?</text>
+<text x="344.7" y="2059.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_motivo : TEXT ?</text>
+<text x="344.7" y="2072.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   version : BIGINT</text>
+<rect x="30.0" y="2091.5" width="226.8" height="268.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="30.0" y="2091.5" width="226.8" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="143.4" y="2107.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">sustitucion_alternativa</text>
+<line x1="30.0" y1="2117.5" x2="256.8" y2="2117.5" stroke="#82B366"/>
+<text x="36.0" y="2131.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK sustitucion_id : TEXT</text>
+<text x="36.0" y="2144.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK posicion : INTEGER</text>
+<text x="36.0" y="2157.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   proveedor_id : TEXT</text>
+<text x="36.0" y="2170.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   disponibilidad_proveedor_id : TEXT ?</text>
+<text x="36.0" y="2183.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   disponibilidad_disponible : BOOLEAN ?</text>
+<text x="36.0" y="2196.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   disponibilidad_costo : NUMERIC ?</text>
+<text x="36.0" y="2209.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   disponibilidad_condiciones : TEXT ?</text>
+<text x="36.0" y="2222.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   impacto_afecta_servicios : BOOLEAN</text>
+<text x="36.0" y="2235.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   impacto_afecta_costos : BOOLEAN</text>
+<text x="36.0" y="2248.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   impacto_afecta_condiciones : BOOLEAN</text>
+<text x="36.0" y="2261.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_actor : TEXT ?</text>
+<text x="36.0" y="2274.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_aprobada : BOOLEAN ?</text>
+<text x="36.0" y="2287.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_fecha : TIMESTAMP ?</text>
+<text x="36.0" y="2300.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   decision_cliente_motivo : TEXT ?</text>
+<text x="36.0" y="2313.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_actor : TEXT ?</text>
+<text x="36.0" y="2326.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_aprobada : BOOLEAN ?</text>
+<text x="36.0" y="2339.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_fecha : TIMESTAMP ?</text>
+<text x="36.0" y="2352.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   autorizacion_motivo : TEXT ?</text>
+<rect x="341.3" y="2104.5" width="237.2" height="242.0" fill="#FFFFFF" stroke="#D6B656" stroke-width="1.3"/>
+<rect x="341.3" y="2104.5" width="237.2" height="26.0" fill="#FFF2CC" stroke="#D6B656" stroke-width="1.3"/>
+<text x="459.9" y="2120.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">sustitucion_proveedor</text>
+<line x1="341.3" y1="2130.5" x2="578.5" y2="2130.5" stroke="#D6B656"/>
+<text x="347.3" y="2144.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK sustitucion_id : TEXT</text>
+<text x="347.3" y="2157.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK evento_id : TEXT</text>
+<text x="347.3" y="2170.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK contrato_id : TEXT</text>
+<text x="347.3" y="2183.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK estado_cuenta_id : TEXT</text>
+<text x="347.3" y="2196.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   anexo_id : TEXT ?</text>
+<text x="347.3" y="2209.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   obligacion_pago_id : TEXT ?</text>
+<text x="347.3" y="2222.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cierre_causa : VARCHAR(40) ?</text>
+<text x="347.3" y="2235.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cierre_descripcion : TEXT ?</text>
+<text x="347.3" y="2248.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   motivo_cierre_fecha : TIMESTAMP ?</text>
+<text x="347.3" y="2261.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado : VARCHAR(40)</text>
+<text x="347.3" y="2274.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   estado_antes_de_detener : VARCHAR(40) ?</text>
+<text x="347.3" y="2287.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   servicio_contratado_id : TEXT</text>
+<text x="347.3" y="2300.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   proveedor_original_id : TEXT ?</text>
+<text x="347.3" y="2313.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   costo_adicional : NUMERIC ?</text>
+<text x="347.3" y="2326.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   aprobada_despues_del_limite : BOOLEAN</text>
+<text x="347.3" y="2339.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   version : BIGINT</text>
+<rect x="359.9" y="96.0" width="200.0" height="151.0" fill="#FFFFFF" stroke="#666666" stroke-width="1.3"/>
+<rect x="359.9" y="96.0" width="200.0" height="26.0" fill="#F5F5F5" stroke="#666666" stroke-width="1.3"/>
+<text x="459.9" y="112.0" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">usuario</text>
+<line x1="359.9" y1="122.0" x2="559.9" y2="122.0" stroke="#666666"/>
+<text x="365.9" y="136.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK usuario_id : TEXT</text>
+<text x="365.9" y="149.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   correo : TEXT</text>
+<text x="365.9" y="162.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   nombre : TEXT</text>
+<text x="365.9" y="175.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   rol : TEXT</text>
+<text x="365.9" y="188.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   contrasena_hash : TEXT</text>
+<text x="365.9" y="201.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   activo : BOOLEAN</text>
+<text x="365.9" y="214.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK proveedor_id : TEXT ?</text>
+<text x="365.9" y="227.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   creado_en : TIMESTAMP</text>
+<text x="365.9" y="240.0" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   ultimo_acceso : TIMESTAMP ?</text>
+<rect x="1305.9" y="1029.5" width="205.9" height="138.0" fill="#FFFFFF" stroke="#82B366" stroke-width="1.3"/>
+<rect x="1305.9" y="1029.5" width="205.9" height="26.0" fill="#D5E8D4" stroke="#82B366" stroke-width="1.3"/>
+<text x="1408.9" y="1045.5" font-family="Arial" font-size="11" text-anchor="middle" fill="#222" font-weight="bold">version_propuesta</text>
+<line x1="1305.9" y1="1055.5" x2="1511.9" y2="1055.5" stroke="#82B366"/>
+<text x="1311.9" y="1069.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">PK version_id : TEXT</text>
+<text x="1311.9" y="1082.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">FK propuesta_id : TEXT</text>
+<text x="1311.9" y="1095.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   numero : INTEGER</text>
+<text x="1311.9" y="1108.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   fecha_actualizacion : TIMESTAMP</text>
+<text x="1311.9" y="1121.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   servicios : TEXT[]</text>
+<text x="1311.9" y="1134.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   proveedores_considerados : TEXT[]</text>
+<text x="1311.9" y="1147.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   costo_total : NUMERIC</text>
+<text x="1311.9" y="1160.5" font-family="Arial" font-size="9" text-anchor="start" fill="#222">   condiciones : TEXT</text>
+<path d="M1175.1,1193.5 L1240.5,1298.7 L1335.9,1416.3 L1453.7,1526.8 L1590.9,1610.5 L1667.7,1633.7 L1748.4,1641.9 L1828.1,1639.0 L1911.7,1620.9" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1175.0" y="1215.4" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1894.0" y="1617.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M1226.7,1098.5 L1244.0,1098.5 L1261.3,1098.5 L1278.5,1098.5 L1305.9,1098.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1242.7" y="1111.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1289.9" y="1091.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M894.4,955.6 L902.4,960.2 L910.4,965.0 L918.2,969.8 L925.9,974.5 L943.3,985.4 L960.9,996.5 L978.6,1007.8 L1005.1,1025.3" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="903.3" y="975.2" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="997.3" y="1011.2" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M902.3,1052.6 L925.2,1057.5 L948.3,1062.5 L971.6,1067.5 L1005.1,1074.7" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="915.8" y="1068.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="991.6" y="1064.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M559.9,904.5 L566.3,910.5 L572.4,917.8 L578.3,925.1 L583.9,932.5 L608.1,974.5 L620.9,1011.0 L635.0,1046.5 L662.9,1085.5 L664.1,1086.8 L665.2,1088.0 L666.4,1089.2 L680.2,1097.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="564.8" y="925.7" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="671.7" y="1083.7" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M926.1,1138.6 L943.5,1135.0 L960.8,1131.3 L978.0,1127.6 L1005.1,1121.9" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="943.8" y="1148.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="987.4" y="1118.4" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M557.2,1030.5 L564.6,1033.8 L571.1,1037.0 L577.6,1040.3 L583.9,1043.5 L605.8,1055.1 L628.0,1067.3 L650.2,1079.8 L679.7,1097.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="567.8" y="1049.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="671.1" y="1083.7" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M574.6,1117.8 L594.0,1122.1 L613.5,1126.4 L633.2,1130.8 L662.7,1137.4" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="588.1" y="1134.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="649.3" y="1127.1" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M1811.9,1246.3 L1817.6,1248.0 L1822.9,1251.3 L1828.0,1254.8 L1832.9,1258.5 L1873.5,1295.9 L1909.8,1338.4 L1941.9,1383.9 L1968.7,1439.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1824.4" y="1263.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1970.7" y="1423.2" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M1833.1,1452.9 L1850.5,1464.4 L1868.1,1476.1 L1885.7,1487.9 L1911.7,1505.1" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1840.9" y="1473.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1903.9" y="1491.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M1816.4,1562.3 L1837.4,1565.1 L1858.6,1568.0 L1880.2,1570.8 L1911.7,1575.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1830.9" y="1577.4" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1897.2" y="1566.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M559.9,665.6 L566.8,669.9 L573.0,676.8 L578.7,684.0 L583.9,691.5 L622.7,795.8 L621.4,889.8 L621.2,983.2 L662.9,1085.5 L663.6,1086.5 L664.4,1087.6 L665.2,1088.7 L679.9,1097.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="568.1" y="685.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="671.3" y="1083.7" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M243.4,347.5 L269.5,347.5 L296.3,347.5 L323.3,347.5 L359.9,347.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="259.4" y="360.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="343.9" y="340.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M243.4,602.5 L269.5,602.5 L296.3,602.5 L323.3,602.5 L359.9,602.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="259.4" y="615.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="343.9" y="595.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M1611.9,1090.7 L1589.8,1088.9 L1567.4,1088.8 L1544.8,1088.8 L1511.9,1091.1" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1596.7" y="1082.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1528.5" y="1103.0" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M1811.9,1156.3 L1817.6,1159.6 L1822.9,1164.4 L1828.0,1169.4 L1832.9,1174.5 L1879.8,1233.7 L1920.8,1298.5 L1955.9,1365.0 L1984.4,1439.0" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1820.8" y="1175.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1987.9" y="1423.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M243.4,171.5 L269.5,171.5 L296.3,171.5 L323.3,171.5 L359.9,171.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="259.4" y="184.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="343.9" y="164.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M583.7,1487.5 L692.6,1559.5 L822.7,1622.0 L966.2,1669.0 L1114.9,1687.5 L1119.5,1687.5 L1151.8,1687.5 L1239.4,1687.5 L1409.9,1687.5 L1529.5,1685.9 L1622.5,1679.9 L1714.9,1667.7 L1832.9,1647.5 L1850.0,1644.3 L1867.3,1640.7 L1884.7,1636.8 L1911.7,1629.3" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="591.6" y="1507.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1893.6" y="1626.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M583.7,1317.1 L610.4,1298.0 L637.0,1278.9 L663.4,1260.0 L697.7,1235.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="602.6" y="1318.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="678.8" y="1239.7" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M243.4,1405.5 L263.4,1405.5 L284.0,1405.5 L304.8,1405.5 L336.1,1405.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="259.4" y="1418.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="320.1" y="1398.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M581.1,1861.0 L693.3,1842.9 L826.8,1826.7 L970.9,1814.4 L1114.9,1809.5 L1119.5,1809.5 L1151.8,1809.5 L1239.4,1809.5 L1409.9,1809.5 L1543.9,1796.5 L1675.6,1763.2 L1797.6,1718.3 L1911.7,1659.9" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="598.5" y="1871.3" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1892.9" y="1661.3" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M577.6,1681.5 L579.5,1678.3 L581.0,1675.4 L582.4,1672.4 L583.9,1669.5 L637.4,1555.6 L687.2,1440.1 L730.4,1333.2 L767.9,1235.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="594.3" y="1675.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="752.9" y="1249.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M256.8,2225.5 L275.3,2225.5 L293.9,2225.5 L312.6,2225.5 L341.3,2225.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="272.8" y="2238.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="325.3" y="2218.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M578.5,2165.5 L688.7,2109.8 L821.2,2060.1 L966.5,2022.4 L1114.9,2007.5 L1119.5,2007.5 L1151.8,2007.5 L1239.4,2007.5 L1409.9,2007.5 L1552.8,1983.9 L1686.0,1923.1 L1804.7,1840.4 L1911.7,1729.3" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="597.3" y="2170.2" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1893.4" y="1736.8" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M575.9,2104.5 L579.1,2101.2 L580.7,2098.3 L582.3,2095.4 L583.9,2092.5 L678.1,1862.5 L738.9,1623.9 L773.5,1407.9 L788.4,1235.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="594.2" y="2102.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="777.1" y="1253.6" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M559.9,171.5 L590.5,171.5 L621.9,171.5 L653.5,171.5 L694.4,171.5" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="575.9" y="184.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="678.4" y="164.5" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+<path d="M1511.9,1105.8 L1534.2,1107.4 L1556.7,1107.5 L1579.3,1107.4 L1611.9,1105.2" fill="none" stroke="#333333" stroke-width="1.3" marker-end="url(#open)"/>
+<text x="1527.1" y="1119.9" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">N</text>
+<text x="1595.3" y="1099.3" font-family="Arial" font-size="10" text-anchor="middle" fill="#000">1</text>
+</svg>
