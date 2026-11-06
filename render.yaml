@@ -1,43 +1,54 @@
-# Eventos Nova — Blueprint de Render (BORRADOR NO APLICADO: nada se ha desplegado ni contratado).
-# Requiere cuenta en Render, un repositorio Git y autorización expresa del equipo; genera costos mensuales (ver el informe de despliegue).
-# Sin secretos en este archivo: la URL de la base la inyecta Render (fromDatabase). Verifique los nombres de plan vigentes en
-# https://render.com/pricing antes de aplicarlo (los identificadores de plan pueden cambiar).
+# Eventos Nova — Blueprint de Render (preparado para producción; NO APLICADO: nada se ha desplegado ni contratado).
+# Aplicarlo crea recursos de pago: antes del Apply revise el costo que muestra el Dashboard (docs/manuales/GUIA_DESPLIEGUE_RENDER.md, sección 3).
+# Sin secretos en este archivo: la URL de la base la inyecta Render (fromDatabase) y las cuentas se crean con scripts/crear_administrador.py.
+# Validado contra el esquema JSON oficial de Render (https://render.com/schema/render.yaml.json). Los identificadores de plan son los vigentes
+# (docs: https://render.com/docs/compute-plans); los nombres heredados (starter, basic-256mb) siguen siendo válidos, pero aquí se usan los IDs nuevos.
+# Los tres recursos van en la MISMA región (Ohio): la conexión privada entre servicios y base solo existe dentro de una región y esta no se puede
+# cambiar después de crear los recursos.
 databases:
   - name: eventosnova-db
-    plan: basic-256mb            # el plan gratuito caduca y no sirve para operar; verifique el plan vigente
+    region: ohio
+    plan: 0.1c-256mb             # antes «basic-256mb» (0.1 CPU, 256 MB, hasta 100 conexiones); el plan gratuito caduca a los 30 días y no sirve para operar
     postgresMajorVersion: "18"   # coincide con el PostgreSQL 18 de CI y Docker Compose; no cambia después de crear la base
     databaseName: eventosnova
     user: eventosnova
+    diskSizeGB: 1                # tamaño medido: 9 MB con el esquema vacío y 12 MB con 105 eventos y 110 cuentas de pruebas manuales; 1 GB deja margen de sobra
+    storageAutoscalingEnabled: false   # costo predecible; el disco puede ampliarse (no reducirse) desde el Dashboard si algún día hiciera falta
+    ipAllowList: []              # lista vacía: sin conexiones externas; API y worker usan la URL INTERNA (red privada de la región)
 
 services:
   - type: web
     name: eventosnova-api
+    region: ohio
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    # Sin dockerCommand: Render construye la etapa FINAL del Dockerfile (runtime), cuyo CMD inicia uvicorn con $PORT.
-    plan: starter                # el plan gratuito se duerme tras inactividad
+    # Sin dockerCommand: Render construye la etapa FINAL del Dockerfile (runtime), cuyo CMD inicia uvicorn en 0.0.0.0:$PORT (verificado con docker build).
+    plan: 0.5c-512mb             # antes «starter»; los planes de pago no se duermen por inactividad (el gratuito sí)
     autoDeployTrigger: checksPass   # despliega solo cuando pasan las comprobaciones de CI del commit (no en cada push)
-    healthCheckPath: /ready      # 503 si la base no responde
-    preDeployCommand: python -m alembic upgrade head      # migraciones antes de arrancar la nueva versión
+    healthCheckPath: /ready      # 200 con la base conectada; 503 si la base no responde
+    preDeployCommand: python -m alembic upgrade head      # migraciones ANTES de arrancar la nueva versión (si fallan, el despliegue se cancela y sigue la versión anterior)
     envVars:
-      # EVENTOSNOVA_DOCS=1 (Swagger/OpenAPI en la demostración) se define A MANO en el panel de Render: no está en este archivo.
+      # EVENTOSNOVA_DOCS=1 (Swagger/OpenAPI para la revisión académica) se define A MANO en el panel de Render: no está en este archivo.
       - key: DATABASE_URL
-        fromDatabase: { name: eventosnova-db, property: connectionString }   # postgres:// se normaliza a postgresql+psycopg://
+        fromDatabase: { name: eventosnova-db, property: connectionString }   # URL interna; postgresql:// se normaliza a postgresql+psycopg://
       - key: EVENTOSNOVA_PERSISTENCIA
         value: postgresql
       - key: EVENTOSNOVA_ENTORNO
-        value: produccion        # cookie Secure, HSTS, /docs oculto, autenticación obligatoria
+        value: produccion        # cookie Secure, HSTS, /docs oculto, autenticación obligatoria (no arranca con autenticación desactivada ni con cookie insegura)
       - key: FORWARDED_ALLOW_IPS
-        value: "*"               # uvicorn confía en X-Forwarded-Proto/For del proxy TLS de Render (sin esto el Origin https no coincide)
+        value: "*"               # uvicorn confía en X-Forwarded-Proto/For del proxy TLS de Render (comprobado: sin esto el Origin https no coincide y el inicio de sesión da 403)
 
   - type: worker
     name: eventosnova-worker
+    region: ohio
     runtime: docker
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    plan: starter
-    dockerCommand: python -m infrastructure.persistencia.trabajador_outbox --intervalo 2
+    plan: 0.5c-512mb
+    # Despacha el Outbox y aplica la llegada de T. --espera-esquema 900: si arranca antes de que la API termine las migraciones, REINTENTA cada 5 s hasta 15 minutos (sin migrar);
+    # pasado ese plazo termina con error. SIGTERM lo detiene de forma ordenada.
+    dockerCommand: python -m infrastructure.persistencia.trabajador_outbox --intervalo 2 --espera-esquema 900
     autoDeployTrigger: checksPass
     envVars:
       - key: DATABASE_URL

@@ -50,12 +50,12 @@ Nota: desde HEAD, el comentario de `.env.example` ya explica D-P3 (la fuente de 
 | `tests` | Suite `unittest`; la usa el servicio `tests` de Compose |
 | `runtime` | Etapa **final y predeterminada** (`FROM app`, commit `7aee2cb`): es la que construye `docker build` sin `--target` y la que construirá Render. Debe seguir siendo la última etapa |
 
-## Render (`render.yaml`, borrador sin aplicar)
+## Render (`render.yaml`, preparado y sin aplicar; ver `docs/manuales/GUIA_DESPLIEGUE_RENDER.md`)
 
 | Recurso | Configuración |
 |---|---|
-| `eventosnova-db` | PostgreSQL gestionado, `postgresMajorVersion: "18"` |
-| `eventosnova-api` | Docker, plan `starter`, `autoDeployTrigger: checksPass`, `healthCheckPath: /ready`, `preDeployCommand: python -m alembic upgrade head`; variables `DATABASE_URL` (fromDatabase), `EVENTOSNOVA_PERSISTENCIA=postgresql`, `EVENTOSNOVA_ENTORNO=produccion`, `FORWARDED_ALLOW_IPS=*` |
-| `eventosnova-worker` | Docker, `python -m infrastructure.persistencia.trabajador_outbox --intervalo 2`, mismas variables de base y entorno |
+| `eventosnova-db` | PostgreSQL gestionado, `postgresMajorVersion: "18"`, plan `0.1c-256mb`, región `ohio`, disco de 1 GB, sin acceso externo (`ipAllowList: []`) |
+| `eventosnova-api` | Docker, región `ohio`, plan `0.5c-512mb`, `autoDeployTrigger: checksPass`, `healthCheckPath: /ready`, `preDeployCommand: python -m alembic upgrade head`; variables `DATABASE_URL` (fromDatabase), `EVENTOSNOVA_PERSISTENCIA=postgresql`, `EVENTOSNOVA_ENTORNO=produccion`, `FORWARDED_ALLOW_IPS=*` |
+| `eventosnova-worker` | Docker, región `ohio`, plan `0.5c-512mb`, `python -m infrastructure.persistencia.trabajador_outbox --intervalo 2 --espera-esquema 900` (espera, sin migrar, a que la API aplique las migraciones), mismas variables de base y entorno |
 
 `EVENTOSNOVA_DOCS=1` no está en `render.yaml`: se define a mano en el panel solo si se quiere Swagger en la demostración. **Render no está desplegado y no hay URL pública** (05/11/2026). El Bloque A no añadió variables de entorno.
