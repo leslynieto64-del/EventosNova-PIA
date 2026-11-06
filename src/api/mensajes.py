@@ -67,8 +67,17 @@ def _ruta_plantilla(scope: dict) -> str:
     return getattr(ruta, "path_format", None) or getattr(ruta, "path", None) or scope.get("path", "")
 
 
+# Consultas que devuelven UN elemento (no una lista): contar sus campos de lista («1 resultado (servicios)») confundiría.
+_CONSULTAS_DE_UN_ELEMENTO = {
+    "/proveedores/{proveedor_id}": "Se muestran los datos del proveedor.",
+    "/eventos/{evento_id}/administracion": "Se muestra la información administrativa del evento.",
+}
+_SUSTANTIVOS = {"estados cuenta": "estados de cuenta"}          # el nombre sale de la clave del JSON; aquí se corrige cuando queda forzado
+
+
 def _nombre(clave: str) -> str:
-    return re.sub(r"(?<!^)(?=[A-Z])", " ", clave).replace("_", " ").lower()
+    nombre = re.sub(r"(?<!^)(?=[A-Z])", " ", clave).replace("_", " ").lower()
+    return _SUSTANTIVOS.get(nombre, nombre)
 
 
 def _contar(cuerpo: Any, plantilla: str) -> Optional[Tuple[str, int]]:
@@ -105,6 +114,8 @@ def describir(metodo: str, plantilla: str, estado: int, cuerpo: Any) -> Tuple[st
     detalle = cuerpo.get("detalle") if isinstance(cuerpo, dict) and isinstance(cuerpo.get("detalle"), str) else ""
     if 200 <= estado < 300:
         if metodo in ("GET", "HEAD"):
+            if plantilla in _CONSULTAS_DE_UN_ELEMENTO:
+                return INFO, "Consulta realizada correctamente. " + _CONSULTAS_DE_UN_ELEMENTO[plantilla]
             cuenta = _contar(cuerpo, plantilla)
             if cuenta is None:
                 return INFO, "Consulta realizada correctamente."

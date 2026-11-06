@@ -3,6 +3,7 @@
 Todo en memoria: no usa PostgreSQL ni ninguna base. Los cuerpos JSON y los códigos HTTP deben seguir siendo EXACTAMENTE los de antes.
 Ejecutar desde la raíz:  python -m unittest tests.test_swagger_mensajes -v"""
 import os, sys, unittest
+from unittest import mock
 from urllib.parse import unquote
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
@@ -42,6 +43,12 @@ class Describir(unittest.TestCase):
     def test_consulta_sin_lista_o_con_varias_no_inventa_una_cantidad(self):
         self.assertEqual(describir('GET', '/health', 200, {'estado': 'ok'}), (INFO, 'Consulta realizada correctamente.'))
         self.assertEqual(describir('GET', '/x', 200, {'a': [1], 'b': [2]}), (INFO, 'Consulta realizada correctamente.'))
+
+    def test_consultas_de_un_solo_elemento_y_nombres_legibles(self):
+        self.assertEqual(describir('GET', '/proveedores/{proveedor_id}', 200, {'datos': {'servicios': ['Banquete']}})[1],
+                         'Consulta realizada correctamente. Se muestran los datos del proveedor.')
+        self.assertEqual(describir('GET', '/eventos/{evento_id}/pagos', 200, {'estados_cuenta': [1, 2]})[1],
+                         'Consulta realizada correctamente. Se encontraron 2 estados de cuenta.')
 
     def test_operacion_exitosa_usa_la_frase_especifica_solo_si_el_resultado_coincide(self):
         self.assertEqual(describir('POST', '/propuestas/{propuesta_id}/aceptacion', 200, {'mensaje': 'Propuesta aceptada.'}),
@@ -222,6 +229,15 @@ class PaginaDocs(unittest.TestCase):
         self.assertIn("if (!res.ok && (tipo === 'exito' || tipo === 'info')) tipo = 'error';", pagina)
         self.assertIn('textContent', pagina)                                                   # el mensaje nunca se interpreta como HTML
         self.assertNotIn('innerHTML', pagina)
+
+    def test_la_documentacion_esta_oculta_por_omision_en_produccion(self):
+        with mock.patch.dict(os.environ, {'EVENTOSNOVA_ENTORNO': 'produccion'}):
+            os.environ.pop('EVENTOSNOVA_DOCS', None)
+            cfg = ConfiguracionSeguridad.desde_entorno()
+        self.assertFalse(cfg.documentacion)
+        http = TestClient(crear_app(lambda: construir(), cfg))
+        for ruta in ('/docs', '/redoc', '/openapi.json'):
+            self.assertEqual(http.get(ruta).status_code, 404, ruta)
 
     def test_en_produccion_la_documentacion_sigue_oculta(self):
         cfg = ConfiguracionSeguridad(activa=True, entorno='produccion', cookie_segura=True, hsts=True, documentacion=False)
