@@ -297,6 +297,27 @@ class SwaggerYCsrf(unittest.TestCase):
         self.assertEqual(con.status_code, 201)
         self.assertEqual(http.post('/eventos', json=EVENTO, headers={'X-CSRF-Token': token + 'x'}).status_code, 403)
 
+    def test_mensajes_de_seguridad_claros_y_sin_detalles_internos(self):
+        http, _ = self.entrar('coord@ejemplo.mx')
+        csrf = http.post('/eventos', json=EVENTO)                                              # sin token
+        self.assertEqual(csrf.status_code, 403)
+        texto, tipo = msg(csrf)
+        self.assertEqual(tipo, ERROR)
+        self.assertIn('token de seguridad (CSRF)', texto)
+        self.assertNotIn('No tienes permisos', texto)                                          # CSRF no es un problema de permisos del rol
+        token = http.get('/auth/yo').json()['datos']['csrf']
+        permiso = http.post('/usuarios', json={'correo': 'x@ejemplo.mx', 'nombre': 'X', 'rol': COORDINADOR, 'contrasena': CLAVE}, headers={'X-CSRF-Token': token})
+        self.assertEqual(msg(permiso), ('No tienes permisos para realizar esta operación.', ERROR))
+        origen = http.post('/eventos', json=EVENTO, headers={'X-CSRF-Token': token, 'Origin': 'https://otro.example'})
+        self.assertEqual(origen.status_code, 403)
+        self.assertIn('no proviene de este sitio', msg(origen)[0])
+        for r in (csrf, permiso, origen):
+            for secreto in (token, CLAVE, 'Traceback', 'SELECT', 'psycopg'):
+                self.assertNotIn(secreto, msg(r)[0])
+                self.assertNotIn(secreto, r.text)
+        sin = TestClient(self.app, base_url='https://testserver', raise_server_exceptions=False).get('/auth/yo')
+        self.assertEqual(msg(sin), ('No has iniciado sesión o tu sesión expiró. Inicia sesión para continuar.', ERROR))
+
     def test_sin_sesion_no_hay_autorizacion_ni_token(self):
         http = TestClient(self.app, base_url='https://testserver', raise_server_exceptions=False)
         self.assertEqual(http.get('/auth/yo').status_code, 401)
