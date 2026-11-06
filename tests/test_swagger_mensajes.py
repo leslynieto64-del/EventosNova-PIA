@@ -12,7 +12,7 @@ from fastapi.testclient import TestClient                                       
 from api.documentacion import pagina_swagger                                                 # noqa: E402
 from api.main import crear_app                                                               # noqa: E402
 from api.mensajes import ADVERTENCIA, ERROR, EXITO, INFO, MensajesDeResultado, describir      # noqa: E402
-from application.seguridad import COORDINADOR, ConfiguracionSeguridad           # noqa: E402
+from application.seguridad import ADMINISTRADOR, COORDINADOR, ConfiguracionSeguridad           # noqa: E402
 from infrastructure.composicion import construir                                              # noqa: E402
 from infrastructure.persistencia.errores import ViolacionDeRestriccion                        # noqa: E402
 
@@ -244,6 +244,114 @@ class PaginaDocs(unittest.TestCase):
         http = TestClient(crear_app(lambda: construir(), cfg))
         for ruta in ('/docs', '/redoc', '/openapi.json'):
             self.assertEqual(http.get(ruta).status_code, 404, ruta)
+
+
+class SwaggerYCsrf(unittest.TestCase):
+    """Swagger UI obtiene el token CSRF de GET /auth/yo y lo añade a las escrituras; el servidor sigue exigiéndolo igual que antes."""
+    def setUp(self):
+        self.contenedor = construir()
+        self.cfg = ConfiguracionSeguridad(activa=True, cookie_segura=True, documentacion=True)
+        self.app = crear_app(lambda: self.contenedor, self.cfg)
+        self.seg = self.contenedor.servicios.seguridad
+        self.seg.crear_usuario('admin@ejemplo.mx', 'Admin', ADMINISTRADOR, CLAVE, None)
+        self.seg.crear_usuario('coord@ejemplo.mx', 'Coordinadora', COORDINADOR, CLAVE, None)
+
+    def entrar(self, correo):
+        http = TestClient(self.app, base_url='https://testserver', raise_server_exceptions=False)
+        r = http.post('/auth/inicio-sesion', json={'correo': correo, 'contrasena': CLAVE})
+        self.assertEqual(r.status_code, 200)
+        return http, r
+
+    def test_la_pagina_incluye_el_interceptor_solo_para_escrituras_del_mismo_origen(self):
+        p = pagina_swagger('Eventos Nova API')
+        self.assertIn('requestInterceptor: agregarCsrf', p)
+        self.assertIn("const ESCRITURA = ['POST', 'PUT', 'PATCH', 'DELETE'];", p)
+        self.assertIn("const SIN_CSRF = ['/auth/inicio-sesion'];", p)
+        self.assertIn('url.origin !== window.location.origin', p)
+        self.assertIn("fetch('/auth/yo', { credentials: 'same-origin'", p)                     # fetch directo: no pasa por el interceptor (sin recursión)
+        self.assertIn("req.headers['X-CSRF-Token'] = token", p)
+
+    def test_el_token_no_se_guarda_ni_se_muestra_en_curl(self):
+        p = pagina_swagger('Eventos Nova API')
+        for almacen in ('localStorage', 'sessionStorage', 'document.cookie', 'indexedDB'):
+            self.assertNotIn(almacen, p)
+        self.assertIn('showMutatedRequest: false', p)
+
+    def test_auth_yo_entrega_el_csrf_de_la_sesion_actual_en_el_json(self):
+        http, login = self.entrar('coord@ejemplo.mx')
+        yo = http.get('/auth/yo')
+        self.assertEqual(yo.status_code, 200)
+        self.assertTrue(yo.json()['datos']['csrf'])
+        self.assertEqual(yo.json()['datos']['csrf'], login.json()['datos']['csrf'])
+        self.assertEqual(yo.json()['datos']['cabeceraCsrf'], 'X-CSRF-Token')
+        self.assertNotIn('x-csrf-token', yo.headers)                                          # solo viaja en el JSON
+
+    def test_get_autenticado_post_con_token_y_post_sin_token(self):
+        http, login = self.entrar('coord@ejemplo.mx')
+        token = http.get('/auth/yo').json()['datos']['csrf']
+        self.assertEqual(http.get('/eventos/EV-NO-EXISTE').status_code in (200, 404), True)   # el GET llega al servicio con la cookie
+        sin = http.post('/eventos', json=EVENTO)
+        self.assertEqual(sin.status_code, 403)
+        self.assertEqual(msg(sin)[1], ERROR)
+        con = http.post('/eventos', json=EVENTO, headers={'X-CSRF-Token': token})
+        self.assertEqual(con.status_code, 201)
+        self.assertEqual(http.post('/eventos', json=EVENTO, headers={'X-CSRF-Token': token + 'x'}).status_code, 403)
+
+    def test_mensajes_de_seguridad_claros_y_sin_detalles_internos(self):
+        http, _ = self.entrar('coord@ejemplo.mx')
+        csrf = http.post('/eventos', json=EVENTO)                                              # sin token
+        self.assertEqual(csrf.status_code, 403)
+        texto, tipo = msg(csrf)
+        self.assertEqual(tipo, ERROR)
+        self.assertIn('token de seguridad (CSRF)', texto)
+        self.assertNotIn('No tienes permisos', texto)                                          # CSRF no es un problema de permisos del rol
+        token = http.get('/auth/yo').json()['datos']['csrf']
+        permiso = http.post('/usuarios', json={'correo': 'x@ejemplo.mx', 'nombre': 'X', 'rol': COORDINADOR, 'contrasena': CLAVE}, headers={'X-CSRF-Token': token})
+        self.assertEqual(msg(permiso), ('No tienes permisos para realizar esta operación.', ERROR))
+        origen = http.post('/eventos', json=EVENTO, headers={'X-CSRF-Token': token, 'Origin': 'https://otro.example'})
+        self.assertEqual(origen.status_code, 403)
+        self.assertIn('no proviene de este sitio', msg(origen)[0])
+        for r in (csrf, permiso, origen):
+            for secreto in (token, CLAVE, 'Traceback', 'SELECT', 'psycopg'):
+                self.assertNotIn(secreto, msg(r)[0])
+                self.assertNotIn(secreto, r.text)
+        sin = TestClient(self.app, base_url='https://testserver', raise_server_exceptions=False).get('/auth/yo')
+        self.assertEqual(msg(sin), ('No has iniciado sesión o tu sesión expiró. Inicia sesión para continuar.', ERROR))
+
+    def test_sin_sesion_no_hay_autorizacion_ni_token(self):
+        http = TestClient(self.app, base_url='https://testserver', raise_server_exceptions=False)
+        self.assertEqual(http.get('/auth/yo').status_code, 401)
+        self.assertEqual(http.post('/eventos', json=EVENTO, headers={'X-CSRF-Token': 'inventado'}).status_code, 401)
+
+    def test_el_inicio_de_sesion_no_exige_csrf(self):
+        http = TestClient(self.app, base_url='https://testserver', raise_server_exceptions=False)
+        r = http.post('/auth/inicio-sesion', json={'correo': 'coord@ejemplo.mx', 'contrasena': CLAVE})
+        self.assertEqual(r.status_code, 200)
+
+    def test_la_cookie_sigue_siendo_httponly_secure_y_samesite_strict(self):
+        _, login = self.entrar('coord@ejemplo.mx')
+        cookie = login.headers['set-cookie'].lower()
+        for atributo in ('httponly', 'secure', 'samesite=strict'):
+            self.assertIn(atributo, cookie)
+
+    def test_los_permisos_se_siguen_aplicando_en_el_servidor_aun_con_token_valido(self):
+        coord, _ = self.entrar('coord@ejemplo.mx')
+        token = coord.get('/auth/yo').json()['datos']['csrf']
+        r = coord.post('/usuarios', json={'correo': 'x@ejemplo.mx', 'nombre': 'X', 'rol': COORDINADOR, 'contrasena': CLAVE}, headers={'X-CSRF-Token': token})
+        self.assertEqual(r.status_code, 403)                                                   # el token no concede permisos
+        admin, _ = self.entrar('admin@ejemplo.mx')
+        token = admin.get('/auth/yo').json()['datos']['csrf']
+        r = admin.post('/usuarios', json={'correo': 'x@ejemplo.mx', 'nombre': 'X', 'rol': COORDINADOR, 'contrasena': CLAVE}, headers={'X-CSRF-Token': token})
+        self.assertEqual(r.status_code, 201)
+
+    def test_el_esquema_de_cookie_explica_httponly_y_csrf_y_swagger_muestra_las_77_operaciones(self):
+        esquema = TestClient(self.app).get('/openapi.json').json()
+        operaciones = [m for ruta in esquema['paths'].values() for m in ruta if m in ('get', 'post', 'put', 'patch', 'delete')]
+        self.assertEqual(len(operaciones), 77)
+        descripcion = esquema['components']['securitySchemes']['SesionCookie']['description']
+        self.assertIn('HttpOnly', descripcion)
+        self.assertIn('X-CSRF-Token', descripcion)
+        self.assertEqual(esquema['components']['securitySchemes']['SesionCookie']['in'], 'cookie')
 
 
 if __name__ == '__main__':

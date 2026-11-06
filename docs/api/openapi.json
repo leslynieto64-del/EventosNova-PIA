@@ -1681,7 +1681,7 @@
     },
     "securitySchemes": {
       "SesionCookie": {
-        "description": "Cookie de sesión HttpOnly emitida por POST /auth/inicio-sesion. Las operaciones que modifican datos exigen además la cabecera X-CSRF-Token que devuelve el inicio de sesión.",
+        "description": "Cookie de sesión HttpOnly emitida por POST /auth/inicio-sesion: JavaScript no puede leerla ni escribirla, así que NO hay nada que pegar en Authorize; el navegador la envía solo. Inicia sesión en /app/ (o con POST /auth/inicio-sesion) y recarga esta página. Las operaciones que modifican datos exigen además la cabecera X-CSRF-Token: Swagger UI la añade sola, tomándola de GET /auth/yo en cada escritura, y no se muestra en los ejemplos cURL.",
         "in": "cookie",
         "name": "eventosnova_sesion",
         "type": "apiKey"

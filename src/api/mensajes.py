@@ -133,6 +133,10 @@ def describir(metodo: str, plantilla: str, estado: int, cuerpo: Any) -> Tuple[st
             return ERROR, "No se pudo iniciar sesión. Comprueba tus credenciales."
         return ERROR, "No has iniciado sesión o tu sesión expiró. Inicia sesión para continuar."
     if estado == 403:
+        if "token de seguridad" in detalle:                                       # CSRF: no es un problema de permisos del rol
+            return ERROR, "No se pudo validar la petición: falta el token de seguridad (CSRF) o venció. Vuelve a iniciar sesión y recarga la página; en Swagger, inicia sesión en /app/ y recarga /docs."
+        if "no proviene de este sitio" in detalle:
+            return ERROR, "La petición se rechazó porque no proviene de este sitio. Usa la aplicación o Swagger desde la dirección del propio servicio."
         extra = f" {detalle}" if detalle and "permiso" not in detalle.lower() else ""
         return ERROR, "No tienes permisos para realizar esta operación." + extra
     if estado == 404:
