@@ -39,8 +39,9 @@ a { color: var(--acento); } a:hover { color: var(--acento-osc); }
 .rejilla-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
 .rejilla-detalle { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
 .obligacion { border: 1px solid var(--borde); border-radius: var(--radio); padding: 1rem; background: #fbfcfe; }
-.datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem 1.25rem; margin: .75rem 0 0; }
-.dato dt { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: var(--texto-2); } .dato dd { margin: 0; font-weight: 600; }
+.datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: .75rem 1.25rem; margin: .75rem 0 0; }
+.dato { min-width: 0; }       /* sin esto una celda de rejilla no se encoge por debajo de su texto más largo (correos, identificadores) y se encima con la vecina */
+.dato dt { font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: var(--texto-2); } .dato dd { margin: 0; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
 .fila-estado { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
 
 /* indicadores */
