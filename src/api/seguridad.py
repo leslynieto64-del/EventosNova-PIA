@@ -19,8 +19,10 @@ METODOS_SEGUROS = {"GET", "HEAD", "OPTIONS"}
 CABECERA_CSRF = "X-CSRF-Token"
 # Documenta en OpenAPI que las operaciones usan la cookie de sesión (no la valida: la valida `aplicar_seguridad`).
 esquema_cookie = APIKeyCookie(name=ConfiguracionSeguridad().cookie_nombre, scheme_name="SesionCookie", auto_error=False,
-                              description="Cookie de sesión HttpOnly emitida por POST /auth/inicio-sesion. Las operaciones que modifican datos "
-                                          "exigen además la cabecera X-CSRF-Token que devuelve el inicio de sesión.")
+                              description="Cookie de sesión HttpOnly emitida por POST /auth/inicio-sesion: JavaScript no puede leerla ni escribirla, así que NO hay "
+                                          "nada que pegar en Authorize; el navegador la envía solo. Inicia sesión en /app/ (o con POST /auth/inicio-sesion) y "
+                                          "recarga esta página. Las operaciones que modifican datos exigen además la cabecera X-CSRF-Token: Swagger UI la "
+                                          "añade sola, tomándola de GET /auth/yo en cada escritura, y no se muestra en los ejemplos cURL.")
 
 
 @dataclass(frozen=True)

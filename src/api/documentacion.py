@@ -2,7 +2,11 @@
 
 Es la misma página que genera FastAPI (mismos recursos de swagger-ui-dist@5), más un `responseInterceptor` que lee las cabeceras
 X-Mensaje y X-Mensaje-Tipo de `api.mensajes` y las muestra en un aviso fijo. El aviso nunca contradice al servidor: si la respuesta no fue
-correcta (código fuera de 2xx), jamás se muestra como éxito. Solo se registra cuando la documentación está habilitada
+correcta (código fuera de 2xx), jamás se muestra como éxito.
+
+Además, un `requestInterceptor` incorpora la cabecera X-CSRF-Token a las operaciones de escritura (POST, PUT, PATCH, DELETE) del mismo origen, para que
+Swagger pueda probar las operaciones protegidas SIN debilitar nada: la cookie de sesión sigue siendo HttpOnly (el navegador la envía solo) y el token se
+pide a GET /auth/yo justo antes de cada escritura, se usa en esa petición y se descarta (no se guarda en ningún almacenamiento). Solo se registra cuando la documentación está habilitada
 (EVENTOSNOVA_DOCS=1); en producción sigue oculta y /docs responde 404."""
 from __future__ import annotations
 from fastapi import FastAPI
@@ -51,6 +55,29 @@ function cabecera(res, nombre) {
   return typeof h.get === 'function' ? h.get(nombre) : (h[nombre] || h[nombre.toLowerCase()] || null);
 }
 
+const ESCRITURA = ['POST', 'PUT', 'PATCH', 'DELETE'];
+const SIN_CSRF = ['/auth/inicio-sesion'];                                     // pública: el servidor no exige token (y aún no hay sesión de la que pedirlo)
+
+// El token CSRF de la sesión actual lo entrega GET /auth/yo (datos.csrf). Se pide en cada escritura, sin guardarlo: nunca queda obsoleto tras iniciar o cerrar sesión.
+async function tokenCsrf() {
+  const r = await fetch('/auth/yo', { credentials: 'same-origin', cache: 'no-store', headers: { Accept: 'application/json' } });
+  if (!r.ok) return null;                                                      // sin sesión: se envía sin token y el servidor responde con su error
+  const j = await r.json();
+  return (j && j.datos && j.datos.csrf) || null;
+}
+
+async function agregarCsrf(req) {
+  const metodo = String(req.method || 'GET').toUpperCase();
+  if (!ESCRITURA.includes(metodo)) return req;
+  const url = new URL(req.url, window.location.href);
+  if (url.origin !== window.location.origin || SIN_CSRF.includes(url.pathname)) return req;
+  try {
+    const token = await tokenCsrf();                                           // fetch directo: no pasa por el interceptor, no hay recursión
+    if (token) { req.headers = req.headers || {}; req.headers['X-CSRF-Token'] = token; }
+  } catch (e) { /* sin red: la escritura sigue y el servidor decide */ }
+  return req;
+}
+
 function avisarResultado(res) {
   if (/\\/openapi\\.json(\\?|$)/.test(res.url || '')) return;                    // la carga de la especificación no es una operación del usuario
   const estado = res.status || 0;
@@ -73,7 +100,9 @@ window.ui = SwaggerUIBundle({
   deepLinking: true,
   showExtensions: true,
   showCommonExtensions: true,
+  showMutatedRequest: false,                                                   // el cURL mostrado es el original: el token CSRF añadido por el interceptor no aparece
   presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+  requestInterceptor: agregarCsrf,
   responseInterceptor: (res) => { try { avisarResultado(res); } catch (e) { /* el aviso es una ayuda: no debe romper la respuesta */ } return res; },
 });
 </script>
