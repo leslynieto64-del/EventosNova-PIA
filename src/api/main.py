@@ -27,7 +27,9 @@ from infrastructure.persistencia.errores import (ConflictoDeConcurrencia, ErrorD
                                                     ViolacionDeRestriccion)
 from application.seguridad import ConfiguracionSeguridad
 from .limites import LimiteDeCuerpo, maximo_desde_entorno
+from .documentacion import registrar_swagger
 from .errores import registrar_manejadores, registrar_manejadores_persistencia
+from .mensajes import registrar_mensajes
 from .rutas_seguridad import protegido as rutas_seguridad_protegidas, publico as rutas_seguridad_publicas
 from .seguridad import aplicar_seguridad, registrar_cabeceras, registrar_manejador_de_seguridad
 from .rutas_consultas import router as rutas_consultas
@@ -70,7 +72,7 @@ def crear_app(fabrica_contenedor: Optional[Callable[[], object]] = None, segurid
             cerrar()
 
     aplicacion = FastAPI(title=f"{NOMBRE_APLICACION} API", version=VERSION_API, description=DESCRIPCION, lifespan=ciclo_de_vida,
-                         docs_url="/docs" if config.documentacion else None, redoc_url="/redoc" if config.documentacion else None,
+                         docs_url=None, redoc_url="/redoc" if config.documentacion else None,
                          openapi_url="/openapi.json" if config.documentacion else None)
     aplicacion.state.contenedor = (fabrica_contenedor or fabrica_por_defecto())()
     aplicacion.state.seguridad = config
@@ -85,6 +87,9 @@ def crear_app(fabrica_contenedor: Optional[Callable[[], object]] = None, segurid
     aplicacion.add_middleware(LimiteDeCuerpo, maximo=maximo_desde_entorno())      # 413 si el cuerpo supera el máximo
     registrar_cabeceras(aplicacion, config)
     registrar_manejadores(aplicacion)
+    registrar_mensajes(aplicacion)                   # X-Mensaje / X-Mensaje-Tipo en cada respuesta JSON: no cambia cuerpos ni códigos
+    if config.documentacion:
+        registrar_swagger(aplicacion)                # /docs con aviso de resultado; con la documentación oculta (producción) no se registra y /docs es 404
     registrar_manejadores_persistencia(aplicacion, ViolacionDeRestriccion, ErrorDeDatos, ErrorDeConexion, ErrorDePersistencia,
                                       ConflictoDeConcurrencia)
     for enrutador in (rutas_propuestas, rutas_contratacion, rutas_pagos, rutas_eventos, rutas_solicitudes, rutas_consultas,
