@@ -12,7 +12,7 @@ Convenciones: `<...>` es un dato que debe poner la persona que despliega; **nunc
 |---|---|---|---|---|
 | `eventosnova-db` | PostgreSQL 18 | Ohio | `0.1c-256mb` (antes `basic-256mb`) | Disco de 1 GB, sin acceso externo (`ipAllowList: []`) |
 | `eventosnova-api` | Web (Docker) | Ohio | `0.5c-512mb` (antes `starter`) | Etapa final `runtime` del `Dockerfile`; `healthCheckPath: /ready`; `preDeployCommand: python -m alembic upgrade head` |
-| `eventosnova-worker` | Worker (Docker) | Ohio | `0.5c-512mb` | `python -m infrastructure.persistencia.trabajador_outbox --intervalo 2` |
+| `eventosnova-worker` | Worker (Docker) | Ohio | `0.5c-512mb` | `python -m infrastructure.persistencia.trabajador_outbox --intervalo 2 --espera-esquema 900` |
 
 Comprobado **en local** (imagen construida con `docker build .`, base PostgreSQL desechable; no equivale a Render):
 
@@ -29,6 +29,7 @@ Comprobado **en local** (imagen construida con `docker build .`, base PostgreSQL
 | La misma API **sin** `FORWARDED_ALLOW_IPS` | El inicio de sesión devuelve 403 (por eso la variable es obligatoria) |
 | Reinicio de la API | Los datos y el inicio de sesión persisten |
 | Worker (`dockerCommand` del Blueprint) | Se conecta, queda activo y al recibir SIGTERM termina con código 0 |
+| Worker que arranca **antes** de la migración 0009 (prueba con PostgreSQL real: base en la 0008) | Con `--espera-esquema` espera sin migrar, registra el motivo y arranca cuando otro proceso aplica la 0009; si vence el plazo, termina con error y la base sigue en la 0008 |
 
 ## 2. Validar el Blueprint antes de usarlo
 
@@ -59,11 +60,11 @@ Las invariantes del Blueprint (tres recursos, Ohio, planes vigentes, base privad
 | Web service `0.5c-512mb` | 1 | 7 USD | Página de precios de Render; **confirmar en el Dashboard** |
 | Background worker `0.5c-512mb` | 1 | 7 USD | Ídem |
 | PostgreSQL `0.1c-256mb` (instancia) | 1 | 6 USD | Página de precios de Render y un artículo de Render. La página de tipos heredados indica 7 USD para el plan «Starter» antiguo, **no disponible para bases nuevas**; **confirmar en el Dashboard** |
-| Almacenamiento PostgreSQL | 1 GB | 0.30 USD por GB-mes → 0.30 USD | Página de precios de Render; se elige 1 GB o múltiplos de 5 GB; **confirmar** |
+| Almacenamiento PostgreSQL | 1 GB | **Incluido** (la página de precios lista el plan con 1 GB SSD incluido; el almacenamiento adicional cuesta 0.30 USD por GB-mes). No se suma ningún cargo | Página de precios de Render; **confirmar en el Dashboard** que el primer GB no se cobra aparte |
 | Workspace Hobby | 1 | 0 USD (sin cuota mensual, solo uso) | Documentación oficial de Render |
-| **Total estimado** | | **≈ 20.30 USD/mes** | Presupuesto del equipo: ≈ 20 USD |
+| **Total estimado** | | **≈ 20 USD/mes** (7 + 7 + 6) | Presupuesto del equipo: ≈ 20 USD. Si el primer GB se cobrara aparte, serían 0.30 USD más |
 
-- Con el disco por omisión de ese plan (15 GB, que Render propone si no se indica `diskSizeGB`) el almacenamiento costaría 4.50 USD y el total subiría a ≈ 24.50 USD. El disco se fijó en
+- Con el disco por omisión de ese plan (15 GB, que Render propone si no se indica `diskSizeGB`) habría 14 GB adicionales (≈ 4.20 USD al mes) y el total subiría a ≈ 24.20 USD. El disco se fijó en
   **1 GB** tras medir el tamaño real: 9 MB con el esquema vacío y 12 MB con 105 eventos, 110 cuentas y 604 sesiones de las pruebas manuales. Puede ampliarse después (no reducirse).
 - **No cuantificados** (no se encontraron cifras verificables): ancho de banda saliente, minutos de *pipeline* usados por builds y por el `preDeployCommand`, y cargos por exceso.
 - El workspace **Hobby** admite **un solo miembro**. Si varias personas del equipo necesitan acceso al Dashboard hará falta el plan Pro (precio no verificado), lo que cambia el presupuesto.
@@ -82,8 +83,8 @@ Los nombres exactos de menús y botones del Dashboard pueden variar; lo importan
    aparece otra región, un plan gratuito, otro número de recursos o un total distinto: **detenerse**.
 4. **Autorización.** El *Apply* crea recursos de pago: solo debe pulsarlo quien tenga la autorización del equipo.
 5. **Comprobar la creación.** Esperar a que la base esté disponible, que la API termine su primer despliegue (el `preDeployCommand` aplica las migraciones) y que el worker quede activo.
-   Es posible que el worker falle en los primeros minutos si arranca antes de que terminen las migraciones (el proceso se niega a iniciar con un esquema desactualizado; no se ha
-   comprobado en Render cuántas veces lo reintenta la plataforma). Debe estabilizarse cuando la API termine su despliegue; si sigue fallando después, revise sus logs (sección 6).
+   **No se puede asumir en qué orden arranca Render los servicios.** Por eso el worker se inicia con `--espera-esquema 900`: si la base aún no responde o no tiene la revisión `0009`, espera sin migrar
+   (ver «Arranque y recuperación del worker» en la sección 6). Mientras la API migra, sus logs mostrarán avisos «Esperando a que la base de datos esté lista»; es lo esperado.
 6. **Confirmar variables** (sección 5) en *Environment* de cada servicio.
 7. **Comprobar PostgreSQL.** En la base: región Ohio, versión 18, sin direcciones permitidas para conexiones externas. Los servicios usan la URL **interna**.
 8. **Migraciones.** Ver la sección 6.
@@ -111,6 +112,15 @@ origen distinto del de la propia API.
   comprobarlo en Render: Shell de la API → `python -m alembic current` debe mostrar `0009 (head)`.
 - **Logs.** Dashboard → servicio → *Logs*. Busque en la API los registros de arranque y del `preDeployCommand`; en el worker, `Trabajador detenido` solo debe aparecer al reiniciar. No
   debe haber trazas de error repetidas ni contraseñas en ningún log.
+- **Arranque y recuperación del worker.** Al iniciar, el worker comprueba la conexión y que la revisión de Alembic de la base sea la que el código necesita. Con `--espera-esquema 900`:
+  1. Si la base no responde o está en otra revisión (p. ej. vacía o en la `0008`), registra un aviso `Esperando a que la base de datos esté lista (EsquemaDesactualizado|ErrorDeConexion): …` con la revisión
+     actual y la esperada, y reintenta cada 5 s (repite el aviso cada ~30 s). **No ejecuta migraciones**: solo la API migra, con su `preDeployCommand`.
+  2. Cuando la API termina de migrar, registra `La base de datos está lista tras N s` y empieza a procesar el Outbox. No hay que hacer nada.
+  3. Si pasan 15 minutos sin que la base esté lista, registra `La base de datos no estuvo lista en 900 s` y termina con error. Qué hace Render entonces (reiniciarlo o no) no está verificado: si
+     el worker queda detenido, primero compruebe que la API se desplegó y que `python -m alembic current` en su Shell muestra `0009 (head)`; después use *Manual Deploy* → *Restart* del worker.
+  4. Un error de configuración (p. ej. falta `DATABASE_URL`) no espera: falla de inmediato.
+  5. Si se detiene el servicio (SIGTERM) mientras espera, termina limpiamente con código 0.
+  Si una migración futura exigiera una revisión nueva, el procedimiento es el mismo: la API migra en su pre-despliegue y el worker nuevo espera a esa revisión.
 - **Salud.** `/health` solo confirma que el proceso responde; `/ready` además consulta la base (503 si no responde) y es el *health check* del Blueprint.
 
 ## 7. Crear el administrador inicial
@@ -164,7 +174,8 @@ cuentas de demostración (`POST /usuarios/{id}/estado` con `activo: false`).
 | El despliegue de la API se cancela en el pre-despliegue | Fallo en las migraciones (ver el log) | Corregir y volver a desplegar; la versión anterior sigue activa |
 | `/ready` devuelve 503 | La base no responde o el esquema no está al día | Revisar la base y los logs de la API |
 | El inicio de sesión devuelve 403 | Falta `FORWARDED_ALLOW_IPS=*` en la API | Añadirla y redesplegar |
-| El worker se reinicia sin parar | Esquema sin migrar o `DATABASE_URL` ausente | Esperar el despliegue de la API; revisar variables y logs |
+| El worker registra «Esperando a que la base de datos esté lista» | La API aún no terminó el pre-despliegue (migraciones) | Esperar (hasta 15 minutos); si no avanza, ver «Arranque y recuperación del worker» (sección 6) |
+| El worker terminó con «no estuvo lista en 900 s» | La API no migró (despliegue fallido) o la base no responde | Corregir el despliegue de la API; después reiniciar el worker |
 | `/docs` devuelve 404 | Swagger desactivado (valor por omisión) | Ver la sección 8 |
 | La API no arranca con un error de configuración | Se definió autenticación desactivada o cookie insegura | Eliminar esa variable |
 

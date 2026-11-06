@@ -67,6 +67,9 @@ class BlueprintDeRender(unittest.TestCase):
         worker = self.servicios['eventosnova-worker']
         modulo = re.search(r'dockerCommand: python -m (\S+)', worker).group(1)
         self.assertEqual(modulo, 'infrastructure.persistencia.trabajador_outbox')
+        # no puede asumir el orden de arranque de Render: espera (con límite) a que la API migre, sin migrar él
+        self.assertRegex(worker, r'dockerCommand: .*--espera-esquema 900\b')
+        self.assertIn('--espera-esquema', leer('src/' + modulo.replace('.', '/') + '.py'))
         fuente = leer('src/' + modulo.replace('.', '/') + '.py')
         self.assertIn('def main', fuente)
         self.assertIn('--intervalo', fuente)

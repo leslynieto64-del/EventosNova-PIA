@@ -46,7 +46,9 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     plan: 0.5c-512mb
-    dockerCommand: python -m infrastructure.persistencia.trabajador_outbox --intervalo 2   # despacha el Outbox y aplica la llegada de T; SIGTERM lo detiene de forma ordenada
+    # Despacha el Outbox y aplica la llegada de T. --espera-esquema 900: si arranca antes de que la API termine las migraciones, REINTENTA cada 5 s hasta 15 minutos (sin migrar);
+    # pasado ese plazo termina con error. SIGTERM lo detiene de forma ordenada.
+    dockerCommand: python -m infrastructure.persistencia.trabajador_outbox --intervalo 2 --espera-esquema 900
     autoDeployTrigger: checksPass
     envVars:
       - key: DATABASE_URL
