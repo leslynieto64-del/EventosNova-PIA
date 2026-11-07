@@ -20,8 +20,11 @@
 
 | Elemento | Valor |
 |---|---|
-| Repositorio GitHub | <https://github.com/leslynieto64-del/EventosNova-PIA> (37 commits en `main`: los 25 previos y los 11 del Bloque A, fusionados con la PR #2 el 05/11/2026; PR #1 fusionada el 04/11/2026) |
-| Sistema desplegado (Swagger UI) | **Pendiente:** Render no está desplegado (05/11/2026); `render.yaml` es un borrador sin aplicar. No hay URL pública. Anotar aquí la URL real, solo después de comprobarla (pasos en [`docs/architecture/ci-cd-y-despliegue.md`](docs/architecture/ci-cd-y-despliegue.md)) |
+| Repositorio GitHub | <https://github.com/leslynieto64-del/eventos-nova-cln> (público, rama `main`; 60 commits al 06/11/2026; PR #1 a #8 fusionadas, la #8 el 06/11/2026) |
+| Aplicación web desplegada (Render) | <https://eventosnova-api.onrender.com/app/> (comprobada el 06/11/2026: responde 200) |
+| Swagger UI desplegado | <https://eventosnova-api.onrender.com/docs> (comprobado el 06/11/2026: 200; también `/redoc`) |
+| OpenAPI desplegado | <https://eventosnova-api.onrender.com/openapi.json> (comprobado el 06/11/2026: 200, 77 operaciones) |
+| Salud y disponibilidad | <https://eventosnova-api.onrender.com/health> y <https://eventosnova-api.onrender.com/ready> (comprobados el 06/11/2026: 200; `/ready` informa `persistencia: postgresql`, `base_de_datos: ok`) |
 | Swagger UI local | `http://127.0.0.1:8000/docs` (tras `docker compose up -d --build`) |
 | Swagger UI del entorno manual aislado | `http://127.0.0.1:8001/docs` (solo para pruebas manuales; ver la sección 12; **no** es el sistema de desarrollo del puerto 8000 ni un despliegue) |
 | Especificación OpenAPI | [`docs/api/openapi.json`](docs/api/openapi.json) (77 operaciones: 73 protegidas y 4 públicas; se regenera con `python scripts/exportar_openapi.py`) |
@@ -31,17 +34,18 @@
 
 | Aspecto | Situación |
 |---|---|
-| Código | `main` = `0b16cf3` (37 commits: los 25 previos de <https://github.com/leslynieto64-del/EventosNova-PIA> + los 11 del Bloque A, fusionados con la PR #2 el 05/11/2026); el código del Bloque A es el del commit `9c72bc7` |
+| Código | `main` = `1dfcfdd` (60 commits; fusión de la PR #8 el 06/11/2026). Desde el 05/11/2026 se fusionaron además la PR #6 (corrección visual de «Mis datos»), la PR #7 (mensajes de resultado en español y página `/docs` propia) y la PR #8 (Swagger UI añade el token CSRF a las escrituras; mensajes de seguridad). El código del Bloque A es el del commit `9c72bc7` |
 | API | 73 rutas, 77 operaciones (19 GET, 58 POST), 4 públicas; OpenAPI 3.1.0 |
 | Base de datos | PostgreSQL 18; 26 tablas + `alembic_version`; migraciones 0001–0009 (el Bloque A no añadió migraciones) |
 | Dominio | 7 agregados, 9 máquinas de estado, 12 especificaciones concretas, 31 eventos de dominio |
 | Roles | Administrador, Coordinador y Proveedor (el Cliente no tiene cuenta) |
-| Despliegue | Ninguno; sin URL pública |
+| Despliegue | Render (región Ohio): `eventosnova-api` (Docker, con `preDeployCommand: alembic upgrade head`), `eventosnova-worker` y `eventosnova-db` (PostgreSQL). GitHub registra el despliegue de `1dfcfdd` en la API y el Worker como `success` (06/11/2026). Swagger/OpenAPI publicados con `EVENTOSNOVA_DOCS=1` (definida a mano en el Dashboard). El Dashboard no se consultó para este documento |
 
 ### Resultados de pruebas (cada fila es una ejecución distinta)
 
 | Ejecución | Entorno | Resultado |
 |---|---|---|
+| **CI de GitHub Actions sobre `main` (`1dfcfdd`, run 42268272652; vigente)** | Linux | **1,787 aprobadas** en cada trabajo (omitidas: 1 en «pruebas» y 9 en «docker»); cobertura de **sentencias 98.12 %** (6,751 de 6,880; 129 sin cubrir) y **ramas 93.36 %** (1,378 de 1,476); el «TOTAL» combinado de `coverage report` es 97.3 % |
 | CI de GitHub Actions sobre `main` (`4be166b`, antes del Bloque A) | Linux | 1,654 aprobadas; cobertura de sentencias 98.21 %; omitidas: 0 en «pruebas» y 3 en «docker» |
 | CI de GitHub Actions sobre el commit `9c72bc7` (PR #2, run 42104865505) | Linux | 1,677 aprobadas; cobertura de sentencias 98.21 % (6,573/6,693); omitidas: 1 en «pruebas» y 8 en «docker» |
 | CI de GitHub Actions sobre `main` tras la fusión (`0b16cf3`, run 42109720404) | Linux | 1,677 aprobadas; cobertura de sentencias 98.21 %; omitidas: 1 en «pruebas» y 8 en «docker» |
@@ -50,7 +54,7 @@
 | Clon nuevo de `9c72bc7` | Windows, `core.autocrlf=true` | 1,677 aprobadas, 1 omitida por diseño, 0 fallos (fallo LF/CRLF resuelto) |
 | Recorrido en Chrome del Bloque A | Windows | 30/30 comprobaciones, 3 repeticiones |
 
-Cobertura: 98.21 % de sentencias (6,573 de 6,693) en el CI sobre el commit `9c72bc7`, que ya incluye el Bloque A, y sobre `main` tras la fusión (`0b16cf3`); 98.21 % en el CI sobre `main` `4be166b` (antes del Bloque A); 98.19 % de líneas y 93.20 % de ramas en la medición archivada del 03/11/2026. El mínimo del PIA es 80 %.
+Cobertura vigente: **98.12 % de sentencias (6,751 de 6,880) y 93.36 % de ramas** en el CI sobre `main` `1dfcfdd` (run 42268272652), con 1,787 pruebas; el requisito del PIA (80 %) se mide sobre sentencias. Mediciones anteriores: 98.21 % de sentencias (6,573 de 6,693) en el CI sobre el commit `9c72bc7`, que ya incluye el Bloque A, y sobre `main` tras la fusión (`0b16cf3`); 98.21 % en el CI sobre `main` `4be166b` (antes del Bloque A); 98.19 % de líneas y 93.20 % de ramas en la medición archivada del 03/11/2026. El mínimo del PIA es 80 %.
 
 **Pruebas omitidas.** El CI informa solo el total; los nombres se obtuvieron ejecutando los módulos con `unittest -v` sin Node.js ni Chrome (como la imagen Docker) y con Node.js (como el job «pruebas»). Job «docker» (8): 3 de `test_interfaz_textos.HumanizarYSinVacios` y 4 de `test_interfaz_bloque_a.EtiquetasLegibles` (Node.js no está instalado o disponible) y `test_interfaz_formulario_cuentas…test_visibilidad_obligatoriedad_valor_y_carga_util_segun_el_rol` (opt-in: requiere `EVENTOSNOVA_PRUEBAS_NAVEGADOR=1`, Node.js y Chrome). Job «pruebas» (1): solo esa prueba opt-in. En `4be166b` eran 0 y 3 (solo existía `test_interfaz_textos`): 3 + 4 + 1 = 8 en «docker»; 0 + 1 = 1 en «pruebas».
 
@@ -74,13 +78,12 @@ Cobertura: 98.21 % de sentencias (6,573 de 6,693) en el CI sobre el commit `9c72
 Pendientes de decisión del equipo (no implementados porque cambian reglas): COR-07 como restricción, COR-08, COR-09 y COR-11/COR-19 como bloqueo.
 
 ### Pendiente
-- Despliegue en Render (u otra plataforma) con render.yaml revisado y aprobación de costos.
-- Registrar la URL pública del sistema y de Swagger UI (/docs con EVENTOSNOVA_DOCS=1) en README, reporte final y presentación.
-- Evidencias de la aplicación desplegada: /health, /ready, /docs, inicio de sesión, registros del preDeploy y del worker.
-- Pruebas finales sobre el entorno publicado (recorrido de los tres roles y reglas principales).
+- ~~Despliegue en Render y URL pública~~ **Hecho (06/11/2026):** ver «Enlaces de entrega». Falta registrar la URL en el reporte final PDF y en la presentación.
+- Evidencias de la aplicación desplegada: ya hay capturas de /docs, /redoc, /health, /ready y /app/ en `docs/calidad/evidencias/07_DESPLIEGUE/capturas_20261106/`; faltan las de inicio de sesión por rol, los registros del preDeploy y del worker, y el estado del Outbox (requieren el Dashboard o una sesión).
+- Pruebas finales sobre el entorno publicado (recorrido de los tres roles y reglas principales): confirmadas de palabra por el equipo las consultas de administrador y coordinador; falta la evidencia gráfica y responder la asignación de CL-DEMO-02 en la demostración.
 - Ejecución humana de los casos manuales de la interfaz web y archivo de sus capturas.
 - Decisiones pendientes del Bloque A: COR-08, COR-07 como restricción, COR-11/COR-19 como bloqueo, COR-09.
-- Archivar el `coverage.json` y la captura de las ejecuciones de CI sobre `9c72bc7` y sobre `main` (`0b16cf3`); la cobertura de 98.21 % consta en la salida del CI.
+- Archivar el `coverage.json` y la captura de la ejecución de CI 42268272652 sobre `main` (`1dfcfdd`); el artefacto `cobertura` de esa ejecución contiene el `coverage.json` y la cobertura consta en la salida del CI.
 - Retirar o sustituir en el repositorio los documentos de entrega antiguos de docs/entrega/ (PDF y presentación generados el 29/10/2026); no forman parte de esta entrega.
 - ZIP definitivo del proyecto y manifiesto SHA-256, después de los bloques C y D.
 

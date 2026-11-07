@@ -77,8 +77,8 @@ Las invariantes del Blueprint (tres recursos, Ohio, planes vigentes, base privad
 
 Los nombres exactos de menús y botones del Dashboard pueden variar; lo importante es lo que se verifica en cada paso.
 
-1. **Conectar el repositorio.** En el Dashboard de Render: *New* → *Blueprint* → conectar la cuenta de GitHub y autorizar a Render para `leslynieto64-del/EventosNova-PIA`.
-2. **Seleccionar el Blueprint.** Repositorio `EventosNova-PIA`, rama `main` (debe contener la versión de `render.yaml` aprobada). Render lee `render.yaml` de la raíz.
+1. **Conectar el repositorio.** En el Dashboard de Render: *New* → *Blueprint* → conectar la cuenta de GitHub y autorizar a Render para `leslynieto64-del/eventos-nova-cln`.
+2. **Seleccionar el Blueprint.** Repositorio `eventos-nova-cln`, rama `main` (debe contener la versión de `render.yaml` aprobada). Render lee `render.yaml` de la raíz.
 3. **Revisar región y costo.** La vista previa debe mostrar **tres** recursos (`eventosnova-db`, `eventosnova-api`, `eventosnova-worker`), todos en **Ohio**, y un total consistente con la sección 3. Si
    aparece otra región, un plan gratuito, otro número de recursos o un total distinto: **detenerse**.
 4. **Autorización.** El *Apply* crea recursos de pago: solo debe pulsarlo quien tenga la autorización del equipo.

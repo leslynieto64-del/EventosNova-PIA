@@ -1,0 +1,29 @@
+Evidencia real de Docker Compose, 2026-11-06 14:14 CSTM, equipo local (Windows, Docker Desktop 29.8.2).
+Ninguna contraseña ni cadena de conexión se imprimió. No se tocó la base de desarrollo 'eventosnova' (las pruebas usan eventosnova_test).
+
+$ docker compose config -q
+(sin errores)
+
+$ docker compose ps
+NAME                   SERVICE   STATUS
+eventosnova-api-1      api       Up 21 minutes (healthy)
+eventosnova-db         db        Up 20 minutes (healthy)
+eventosnova-worker-1   worker    Up 21 minutes
+
+$ curl http://127.0.0.1:8000/ready  (API del Compose local)
+{"estado":"ok","persistencia":"postgresql","base_de_datos":"ok"}
+HTTP 200
+
+$ docker logs --tail 3 eventosnova-api-1
+INFO:     127.0.0.1:35904 - "GET /ready HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47308 - "GET /ready HTTP/1.1" 200 OK
+INFO:     172.18.0.1:49330 - "GET /ready HTTP/1.1" 200 OK
+
+$ docker logs eventosnova-worker-1 (errores)
+316
+$ docker compose run --rm --build tests
+Ran 1787 tests in 1129.393s
+OK (skipped=9)
+exit=0
+
+Nota sobre el worker local: al arrancar Docker Desktop (19:53 UTC) el worker registró errores «failed to resolve host 'db'» y se reinició 3 veces (el DNS interno de Compose aún no resolvía el servicio de la base). Tras la base saludable se estabilizó y no registró más errores en los 12 minutos siguientes. Es una condición de arranque transitoria; el worker de Compose no usa --espera-esquema ni reintentos de conexión inicial.

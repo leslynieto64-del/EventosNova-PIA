@@ -78,7 +78,7 @@ El PIA pide un despliegue con Swagger/OpenAPI accesible. La aplicación está li
 
 | Elemento | Situación |
 |---|---|
-| Repositorio | <https://github.com/leslynieto64-del/EventosNova-PIA>: 37 commits en `main`; PR #1 (`fix/auditoria-integral` → `main`) fusionada el 04/11/2026 (`4be166b`) y PR #2 (`fix/cierre-bloque-a` → `main`) fusionada el 05/11/2026 (`0b16cf3`) |
+| Repositorio | <https://github.com/leslynieto64-del/eventos-nova-cln>: 37 commits en `main`; PR #1 (`fix/auditoria-integral` → `main`) fusionada el 04/11/2026 (`4be166b`) y PR #2 (`fix/cierre-bloque-a` → `main`) fusionada el 05/11/2026 (`0b16cf3`) |
 | CI | Ejecutado en verde sobre `main` (`4be166b`, antes del Bloque A: 1,654 pruebas; 0 omitidas en «pruebas» y 3 en «docker»), sobre el commit `9c72bc7` de la PR #2 y sobre `main` tras la fusión (`0b16cf3`): 1,677 pruebas aprobadas, cobertura de sentencias 98.21 % (6,573 de 6,693), 1 omitida en «pruebas» y 8 en «docker» (sin Node.js ni Chrome) |
 | Bloque A | 11 commits (hasta `9c72bc7`) fusionados en `main` mediante la PR #2 el 05/11/2026; el CI los evaluó en verde |
 | Imagen | El `Dockerfile` termina en la etapa `runtime` (predeterminada, commit `7aee2cb`); el CI verifica que ejecute uvicorn, use el usuario `eventosnova` y no contenga `/app/tests` |

@@ -3,7 +3,7 @@
 Equipo 16 · Componentes de Lógica de Negocios · Prof. Miguel Ángel Gómez Marroquín  
 Lesly Adamaris Cotlame Nieto (2226958) · Christopher Bethancourt Contreras (2226948) · Francisco Mora Ruiz (2226912)
 
-Entrega oficial del PIA: 06/11/2026. Repositorio: <https://github.com/leslynieto64-del/EventosNova-PIA> (`main` con 37 commits: la Pull Request #2 —Bloque A, 11 commits— se fusionó el 05/11/2026 con un merge commit, `0b16cf3`; el CI de `main` terminó correctamente). El sistema no está desplegado.
+Entrega oficial del PIA: 06/11/2026. Repositorio: <https://github.com/leslynieto64-del/eventos-nova-cln> (`main` con 37 commits: la Pull Request #2 —Bloque A, 11 commits— se fusionó el 05/11/2026 con un merge commit, `0b16cf3`; el CI de `main` terminó correctamente). El sistema no está desplegado.
 
 ## Estructura
 
